@@ -619,6 +619,64 @@ textarea:focus-visible,
 /* ── Dialog shared bits ── */
 .dialog-desc { color: var(--muted); font-size: 13px; line-height: 1.55; margin: 0; }
 
+/* ── Add-pipeline wizard ── */
+.stepper {
+  display: flex;
+  gap: 4px;
+  padding: 10px 18px 0;
+  border-bottom: 1px solid var(--border);
+}
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px 9px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.step.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+.step.done { color: var(--ink-2); }
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  font-size: 10.5px;
+  font-weight: 700;
+  font-family: var(--mono);
+}
+.step.active .step-num { border-color: var(--primary); color: var(--primary); }
+.step.done .step-num { background: var(--primary-soft); border-color: var(--primary); color: var(--primary-ink); }
+
+.signal-card { cursor: pointer; }
+.signal-card .pill { align-self: flex-start; }
+.signal-card.selected.traces { border-color: var(--traces); }
+.signal-card.selected.metrics { border-color: var(--metrics); }
+.signal-card.selected.logs { border-color: var(--logs); }
+
+.pick-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  cursor: pointer;
+  font-size: 13px;
+}
+.pick-row:hover { border-color: var(--border-strong); }
+.pick-row:has(input:checked) { border-color: var(--primary); background: var(--primary-soft); }
+.pick-row:has(input:checked) .mono { color: var(--primary-ink); }
+.pick-row.disabled { opacity: 0.55; cursor: not-allowed; }
+.pick-row input { accent-color: var(--primary); width: 15px; height: 15px; flex-shrink: 0; }
+
 .muted { color: var(--muted); }
 .mono { font-family: var(--mono); font-size: 0.92em; }
 .small { font-size: 12px; }

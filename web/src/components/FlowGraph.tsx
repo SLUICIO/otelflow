@@ -24,6 +24,7 @@ interface Props {
   selected: Selection | null
   onSelect: (sel: Selection | null) => void
   onAdd: (kind: Kind, pipelineId?: string) => void
+  onAddPipeline: () => void
 }
 
 interface NodePos {
@@ -43,7 +44,7 @@ interface LaneLayout {
   exporterX: number
 }
 
-export function FlowGraph({ model, componentIndex, diagnostics, selected, onSelect, onAdd }: Props) {
+export function FlowGraph({ model, componentIndex, diagnostics, selected, onSelect, onAdd, onAddPipeline }: Props) {
   const connectorIds = new Set(model.sections.connectors)
 
   // Section+id pairs that have an error/warning diagnostic, to badge nodes.
@@ -97,13 +98,15 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
       y += height + LANE_GAP
     }
 
-    // Extensions rail
+    // Pipeline add zone, then extensions rail
+    const pipelineZoneY = y
+    y += ADD_H + 20
     const extY = y + 8
     const extRailH = 30 + NODE_H + 16
     const totalH = extY + extRailH + MARGIN
     // Extra width on the right for the connector-edge routing channel.
     const totalW = Math.max(laneWidth + MARGIN * 2 + 56, 720)
-    return { lanes, laneWidth, exporterX, extY, totalH, totalW, maxProc }
+    return { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW, maxProc }
   }, [model, connectorIds])
 
   // Cross-lane connector edges: exporter-side instance -> receiver-side
@@ -138,14 +141,16 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
         </svg>
         <h3>No pipelines yet</h3>
         <p>
-          Paste an OpenTelemetry Collector configuration into the editor, or use "Load sample" above —
-          the flow of receivers, processors, exporters, connectors and extensions will appear here.
+          Paste an OpenTelemetry Collector configuration into the editor, use "Load sample" above, or
+          start from scratch — the flow of receivers, processors, exporters, connectors and extensions
+          will appear here.
         </p>
+        <button className="btn" onClick={onAddPipeline}>+ Add pipeline</button>
       </div>
     )
   }
 
-  const { lanes, laneWidth, exporterX, extY, totalH, totalW } = layout
+  const { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW } = layout
 
   const renderNode = (n: NodePos, signal?: string) => {
     const typeName = componentType(n.id)
@@ -309,6 +314,21 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
           </g>
         )
       })}
+
+      {/* pipeline add zone spanning the lane width */}
+      <g
+        className="add-zone"
+        transform={`translate(${MARGIN},${pipelineZoneY})`}
+        onClick={(e) => {
+          e.stopPropagation()
+          onAddPipeline()
+        }}
+      >
+        <rect width={laneWidth} height={ADD_H} rx={8} />
+        <text x={laneWidth / 2} y={ADD_H / 2 + 4} textAnchor="middle">
+          + Pipeline
+        </text>
+      </g>
 
       {/* extensions rail */}
       <text className="section-heading" x={MARGIN} y={extY + 12}>

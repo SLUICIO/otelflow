@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { fetchComponents, fetchMeta, validateConfig } from './api'
 import { parseConfigModel } from './lib/parse'
-import { addComponent, getComponentConfig, removeComponent, setComponentConfig } from './lib/mutate'
+import { addComponent, addPipeline, getComponentConfig, removeComponent, setComponentConfig } from './lib/mutate'
+import { AddPipelineDialog } from './components/AddPipelineDialog'
 import { Editor } from './components/Editor'
 import { FlowGraph, type Selection } from './components/FlowGraph'
 import { DiagnosticsPanel } from './components/DiagnosticsPanel'
@@ -54,6 +55,7 @@ export default function App() {
   const [valState, setValState] = useState<ValState>('pending')
   const [selected, setSelected] = useState<Selection | null>(null)
   const [dialog, setDialog] = useState<{ kind: Kind; pipeline?: string } | null>(null)
+  const [pipelineDialog, setPipelineDialog] = useState(false)
   const [jumpLine, setJumpLine] = useState<number | null>(null)
   const [themePref, setThemePref, isDark] = useTheme()
 
@@ -280,7 +282,10 @@ export default function App() {
               </button>
             )}
             <span className="pane-title">Pipeline flow</span>
-            <div style={{ marginLeft: 'auto' }}>
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+              <button className="btn" onClick={() => setPipelineDialog(true)}>
+                + Add pipeline
+              </button>
               <button className="btn btn--primary" onClick={() => setDialog({ kind: 'receiver' })}>
                 + Add component
               </button>
@@ -294,6 +299,7 @@ export default function App() {
               selected={selected}
               onSelect={setSelected}
               onAdd={(kind, pipeline) => setDialog({ kind, pipeline })}
+              onAddPipeline={() => setPipelineDialog(true)}
             />
           </div>
         </section>
@@ -312,6 +318,15 @@ export default function App() {
             setSelected(null)
           }}
           onClose={() => setSelected(null)}
+        />
+      )}
+
+      {pipelineDialog && (
+        <AddPipelineDialog
+          model={model}
+          componentIndex={componentIndex}
+          onCreate={(id, lists) => setYamlText((prev) => addPipeline(prev, id, lists))}
+          onClose={() => setPipelineDialog(false)}
         />
       )}
 

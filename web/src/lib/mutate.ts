@@ -86,6 +86,20 @@ function appendToSeq(doc: Doc, path: string[], value: string) {
   if (!exists) s.add(doc.createNode(value))
 }
 
+/** Adds a pipeline to service.pipelines referencing already-defined components. */
+export function addPipeline(
+  yamlText: string,
+  id: string,
+  lists: { receivers: string[]; processors: string[]; exporters: string[] },
+): string {
+  const doc: Doc = parseDocument(yamlText)
+  ensureMap(doc, ['service', 'pipelines', id])
+  for (const r of lists.receivers) appendToSeq(doc, ['service', 'pipelines', id, 'receivers'], r)
+  for (const p of lists.processors) appendToSeq(doc, ['service', 'pipelines', id, 'processors'], p)
+  for (const e of lists.exporters) appendToSeq(doc, ['service', 'pipelines', id, 'exporters'], e)
+  return String(doc)
+}
+
 /** Replaces the config block of an existing component. */
 export function setComponentConfig(yamlText: string, section: SectionName, id: string, config: unknown): string {
   const doc: Doc = parseDocument(yamlText)
