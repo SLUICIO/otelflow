@@ -191,8 +191,8 @@ export default function App() {
       <header className="header">
         <div className="brand">
           <BlockS size={24} />
-          <span className="brand-name">Sluicio</span>
-          <span className="brand-sub">OTelFlow</span>
+          <span className="brand-name">OTelFlow</span>
+          <span className="brand-sub">by Sluicio</span>
         </div>
         <div className="header-spacer" />
         <button className="btn btn--link" onClick={() => setYamlText(SAMPLE_CONFIG)}>
