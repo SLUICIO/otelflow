@@ -63,7 +63,10 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
 
   const layout = useMemo(() => {
     const maxProc = Math.max(0, ...model.pipelines.map((p) => p.processors.length))
-    const procZone = maxProc * (NODE_W + COL_GAP) + (NODE_W + COL_GAP) // + room for "+" zone
+    // Middle area: one column per processor, at least one column wide. The
+    // "+ Processor" zone lives at the BOTTOM of this area, below the rows
+    // where edges travel, so lines never cross it.
+    const procZone = Math.max(maxProc, 1) * (NODE_W + COL_GAP)
     const exporterX = LANE_PAD + NODE_W + COL_GAP + procZone
     const laneWidth = exporterX + NODE_W + LANE_PAD
 
@@ -273,8 +276,10 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
                   onClick={() => onAdd('receiver', p.id)}
                 />
                 <AddZone
-                  x={MARGIN + LANE_PAD + NODE_W + COL_GAP + lane.processors.length * (NODE_W + COL_GAP)}
-                  y={lane.processors.length ? lane.processors[0].y : lane.y + LANE_HEADER + 4}
+                  // centered in the processor area, at the lane bottom —
+                  // below the node rows so edges never cross it
+                  x={MARGIN + LANE_PAD + NODE_W + COL_GAP + (exporterX - (LANE_PAD + NODE_W + COL_GAP) - COL_GAP - NODE_W) / 2}
+                  y={lane.y + lane.height - LANE_PAD - ADD_H}
                   label="+ Processor"
                   onClick={() => onAdd('processor', p.id)}
                 />
