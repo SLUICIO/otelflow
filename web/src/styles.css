@@ -340,6 +340,8 @@ textarea:focus-visible,
   padding: 6px 8px;
 }
 .btn--link:hover { background: var(--primary-soft); color: var(--primary-ink); }
+.btn--icon { padding: 6px; color: var(--muted); }
+.btn--icon:hover { color: var(--ink); background: var(--surface-3); }
 .btn--danger {
   background: var(--err-soft);
   border-color: var(--err);
