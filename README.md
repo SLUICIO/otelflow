@@ -34,6 +34,11 @@ No login, no persistence beyond the browser's local storage.
   component plus its pipeline references into the YAML, preserving comments.
 - **Click-to-edit** — select any node to inspect its docs/stability/signals,
   edit its config in a form, or remove it (references are cleaned up too).
+- **Share without a database** — the Share button encodes the whole
+  configuration (compressed) into the URL fragment: `#share=` links open the
+  editor, `#embed=` renders a read-only pipeline canvas for iframes, with a
+  link back to the full configuration. Fragments never reach the server, so
+  nothing is stored anywhere.
 
 ## Architecture
 

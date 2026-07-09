@@ -25,6 +25,7 @@ interface Props {
   onSelect: (sel: Selection | null) => void
   onAdd: (kind: Kind, pipelineId?: string) => void
   onAddPipeline: () => void
+  readOnly?: boolean
 }
 
 interface NodePos {
@@ -44,7 +45,7 @@ interface LaneLayout {
   exporterX: number
 }
 
-export function FlowGraph({ model, componentIndex, diagnostics, selected, onSelect, onAdd, onAddPipeline }: Props) {
+export function FlowGraph({ model, componentIndex, diagnostics, selected, onSelect, onAdd, onAddPipeline, readOnly }: Props) {
   const connectorIds = new Set(model.sections.connectors)
 
   // Section+id pairs that have an error/warning diagnostic, to badge nodes.
@@ -145,7 +146,9 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
           start from scratch — the flow of receivers, processors, exporters, connectors and extensions
           will appear here.
         </p>
-        <button className="btn" onClick={onAddPipeline}>+ Add pipeline</button>
+        {!readOnly && (
+          <button className="btn" onClick={onAddPipeline}>+ Add pipeline</button>
+        )}
       </div>
     )
   }
@@ -174,10 +177,11 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
       <g
         key={`${n.kind}:${n.id}:${n.x}:${n.y}`}
         className={classes}
+        style={readOnly ? { cursor: 'default' } : undefined}
         transform={`translate(${n.x},${n.y})`}
         onClick={(e) => {
           e.stopPropagation()
-          onSelect({ kind: n.kind, id: n.id })
+          if (!readOnly) onSelect({ kind: n.kind, id: n.id })
         }}
       >
         <rect className="node-box" width={NODE_W} height={NODE_H} rx={8} />
@@ -257,24 +261,28 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
             )}
 
             {/* add zones */}
-            <AddZone
-              x={MARGIN + LANE_PAD}
-              y={lane.y + LANE_HEADER + lane.receivers.length * (NODE_H + NODE_GAP)}
-              label="+ Receiver"
-              onClick={() => onAdd('receiver', p.id)}
-            />
-            <AddZone
-              x={MARGIN + LANE_PAD + NODE_W + COL_GAP + lane.processors.length * (NODE_W + COL_GAP)}
-              y={lane.processors.length ? lane.processors[0].y : lane.y + LANE_HEADER + 4}
-              label="+ Processor"
-              onClick={() => onAdd('processor', p.id)}
-            />
-            <AddZone
-              x={MARGIN + exporterX}
-              y={lane.y + LANE_HEADER + lane.exporters.length * (NODE_H + NODE_GAP)}
-              label="+ Exporter"
-              onClick={() => onAdd('exporter', p.id)}
-            />
+            {!readOnly && (
+              <>
+                <AddZone
+                  x={MARGIN + LANE_PAD}
+                  y={lane.y + LANE_HEADER + lane.receivers.length * (NODE_H + NODE_GAP)}
+                  label="+ Receiver"
+                  onClick={() => onAdd('receiver', p.id)}
+                />
+                <AddZone
+                  x={MARGIN + LANE_PAD + NODE_W + COL_GAP + lane.processors.length * (NODE_W + COL_GAP)}
+                  y={lane.processors.length ? lane.processors[0].y : lane.y + LANE_HEADER + 4}
+                  label="+ Processor"
+                  onClick={() => onAdd('processor', p.id)}
+                />
+                <AddZone
+                  x={MARGIN + exporterX}
+                  y={lane.y + LANE_HEADER + lane.exporters.length * (NODE_H + NODE_GAP)}
+                  label="+ Exporter"
+                  onClick={() => onAdd('exporter', p.id)}
+                />
+              </>
+            )}
           </Fragment>
         )
       })}
@@ -316,19 +324,21 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
       })}
 
       {/* pipeline add zone spanning the lane width */}
-      <g
-        className="add-zone"
-        transform={`translate(${MARGIN},${pipelineZoneY})`}
-        onClick={(e) => {
-          e.stopPropagation()
-          onAddPipeline()
-        }}
-      >
-        <rect width={laneWidth} height={ADD_H} rx={8} />
-        <text x={laneWidth / 2} y={ADD_H / 2 + 4} textAnchor="middle">
-          + Pipeline
-        </text>
-      </g>
+      {!readOnly && (
+        <g
+          className="add-zone"
+          transform={`translate(${MARGIN},${pipelineZoneY})`}
+          onClick={(e) => {
+            e.stopPropagation()
+            onAddPipeline()
+          }}
+        >
+          <rect width={laneWidth} height={ADD_H} rx={8} />
+          <text x={laneWidth / 2} y={ADD_H / 2 + 4} textAnchor="middle">
+            + Pipeline
+          </text>
+        </g>
+      )}
 
       {/* extensions rail */}
       <text className="section-heading" x={MARGIN} y={extY + 12}>
@@ -352,12 +362,14 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
           </g>
         )
       })}
-      <AddZone
-        x={MARGIN + model.sections.extensions.length * (NODE_W + 16)}
-        y={extY + 22 + (NODE_H - ADD_H) / 2}
-        label="+ Extension"
-        onClick={() => onAdd('extension')}
-      />
+      {!readOnly && (
+        <AddZone
+          x={MARGIN + model.sections.extensions.length * (NODE_W + 16)}
+          y={extY + 22 + (NODE_H - ADD_H) / 2}
+          label="+ Extension"
+          onClick={() => onAdd('extension')}
+        />
+      )}
     </svg>
   )
 }

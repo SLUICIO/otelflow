@@ -8,9 +8,15 @@ import { FlowGraph, type Selection } from './components/FlowGraph'
 import { DiagnosticsPanel } from './components/DiagnosticsPanel'
 import { AddComponentDialog } from './components/AddComponentDialog'
 import { DetailsDialog } from './components/DetailsDialog'
+import { ShareDialog } from './components/ShareDialog'
+import { decodeShare, parseShareHash } from './lib/share'
 import { SAMPLE_CONFIG } from './sample'
 import type { Component, Diagnostic, Kind, Meta } from './types'
 import { KIND_TO_SECTION, componentType } from './types'
+
+// Parsed once at module load, before any state initializes: a #share= or
+// #embed= fragment carries a full configuration in the URL itself.
+const shareHash = parseShareHash()
 
 const LS_YAML = 'sluicio.otelcol.yaml'
 const LS_VERSION = 'sluicio.otelcol.version'
@@ -47,10 +53,15 @@ function useTheme(): [ThemePref, (t: ThemePref) => void, boolean] {
 }
 
 export default function App() {
+  const embed = shareHash?.mode === 'embed'
   const [meta, setMeta] = useState<Meta | null>(null)
   const [version, setVersion] = useState<string>('')
   const [components, setComponents] = useState<Component[]>([])
-  const [yamlText, setYamlText] = useState<string>(() => localStorage.getItem(LS_YAML) ?? SAMPLE_CONFIG)
+  const [yamlText, setYamlText] = useState<string>(() =>
+    shareHash ? '' : (localStorage.getItem(LS_YAML) ?? SAMPLE_CONFIG),
+  )
+  const [shareOpen, setShareOpen] = useState(false)
+  const sharedVersionRef = useRef<string>('')
   const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([])
   const [valState, setValState] = useState<ValState>('pending')
   const [selected, setSelected] = useState<Selection | null>(null)
@@ -99,13 +110,39 @@ export default function App() {
     [editorWidth, clampWidth],
   )
 
+  // Load a shared configuration from the URL fragment, if present.
+  useEffect(() => {
+    if (!shareHash) return
+    decodeShare(shareHash.payload).then((cfg) => {
+      if (!cfg) {
+        setYamlText(localStorage.getItem(LS_YAML) ?? SAMPLE_CONFIG)
+        return
+      }
+      sharedVersionRef.current = cfg.version
+      setYamlText(cfg.yaml)
+      if (cfg.version) setVersion(cfg.version)
+      // Clear the fragment in the full app so later edits don't sit under a
+      // stale share URL. The embed keeps it — it is the whole page state.
+      if (shareHash.mode === 'share') {
+        history.replaceState(null, '', window.location.pathname)
+      }
+    })
+  }, [])
+
   // Bootstrap: versions + default
   useEffect(() => {
     fetchMeta()
       .then((m) => {
         setMeta(m)
-        const saved = localStorage.getItem(LS_VERSION)
-        setVersion(saved && m.versions.includes(saved) ? saved : m.defaultVersion)
+        const shared = sharedVersionRef.current
+        const saved = shareHash ? '' : localStorage.getItem(LS_VERSION)
+        setVersion(
+          shared && m.versions.includes(shared)
+            ? shared
+            : saved && m.versions.includes(saved)
+              ? saved
+              : m.defaultVersion,
+        )
       })
       .catch(() => setValState('offline'))
   }, [])
@@ -113,15 +150,15 @@ export default function App() {
   // Component catalog per version
   useEffect(() => {
     if (!version) return
-    localStorage.setItem(LS_VERSION, version)
+    if (!embed) localStorage.setItem(LS_VERSION, version)
     fetchComponents(version).then(setComponents).catch(() => setValState('offline'))
-  }, [version])
+  }, [version, embed])
 
   // Debounced real-time validation
   const validateSeq = useRef(0)
   useEffect(() => {
     if (!version) return
-    localStorage.setItem(LS_YAML, yamlText)
+    if (!embed) localStorage.setItem(LS_YAML, yamlText)
     setValState('pending')
     const seq = ++validateSeq.current
     const t = setTimeout(() => {
@@ -188,6 +225,39 @@ export default function App() {
 
   const errors = diagnostics.filter((d) => d.severity === 'error').length
 
+  // Embed mode: just the read-only canvas plus a slim bar linking back to
+  // the full, editable configuration.
+  if (embed) {
+    const openUrl = `${window.location.origin}${window.location.pathname}#share=${shareHash!.payload}`
+    return (
+      <div className="app embed">
+        <div className="graph-scroll" style={{ flex: 1 }}>
+          <FlowGraph
+            model={model}
+            componentIndex={componentIndex}
+            diagnostics={diagnostics}
+            selected={null}
+            onSelect={() => {}}
+            onAdd={() => {}}
+            onAddPipeline={() => {}}
+            readOnly
+          />
+        </div>
+        <div className="embed-bar">
+          <span className="brand" style={{ gap: 7 }}>
+            <BlockS size={16} />
+            <span className="brand-name" style={{ fontSize: 13 }}>OTelFlow</span>
+          </span>
+          {version && <span className="pill pill--outline">v{version}</span>}
+          <StatusBadge state={valState} errors={errors} />
+          <a className="btn btn--link" style={{ marginLeft: 'auto' }} href={openUrl} target="_blank" rel="noreferrer">
+            Open configuration →
+          </a>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="app">
       <header className="header">
@@ -197,6 +267,9 @@ export default function App() {
           <span className="brand-sub">by Sluicio</span>
         </div>
         <div className="header-spacer" />
+        <button className="btn btn--link" onClick={() => setShareOpen(true)}>
+          Share
+        </button>
         <button className="btn btn--link" onClick={() => setYamlText(SAMPLE_CONFIG)}>
           Load sample
         </button>
@@ -319,6 +392,10 @@ export default function App() {
           }}
           onClose={() => setSelected(null)}
         />
+      )}
+
+      {shareOpen && (
+        <ShareDialog yaml={yamlText} version={version} onClose={() => setShareOpen(false)} />
       )}
 
       {pipelineDialog && (
