@@ -45,6 +45,81 @@ interface LaneLayout {
   exporterX: number
 }
 
+export interface GraphLayout {
+  lanes: LaneLayout[]
+  laneWidth: number
+  exporterX: number
+  pipelineZoneY: number
+  extY: number
+  totalH: number
+  totalW: number
+  maxProc: number
+  showExtensions: boolean
+}
+
+/**
+ * Pure layout computation, shared between rendering and consumers that need
+ * to predict the canvas size (the share dialog computes exact embed heights
+ * from it — embeds are immutable, so the prediction stays correct).
+ */
+export function computeLayout(model: ConfigModel, readOnly = false): GraphLayout {
+  const connectorIds = new Set(model.sections.connectors)
+  const maxProc = Math.max(0, ...model.pipelines.map((p) => p.processors.length))
+  // Middle area: one column per processor, at least one column wide. The
+  // "+ Processor" zone lives at the BOTTOM of this area, below the rows
+  // where edges travel, so lines never cross it.
+  const procZone = Math.max(maxProc, 1) * (NODE_W + COL_GAP)
+  const exporterX = LANE_PAD + NODE_W + COL_GAP + procZone
+  const laneWidth = exporterX + NODE_W + LANE_PAD
+  // Read-only embeds render no add zones, so don't reserve their rows.
+  const zoneH = readOnly ? 0 : ADD_H
+
+  const lanes: LaneLayout[] = []
+  let y = MARGIN
+  for (const p of model.pipelines) {
+    const recvColH = p.receivers.length * (NODE_H + NODE_GAP) + zoneH
+    const expColH = p.exporters.length * (NODE_H + NODE_GAP) + zoneH
+    const contentH = Math.max(recvColH, expColH, NODE_H + NODE_GAP)
+    const height = LANE_HEADER + contentH + LANE_PAD
+
+    const midY = y + LANE_HEADER + (contentH - zoneH - NODE_H) / 2
+
+    const receivers = p.receivers.map((id, i) => ({
+      id,
+      kind: (connectorIds.has(id) ? 'connector' : 'receiver') as Kind,
+      x: LANE_PAD,
+      y: y + LANE_HEADER + i * (NODE_H + NODE_GAP),
+    }))
+    const exporters = p.exporters.map((id, i) => ({
+      id,
+      kind: (connectorIds.has(id) ? 'connector' : 'exporter') as Kind,
+      x: exporterX,
+      y: y + LANE_HEADER + i * (NODE_H + NODE_GAP),
+    }))
+    const processors = p.processors.map((id, j) => ({
+      id,
+      kind: 'processor' as Kind,
+      x: LANE_PAD + NODE_W + COL_GAP + j * (NODE_W + COL_GAP),
+      y: midY,
+    }))
+    lanes.push({ pipeline: p, y, height, receivers, processors, exporters, exporterX })
+    y += height + LANE_GAP
+  }
+
+  // Pipeline add zone (edit mode only), then extensions rail. Read-only
+  // embeds skip the zones, and skip the rail entirely when the config
+  // defines no extensions.
+  const pipelineZoneY = y
+  if (!readOnly) y += ADD_H + 20
+  const showExtensions = !readOnly || model.sections.extensions.length > 0
+  const extY = y + 8
+  const extRailH = 30 + NODE_H + 16
+  const totalH = (showExtensions ? extY + extRailH : y) + MARGIN
+  // Extra width on the right for the connector-edge routing channel.
+  const totalW = Math.max(laneWidth + MARGIN * 2 + 56, 720)
+  return { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW, maxProc, showExtensions }
+}
+
 export function FlowGraph({ model, componentIndex, diagnostics, selected, onSelect, onAdd, onAddPipeline, readOnly }: Props) {
   const connectorIds = new Set(model.sections.connectors)
 
@@ -61,60 +136,7 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
     return map
   }, [diagnostics])
 
-  const layout = useMemo(() => {
-    const maxProc = Math.max(0, ...model.pipelines.map((p) => p.processors.length))
-    // Middle area: one column per processor, at least one column wide. The
-    // "+ Processor" zone lives at the BOTTOM of this area, below the rows
-    // where edges travel, so lines never cross it.
-    const procZone = Math.max(maxProc, 1) * (NODE_W + COL_GAP)
-    const exporterX = LANE_PAD + NODE_W + COL_GAP + procZone
-    const laneWidth = exporterX + NODE_W + LANE_PAD
-
-    const lanes: LaneLayout[] = []
-    let y = MARGIN
-    for (const p of model.pipelines) {
-      const recvColH = p.receivers.length * (NODE_H + NODE_GAP) + ADD_H
-      const expColH = p.exporters.length * (NODE_H + NODE_GAP) + ADD_H
-      const contentH = Math.max(recvColH, expColH, NODE_H + NODE_GAP)
-      const height = LANE_HEADER + contentH + LANE_PAD
-
-      const midY = y + LANE_HEADER + (contentH - ADD_H - NODE_H) / 2
-
-      const receivers = p.receivers.map((id, i) => ({
-        id,
-        kind: (connectorIds.has(id) ? 'connector' : 'receiver') as Kind,
-        x: LANE_PAD,
-        y: y + LANE_HEADER + i * (NODE_H + NODE_GAP),
-      }))
-      const exporters = p.exporters.map((id, i) => ({
-        id,
-        kind: (connectorIds.has(id) ? 'connector' : 'exporter') as Kind,
-        x: exporterX,
-        y: y + LANE_HEADER + i * (NODE_H + NODE_GAP),
-      }))
-      const processors = p.processors.map((id, j) => ({
-        id,
-        kind: 'processor' as Kind,
-        x: LANE_PAD + NODE_W + COL_GAP + j * (NODE_W + COL_GAP),
-        y: midY,
-      }))
-      lanes.push({ pipeline: p, y, height, receivers, processors, exporters, exporterX })
-      y += height + LANE_GAP
-    }
-
-    // Pipeline add zone (edit mode only), then extensions rail. Read-only
-    // embeds skip the zones, and skip the rail entirely when the config
-    // defines no extensions.
-    const pipelineZoneY = y
-    if (!readOnly) y += ADD_H + 20
-    const showExtensions = !readOnly || model.sections.extensions.length > 0
-    const extY = y + 8
-    const extRailH = 30 + NODE_H + 16
-    const totalH = (showExtensions ? extY + extRailH : y) + MARGIN
-    // Extra width on the right for the connector-edge routing channel.
-    const totalW = Math.max(laneWidth + MARGIN * 2 + 56, 720)
-    return { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW, maxProc, showExtensions }
-  }, [model, connectorIds, readOnly])
+  const layout = useMemo(() => computeLayout(model, readOnly), [model, readOnly])
 
   // Cross-lane connector edges: exporter-side instance -> receiver-side
   // instance, with the lanes they sit in (needed for routing).

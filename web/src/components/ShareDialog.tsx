@@ -1,5 +1,22 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { encodeShare, type EmbedView } from '../lib/share'
+import { parseConfigModel } from '../lib/parse'
+import { computeLayout } from './FlowGraph'
+
+const EMBED_BAR_H = 40
+const CM_LINE_H = 19 // read-only config viewer line height, approximately
+
+/**
+ * Embeds are immutable snapshots, so the iframe height can be computed
+ * exactly for this configuration and stays correct forever.
+ */
+function embedHeight(view: EmbedView, yaml: string): number {
+  const canvasH = computeLayout(parseConfigModel(yaml), true).totalH
+  const configH = Math.min(Math.max(yaml.split('\n').length * CM_LINE_H + 12, 140), 700)
+  const content =
+    view === 'canvas' ? canvasH : view === 'config' ? configH : canvasH + Math.min(configH, 380)
+  return Math.ceil((content + EMBED_BAR_H + 2) / 10) * 10
+}
 
 /**
  * Copies text to the clipboard, falling back to the legacy execCommand path
@@ -41,10 +58,10 @@ interface Props {
  * Generates a share link and an embeddable iframe snippet. The configuration
  * travels inside the URL fragment — nothing is stored on any server.
  */
-const EMBED_VIEWS: { value: EmbedView; label: string; height: number }[] = [
-  { value: 'canvas', label: 'Visual', height: 480 },
-  { value: 'config', label: 'Configuration', height: 400 },
-  { value: 'both', label: 'Visual + configuration', height: 760 },
+const EMBED_VIEWS: { value: EmbedView; label: string }[] = [
+  { value: 'canvas', label: 'Visual' },
+  { value: 'config', label: 'Configuration' },
+  { value: 'both', label: 'Visual + configuration' },
 ]
 
 export function ShareDialog({ yaml, version, onClose }: Props) {
@@ -57,11 +74,11 @@ export function ShareDialog({ yaml, version, onClose }: Props) {
     })
   }, [yaml, version])
 
-  const viewDef = EMBED_VIEWS.find((v) => v.value === embedView)!
+  const height = useMemo(() => embedHeight(embedView, yaml), [embedView, yaml])
   const embedSrc =
     link.replace('#share=', '#embed=') + (embedView === 'canvas' ? '' : `&view=${embedView}`)
   const iframeCode = link
-    ? `<iframe src="${embedSrc}" width="100%" height="${viewDef.height}" style="border:1px solid #E5E7EB;border-radius:12px" title="OTelFlow — OpenTelemetry Collector pipeline"></iframe>`
+    ? `<iframe src="${embedSrc}" width="100%" height="${height}" style="border:1px solid #E5E7EB;border-radius:12px" title="OTelFlow — OpenTelemetry Collector pipeline"></iframe>`
     : ''
 
   return (

@@ -4,7 +4,7 @@ import { parseConfigModel } from './lib/parse'
 import { addComponent, addPipeline, getComponentConfig, removeComponent, setComponentConfig } from './lib/mutate'
 import { AddPipelineDialog } from './components/AddPipelineDialog'
 import { ConfigViewer, Editor } from './components/Editor'
-import { FlowGraph, type Selection } from './components/FlowGraph'
+import { FlowGraph, computeLayout, type Selection } from './components/FlowGraph'
 import { DiagnosticsPanel } from './components/DiagnosticsPanel'
 import { AddComponentDialog } from './components/AddComponentDialog'
 import { DetailsDialog } from './components/DetailsDialog'
@@ -250,6 +250,13 @@ export default function App() {
 
   const errors = diagnostics.filter((d) => d.severity === 'error').length
 
+  // Natural canvas height for the embed "both" view: the canvas keeps its
+  // content size and the configuration takes the remaining space.
+  const embedCanvasH = useMemo(
+    () => (embed ? computeLayout(model, true).totalH : 0),
+    [embed, model],
+  )
+
   // Embed mode: just the read-only canvas plus a slim bar linking back to
   // the full, editable configuration.
   if (embed) {
@@ -258,7 +265,10 @@ export default function App() {
     return (
       <div className="app embed">
         {view !== 'config' && (
-          <div className="graph-scroll" style={{ flex: view === 'both' ? '3 1 0' : '1 1 0' }}>
+          <div
+            className="graph-scroll"
+            style={view === 'both' ? { flex: `0 1 ${embedCanvasH}px` } : { flex: '1 1 0' }}
+          >
             <FlowGraph
               model={model}
               componentIndex={componentIndex}
@@ -272,7 +282,7 @@ export default function App() {
           </div>
         )}
         {view !== 'canvas' && (
-          <div className="embed-config" style={{ flex: view === 'both' ? '2 1 0' : '1 1 0' }}>
+          <div className="embed-config" style={{ flex: view === 'both' ? '1 1 120px' : '1 1 0' }}>
             <ConfigViewer value={yamlText} dark={isDark} />
           </div>
         )}
