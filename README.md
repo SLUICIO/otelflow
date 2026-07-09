@@ -120,6 +120,59 @@ is self-contained, `web/dist` can also be served by any static file host.
 | `GET /api/components?version=` | Component catalog with availability for that version |
 | `POST /api/validate` | `{config, version}` → structured diagnostics |
 
+## Sharing and embedding
+
+The Share button produces two things, and both work without any server-side
+storage — the entire configuration travels inside the URL fragment, which
+browsers never send to the server.
+
+**Share links** open the configuration in the full editor:
+
+```
+https://otelflow.sluicio.com/#share=1.rVNNb9swDP0rhLfTkNlxsq2dbju...
+```
+
+The fragment format is `#share=<kind>.<data>` where `kind` `1` means the
+data is a deflate-raw compressed, base64url-encoded JSON object
+`{"v": "<collector version>", "c": "<yaml>"}` (`0` is the uncompressed
+fallback). Links are immutable snapshots: editing the configuration
+afterwards does not change what a previously shared link shows.
+
+**Embeds** render a read-only pipeline canvas for other pages — same
+payload, `#embed=` instead of `#share=` — with the collector version, live
+validation status, and a link back to the full configuration:
+
+```html
+<iframe
+  src="https://otelflow.sluicio.com/#embed=1.rVNNb9swDP0rhLfTkNlxsq2dbju..."
+  width="100%"
+  height="480"
+  style="border: 1px solid #e5e7eb; border-radius: 12px"
+  loading="lazy"
+  title="OTelFlow — OpenTelemetry Collector pipeline"
+></iframe>
+```
+
+Because the format is stable and documented, links can also be generated
+programmatically — for example from a repository's collector config in CI,
+so a docs page always links to the current pipeline:
+
+```js
+// examples/make-share-link.mjs
+import { readFileSync } from 'node:fs'
+import { deflateRawSync } from 'node:zlib'
+
+const yaml = readFileSync('otelcol.yaml', 'utf8')
+const payload = deflateRawSync(
+  Buffer.from(JSON.stringify({ v: '0.127.0', c: yaml })),
+).toString('base64url')
+
+console.log(`https://otelflow.sluicio.com/#share=1.${payload}`)
+```
+
+Run it directly: `node examples/make-share-link.mjs my-config.yaml 0.127.0`.
+Point the base URL at your own instance to keep everything on your premises.
+
 ## Development
 
 Requires Go 1.24+ and Node 22+. One terminal:
