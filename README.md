@@ -5,6 +5,39 @@ A visual designer for OpenTelemetry Collector configurations, by
 [OTelBin](https://github.com/dash0hq/otelbin), with version-aware validation
 and a click-to-configure component catalog.
 
+## Purpose
+
+Collector configurations describe your infrastructure: endpoints, service
+names, pipeline topology, sometimes credentials. A tool for editing them
+should not require you to hand any of that to anyone. OTelFlow is built
+around that idea:
+
+- **No accounts, no coupling.** There is no login, no IAM/IdP integration,
+  and no connection to any product — including Sluicio's. The server is a
+  single stateless binary; configurations live in your browser's local
+  storage and share links carry the configuration inside the URL fragment,
+  which never reaches a server.
+- **Self-hosting is the point.** A public instance runs at
+  <https://otelflow.sluicio.com> (the URL may change) and is free to use.
+  But the reason this project exists in the open is so that nobody has to
+  spread OTel configurations around the internet unnecessarily. One command
+  and you are hosting it on your premises — the data is yours and yours only:
+
+  ```sh
+  podman run -d --name otelflow --pull=newer -p 7317:7317 ghcr.io/sluicio/otelflow:latest
+  # docker works identically
+  ```
+
+  Self-hosting also keeps validation local: the editor sends the
+  configuration to the bundled API for checking (it is validated in memory
+  and stored nowhere), and on your own instance even that round trip never
+  leaves your network.
+- **Independent by design.** Parts of OTelFlow will be integrated into
+  [Sluicio](https://sluicio.com) itself
+  ([sluicio-app](https://github.com/sluicio/sluicio-app)), but OTelFlow
+  stays a standalone, Apache-2.0 licensed tool that works the same for
+  everyone, Sluicio customer or not.
+
 Paste an OpenTelemetry Collector configuration, see the pipeline flow as a live
 diagram, get real-time version-aware validation, and add or edit components
 (receivers, processors, exporters, extensions, connectors) through a graphical
