@@ -289,7 +289,9 @@ export default function App() {
         <div className="brand">
           <BlockS size={24} />
           <span className="brand-name">OTelFlow</span>
-          <span className="brand-sub">by Sluicio</span>
+          <a className="brand-sub" href="https://sluicio.com" target="_blank" rel="noreferrer">
+            by Sluicio
+          </a>
         </div>
         <VersionLink />
         <div className="header-spacer" />

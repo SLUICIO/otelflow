@@ -185,7 +185,9 @@ textarea:focus-visible,
   padding-left: 12px;
   margin-left: 3px;
   white-space: nowrap;
+  text-decoration: none;
 }
+a.brand-sub:hover { color: var(--primary); text-decoration: underline; }
 
 .header .btn { white-space: nowrap; }
 .brand-name { white-space: nowrap; }

@@ -45,6 +45,27 @@ interface that writes clean YAML back into the editor.
 
 No login, no persistence beyond the browser's local storage.
 
+## How OTelFlow compares to OTelBin
+
+[OTelBin](https://github.com/dash0hq/otelbin) by Dash0 is the established
+tool in this space, and a good one. The short version: **OTelBin visualizes
+and validates YAML you write; OTelFlow is a designer that also writes the
+YAML for you.**
+
+|  | OTelFlow | OTelBin |
+| --- | --- | --- |
+| Editing | YAML editor plus a GUI that writes YAML: click-to-add components with schema-driven forms, a guided pipeline wizard, click-to-edit and remove — comment-preserving | YAML editor; the diagram is a read-only visualization |
+| Validation | In your browser (WebAssembly) against a curated, version-aware registry, with added/deprecated/removed guidance and fix hints | On OTelBin's backend against real collector distributions (core, contrib, ADOT, Splunk) — authoritative per distribution |
+| Privacy | The configuration never leaves the page; share links carry the data in the URL fragment | Visualization is client-side; distribution validation sends the configuration to the backend |
+| Self-hosting | One ~15 MB container, or any static file host | Self-hostable; the validation backend is a separate deployment |
+| Sharing | Share links plus an embeddable read-only canvas (iframe) with a link back to the configuration | Share links |
+
+The honest gap: validating against real collector binaries catches things a
+curated registry cannot, and OTelBin covers more distributions. Closing that
+gap without giving up in-browser validation is on the roadmap — generating
+the registry from the collector-contrib component metadata instead of
+curating it by hand.
+
 ## Features
 
 - **Live flow visualization** — pipelines rendered as lanes (traces / metrics /
