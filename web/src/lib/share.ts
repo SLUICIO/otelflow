@@ -15,14 +15,24 @@ export interface SharedConfig {
 }
 
 export type EmbedView = 'canvas' | 'config' | 'both'
+export type EmbedTheme = 'light' | 'dark'
 
-export function parseShareHash(): { mode: 'share' | 'embed'; payload: string; view: EmbedView } | null {
-  const m = window.location.hash.match(/^#(share|embed)=([^&]+)(?:&view=(canvas|config|both))?$/)
+export function parseShareHash(): {
+  mode: 'share' | 'embed'
+  payload: string
+  view: EmbedView
+  theme?: EmbedTheme
+} | null {
+  const m = window.location.hash.match(/^#(share|embed)=([^&]+)(?:&(.+))?$/)
   if (!m) return null
+  const params = new URLSearchParams(m[3] ?? '')
+  const view = params.get('view')
+  const theme = params.get('theme')
   return {
     mode: m[1] as 'share' | 'embed',
     payload: m[2],
-    view: (m[3] as EmbedView) ?? 'canvas',
+    view: view === 'config' || view === 'both' ? view : 'canvas',
+    theme: theme === 'light' || theme === 'dark' ? theme : undefined,
   }
 }
 

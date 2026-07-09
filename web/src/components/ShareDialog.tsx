@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { encodeShare, type EmbedView } from '../lib/share'
+import { copyText } from '../lib/clipboard'
+import { encodeShare, type EmbedTheme, type EmbedView } from '../lib/share'
 import { parseConfigModel } from '../lib/parse'
 import { computeLayout } from './FlowGraph'
 
@@ -16,36 +17,6 @@ function embedHeight(view: EmbedView, yaml: string): number {
   const content =
     view === 'canvas' ? canvasH : view === 'config' ? configH : canvasH + Math.min(configH, 380)
   return Math.ceil((content + EMBED_BAR_H + 2) / 10) * 10
-}
-
-/**
- * Copies text to the clipboard, falling back to the legacy execCommand path
- * when the async Clipboard API is unavailable (non-secure contexts) or
- * rejects. Returns whether the copy actually succeeded.
- */
-async function copyText(value: string): Promise<boolean> {
-  try {
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(value)
-      return true
-    }
-  } catch {
-    // fall through to the legacy path
-  }
-  try {
-    const ta = document.createElement('textarea')
-    ta.value = value
-    ta.style.position = 'fixed'
-    ta.style.opacity = '0'
-    document.body.appendChild(ta)
-    ta.focus()
-    ta.select()
-    const ok = document.execCommand('copy')
-    document.body.removeChild(ta)
-    return ok
-  } catch {
-    return false
-  }
 }
 
 interface Props {
@@ -67,6 +38,7 @@ const EMBED_VIEWS: { value: EmbedView; label: string }[] = [
 export function ShareDialog({ yaml, version, onClose }: Props) {
   const [link, setLink] = useState('')
   const [embedView, setEmbedView] = useState<EmbedView>('canvas')
+  const [embedTheme, setEmbedTheme] = useState<EmbedTheme | 'auto'>('auto')
 
   useEffect(() => {
     encodeShare({ yaml, version }).then((payload) => {
@@ -76,7 +48,9 @@ export function ShareDialog({ yaml, version, onClose }: Props) {
 
   const height = useMemo(() => embedHeight(embedView, yaml), [embedView, yaml])
   const embedSrc =
-    link.replace('#share=', '#embed=') + (embedView === 'canvas' ? '' : `&view=${embedView}`)
+    link.replace('#share=', '#embed=') +
+    (embedView === 'canvas' ? '' : `&view=${embedView}`) +
+    (embedTheme === 'auto' ? '' : `&theme=${embedTheme}`)
   const iframeCode = link
     ? `<iframe src="${embedSrc}" width="100%" height="${height}" style="border:1px solid #E5E7EB;border-radius:12px" title="OTelFlow — OpenTelemetry Collector pipeline"></iframe>`
     : ''
@@ -114,6 +88,25 @@ export function ShareDialog({ yaml, version, onClose }: Props) {
                     onChange={() => setEmbedView(v.value)}
                   />
                   {v.label}
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="form-field">
+            <label className="form-label">
+              <span>Embed theme</span>
+              <span className="muted small">auto follows the reader's device</span>
+            </label>
+            <div className="pipeline-pick">
+              {(['auto', 'light', 'dark'] as const).map((t) => (
+                <label key={t}>
+                  <input
+                    type="radio"
+                    name="embed-theme"
+                    checked={embedTheme === t}
+                    onChange={() => setEmbedTheme(t)}
+                  />
+                  {t === 'auto' ? 'Auto' : t === 'light' ? 'Light' : 'Dark'}
                 </label>
               ))}
             </div>

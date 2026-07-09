@@ -6,8 +6,16 @@
     <title>OTelFlow — by Sluicio</title>
     <script>
       // Apply theme before the stylesheet loads (no flash). Light is the
-      // default; 'auto' follows the OS. Per-device setting.
+      // default; 'auto' follows the OS. Per-device setting. Embeds may pin
+      // a theme via a &theme= parameter in the fragment.
       ;(function () {
+        var forced =
+          location.hash.indexOf('#embed=') === 0 &&
+          location.hash.match(/[?&]theme=(light|dark)\b/)
+        if (forced) {
+          document.documentElement.dataset.theme = forced[1]
+          return
+        }
         var t = localStorage.getItem('sluicio.theme') || 'auto'
         var dark =
           t === 'dark' ||

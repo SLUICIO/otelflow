@@ -143,9 +143,11 @@ afterwards does not change what a previously shared link shows.
 validation status, and a link back to the full configuration. An optional
 `&view=` suffix picks what the embed shows: the pipeline canvas (default),
 the configuration (`&view=config`), or both stacked — canvas on top,
-configuration below (`&view=both`). The Share dialog computes the iframe
-height to fit this exact configuration — embeds are immutable snapshots, so
-the computed height stays correct:
+configuration below (`&view=both`). `&theme=light` or `&theme=dark` pins the
+embed's theme (default: the reader's device preference), and the bar offers
+a copy-config button. The Share dialog computes the iframe height to fit
+this exact configuration — embeds are immutable snapshots, so the computed
+height stays correct:
 
 ```html
 <iframe

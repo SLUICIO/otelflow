@@ -9,6 +9,7 @@ import { DiagnosticsPanel } from './components/DiagnosticsPanel'
 import { AddComponentDialog } from './components/AddComponentDialog'
 import { DetailsDialog } from './components/DetailsDialog'
 import { ShareDialog } from './components/ShareDialog'
+import { copyText } from './lib/clipboard'
 import { decodeShare, parseShareHash } from './lib/share'
 import { SAMPLE_CONFIG } from './sample'
 import type { Component, Diagnostic, Kind, Meta } from './types'
@@ -30,12 +31,18 @@ const GRAPH_MIN_W = 460
 type ValState = 'pending' | 'valid' | 'invalid' | 'offline'
 type ThemePref = 'auto' | 'light' | 'dark'
 
-function useTheme(): [ThemePref, (t: ThemePref) => void, boolean] {
+function useTheme(forced?: 'light' | 'dark'): [ThemePref, (t: ThemePref) => void, boolean] {
   const [pref, setPref] = useState<ThemePref>(
     () => (localStorage.getItem(LS_THEME) as ThemePref) || 'auto',
   )
   const [dark, setDark] = useState(() => document.documentElement.dataset.theme === 'dark')
   useEffect(() => {
+    // Embeds may pin a theme via the URL; no persistence, no OS tracking.
+    if (forced) {
+      document.documentElement.dataset.theme = forced
+      setDark(forced === 'dark')
+      return
+    }
     localStorage.setItem(LS_THEME, pref)
     const mq = window.matchMedia('(prefers-color-scheme: dark)')
     const apply = () => {
@@ -48,7 +55,7 @@ function useTheme(): [ThemePref, (t: ThemePref) => void, boolean] {
       mq.addEventListener('change', apply)
       return () => mq.removeEventListener('change', apply)
     }
-  }, [pref])
+  }, [pref, forced])
   return [pref, setPref, dark]
 }
 
@@ -68,7 +75,7 @@ export default function App() {
   const [dialog, setDialog] = useState<{ kind: Kind; pipeline?: string } | null>(null)
   const [pipelineDialog, setPipelineDialog] = useState(false)
   const [jumpLine, setJumpLine] = useState<number | null>(null)
-  const [themePref, setThemePref, isDark] = useTheme()
+  const [themePref, setThemePref, isDark] = useTheme(embed ? shareHash?.theme : undefined)
 
   // Split layout: draggable divider + hideable configuration panel.
   const [editorWidth, setEditorWidth] = useState<number>(() => {
@@ -294,9 +301,12 @@ export default function App() {
           {version && <span className="pill pill--outline">collector v{version}</span>}
           <StatusBadge state={valState} errors={errors} />
           <VersionLink />
-          <a className="btn btn--link" style={{ marginLeft: 'auto' }} href={openUrl} target="_blank" rel="noreferrer">
-            Open configuration →
-          </a>
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
+            <CopyConfigButton text={yamlText} />
+            <a className="btn btn--link" href={openUrl} target="_blank" rel="noreferrer">
+              Open configuration →
+            </a>
+          </div>
         </div>
       </div>
     )
@@ -510,6 +520,23 @@ function StatusBadge({ state, errors }: { state: ValState; errors: number }) {
         </span>
       )
   }
+}
+
+/** Copies the embedded configuration; honest about failure. */
+function CopyConfigButton({ text }: { text: string }) {
+  const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle')
+  return (
+    <button
+      className="btn btn--link"
+      onClick={async () => {
+        const ok = await copyText(text)
+        setState(ok ? 'copied' : 'failed')
+        setTimeout(() => setState('idle'), 2000)
+      }}
+    >
+      {state === 'copied' ? 'Copied' : state === 'failed' ? 'Copy failed' : 'Copy config'}
+    </button>
+  )
 }
 
 /** The GitHub mark, drawn in currentColor. */
