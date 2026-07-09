@@ -19,6 +19,8 @@ jobs:
           go-version-file: go.mod
       - name: Build
         run: go build ./...
+      - name: Build WASM validator
+        run: GOOS=js GOARCH=wasm go build ./cmd/wasm
       - name: Vet
         run: go vet ./...
       - name: Test
@@ -32,6 +34,9 @@ jobs:
         working-directory: web
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5 # the frontend build embeds the WASM validator
+        with:
+          go-version-file: go.mod
       - uses: actions/setup-node@v4
         with:
           node-version: 22

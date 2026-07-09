@@ -28,10 +28,10 @@ around that idea:
   # docker works identically
   ```
 
-  Self-hosting also keeps validation local: the editor sends the
-  configuration to the bundled API for checking (it is validated in memory
-  and stored nowhere), and on your own instance even that round trip never
-  leaves your network.
+  Validation itself runs entirely inside your browser — the Go validation
+  engine is compiled to WebAssembly and ships with the frontend — so the
+  configuration never leaves the page, not even to the server that hosts
+  the app.
 - **Independent by design.** Parts of OTelFlow will be integrated into
   [Sluicio](https://sluicio.com) itself
   ([sluicio-app](https://github.com/sluicio/sluicio-app)), but OTelFlow
@@ -76,15 +76,20 @@ No login, no persistence beyond the browser's local storage.
 ## Architecture
 
 ```
-cmd/server/           Go HTTP server (API + serves web/dist in production)
+cmd/server/           Go HTTP server (serves web/dist; REST API for tooling)
+cmd/wasm/             WebAssembly build of the validator — runs in the browser
 internal/registry/    Curated, version-aware component catalog (embedded JSON)
 internal/validate/    Semantic validation engine (yaml.v3 AST, line numbers)
-internal/api/         REST endpoints
+internal/api/         REST endpoints (same engine, for programmatic use)
 web/                  React + TypeScript + Vite frontend
   src/lib/parse.ts      tolerant config → graph model
   src/lib/mutate.ts     comment-preserving YAML edits (yaml Document API)
   src/components/       Editor (CodeMirror), FlowGraph (SVG), catalog, forms
 ```
+
+The app validates in the browser via the WASM build; it makes no API calls.
+The REST endpoints remain for scripts and CI tooling. Because the frontend
+is self-contained, `web/dist` can also be served by any static file host.
 
 ### API
 
@@ -96,13 +101,13 @@ web/                  React + TypeScript + Vite frontend
 
 ## Development
 
-```sh
-# Terminal 1 — API on :7317
-go run ./cmd/server
+Requires Go 1.24+ and Node 22+. One terminal:
 
-# Terminal 2 — frontend on :5173 (proxies /api)
-cd web && npm install && npm run dev
+```sh
+cd web && npm install && npm run dev   # builds the WASM validator, serves on :5173
 ```
+
+`go run ./cmd/server` is only needed when working on the REST API.
 
 ## Production build
 

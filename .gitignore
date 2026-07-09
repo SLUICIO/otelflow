@@ -1,5 +1,7 @@
 web/node_modules/
 web/dist/
+web/public/validate.wasm
+web/public/wasm_exec.js
 *.log
 .DS_Store
 *.tsbuildinfo

@@ -5,7 +5,10 @@
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
+    "build:wasm": "sh -c 'if command -v go >/dev/null 2>&1; then cd .. && GOOS=js GOARCH=wasm go build -trimpath -ldflags=\"-s -w\" -o web/public/validate.wasm ./cmd/wasm && cp \"$(go env GOROOT)/lib/wasm/wasm_exec.js\" web/public/wasm_exec.js 2>/dev/null || cp \"$(go env GOROOT)/misc/wasm/wasm_exec.js\" web/public/wasm_exec.js; else echo \"go not found — skipping wasm build (validator will be missing at runtime)\"; fi'",
+    "predev": "npm run build:wasm",
     "dev": "vite",
+    "prebuild": "npm run build:wasm",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },

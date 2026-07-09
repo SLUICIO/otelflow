@@ -18,10 +18,15 @@ RUN go mod download
 COPY cmd/ cmd/
 COPY internal/ internal/
 RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /otelflow ./cmd/server
+# In-browser validator: WASM build of the validation engine + Go's JS shim.
+RUN GOOS=js GOARCH=wasm go build -trimpath -ldflags="-s -w" -o /validate.wasm ./cmd/wasm && \
+    cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" /wasm_exec.js
 
 FROM gcr.io/distroless/static-debian12:nonroot
 WORKDIR /app
 COPY --from=backend /otelflow /app/otelflow
 COPY --from=frontend /app/web/dist /app/web/dist
+COPY --from=backend /validate.wasm /app/web/dist/validate.wasm
+COPY --from=backend /wasm_exec.js /app/web/dist/wasm_exec.js
 EXPOSE 7317
 ENTRYPOINT ["/app/otelflow"]

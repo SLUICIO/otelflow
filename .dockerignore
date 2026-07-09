@@ -3,6 +3,8 @@
 .claude
 web/node_modules
 web/dist
+web/public/validate.wasm
+web/public/wasm_exec.js
 *.md
 LICENSE
 deploy

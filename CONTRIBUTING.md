@@ -5,17 +5,16 @@ of the codebase, and what a good pull request looks like.
 
 ## Development setup
 
-You need Go 1.24+ and Node 22+.
+You need Go 1.24+ and Node 22+ (Go is needed even for frontend work — the
+validation engine is compiled to WebAssembly and runs in the browser).
 
 ```sh
-# Terminal 1 — API on :7317
-go run ./cmd/server
-
-# Terminal 2 — frontend on :5173, proxies /api to the Go server
 cd web
 npm install
-npm run dev
+npm run dev   # auto-builds the WASM validator, serves on :5173
 ```
+
+`go run ./cmd/server` is only needed when working on the REST API.
 
 Before opening a PR, make sure both of these pass — CI runs the same:
 

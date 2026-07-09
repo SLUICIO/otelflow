@@ -478,7 +478,7 @@ function StatusBadge({ state, errors }: { state: ValState; errors: number }) {
       return (
         <span className="pill pill--warn">
           <span className="dot" />
-          API offline
+          Validator unavailable
         </span>
       )
     default:
