@@ -1,0 +1,33 @@
+# OTelFlow — docker compose
+#
+#   docker compose up -d                  → app on http://localhost:7317
+#   docker compose --profile proxy up -d  → additionally Caddy on :80/:443
+#                                           (set your domain in deploy/Caddyfile
+#                                           first; Caddy fetches TLS certificates
+#                                           automatically)
+#
+# The image is published by CI; `docker compose build` rebuilds it locally.
+
+services:
+  otelflow:
+    image: ghcr.io/sluicio/otelflow:latest
+    build: .
+    restart: unless-stopped
+    ports:
+      - "7317:7317"
+
+  caddy:
+    image: caddy:2
+    profiles: [proxy]
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	addr := flag.String("addr", ":7317", "listen address")
+	addr := flag.String("addr", defaultAddr(), "listen address")
 	staticDir := flag.String("static", "web/dist", "directory with the built frontend (optional)")
 	flag.Parse()
 
@@ -38,6 +38,15 @@ func main() {
 	if err := http.ListenAndServe(*addr, api.CORS(mux)); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// defaultAddr honors the PORT environment variable that container platforms
+// inject, falling back to the designer's own port.
+func defaultAddr() string {
+	if p := os.Getenv("PORT"); p != "" {
+		return ":" + p
+	}
+	return ":7317"
 }
 
 // spaHandler serves static files, falling back to index.html for client-side

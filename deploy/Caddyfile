@@ -1,0 +1,5 @@
+# Replace with your domain. Caddy obtains and renews the TLS certificate
+# automatically as long as the domain's DNS points at this host.
+otelflow.example.com {
+	reverse_proxy otelflow:7317
+}

@@ -73,6 +73,21 @@ cd web && npm run build     # emits web/dist
 go run ./cmd/server         # serves API + web/dist on :7317
 ```
 
+## Deployment
+
+CI publishes a multi-arch image to `ghcr.io/sluicio/otelflow:latest` on every
+push to main. The container is stateless — user configs live in the browser.
+
+```sh
+docker compose up -d                  # app on http://localhost:7317
+docker compose --profile proxy up -d  # + Caddy on :80/:443 with automatic TLS
+                                      #   (set your domain in deploy/Caddyfile)
+```
+
+The server honors the `PORT` environment variable, so the same image runs
+unmodified on container platforms like Scaleway Serverless Containers or
+Cloud Run. `-addr` and `-static` flags override the defaults.
+
 ## Notes
 
 - The component registry (`internal/registry/data/components.json`) is a

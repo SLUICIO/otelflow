@@ -1,0 +1,9 @@
+.git
+.github
+.claude
+web/node_modules
+web/dist
+*.md
+LICENSE
+deploy
+docker-compose.yml
