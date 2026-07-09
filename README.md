@@ -138,9 +138,12 @@ data is a deflate-raw compressed, base64url-encoded JSON object
 fallback). Links are immutable snapshots: editing the configuration
 afterwards does not change what a previously shared link shows.
 
-**Embeds** render a read-only pipeline canvas for other pages — same
-payload, `#embed=` instead of `#share=` — with the collector version, live
-validation status, and a link back to the full configuration:
+**Embeds** render a read-only view for other pages — same payload,
+`#embed=` instead of `#share=` — with the collector version, live
+validation status, and a link back to the full configuration. An optional
+`&view=` suffix picks what the embed shows: the pipeline canvas (default),
+the configuration (`&view=config`), or both stacked — canvas on top,
+configuration below (`&view=both`):
 
 ```html
 <iframe

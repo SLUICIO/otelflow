@@ -43,6 +43,25 @@ function chromeTheme(dark: boolean) {
   )
 }
 
+/** Read-only, syntax-highlighted configuration view for embeds. */
+export function ConfigViewer({ value, dark }: { value: string; dark: boolean }) {
+  const extensions = useMemo(
+    () => [yaml(), chromeTheme(dark), syntaxHighlighting(dark ? oneDarkHighlightStyle : defaultHighlightStyle)],
+    [dark],
+  )
+  return (
+    <CodeMirror
+      value={value}
+      editable={false}
+      theme="none"
+      extensions={extensions}
+      height="100%"
+      style={{ height: '100%' }}
+      basicSetup={{ lineNumbers: true, foldGutter: false, highlightActiveLine: false }}
+    />
+  )
+}
+
 export function Editor({ value, onChange, diagnostics, jumpToLine, onJumped, dark }: Props) {
   const ref = useRef<ReactCodeMirrorRef>(null)
   const diagRef = useRef(diagnostics)

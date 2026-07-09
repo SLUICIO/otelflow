@@ -14,9 +14,16 @@ export interface SharedConfig {
   version: string
 }
 
-export function parseShareHash(): { mode: 'share' | 'embed'; payload: string } | null {
-  const m = window.location.hash.match(/^#(share|embed)=(.+)$/)
-  return m ? { mode: m[1] as 'share' | 'embed', payload: m[2] } : null
+export type EmbedView = 'canvas' | 'config' | 'both'
+
+export function parseShareHash(): { mode: 'share' | 'embed'; payload: string; view: EmbedView } | null {
+  const m = window.location.hash.match(/^#(share|embed)=([^&]+)(?:&view=(canvas|config|both))?$/)
+  if (!m) return null
+  return {
+    mode: m[1] as 'share' | 'embed',
+    payload: m[2],
+    view: (m[3] as EmbedView) ?? 'canvas',
+  }
 }
 
 export async function encodeShare(cfg: SharedConfig): Promise<string> {

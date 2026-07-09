@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { encodeShare } from '../lib/share'
+import { encodeShare, type EmbedView } from '../lib/share'
 
 /**
  * Copies text to the clipboard, falling back to the legacy execCommand path
@@ -41,8 +41,15 @@ interface Props {
  * Generates a share link and an embeddable iframe snippet. The configuration
  * travels inside the URL fragment — nothing is stored on any server.
  */
+const EMBED_VIEWS: { value: EmbedView; label: string; height: number }[] = [
+  { value: 'canvas', label: 'Visual', height: 480 },
+  { value: 'config', label: 'Configuration', height: 400 },
+  { value: 'both', label: 'Visual + configuration', height: 760 },
+]
+
 export function ShareDialog({ yaml, version, onClose }: Props) {
   const [link, setLink] = useState('')
+  const [embedView, setEmbedView] = useState<EmbedView>('canvas')
 
   useEffect(() => {
     encodeShare({ yaml, version }).then((payload) => {
@@ -50,9 +57,11 @@ export function ShareDialog({ yaml, version, onClose }: Props) {
     })
   }, [yaml, version])
 
-  const embedSrc = link.replace('#share=', '#embed=')
+  const viewDef = EMBED_VIEWS.find((v) => v.value === embedView)!
+  const embedSrc =
+    link.replace('#share=', '#embed=') + (embedView === 'canvas' ? '' : `&view=${embedView}`)
   const iframeCode = link
-    ? `<iframe src="${embedSrc}" width="100%" height="480" style="border:1px solid #E5E7EB;border-radius:12px" title="OTelFlow — OpenTelemetry Collector pipeline"></iframe>`
+    ? `<iframe src="${embedSrc}" width="100%" height="${viewDef.height}" style="border:1px solid #E5E7EB;border-radius:12px" title="OTelFlow — OpenTelemetry Collector pipeline"></iframe>`
     : ''
 
   return (
@@ -74,9 +83,33 @@ export function ShareDialog({ yaml, version, onClose }: Props) {
             hint="Opens the configuration in the full editor."
             value={link}
           />
+          <div className="form-field">
+            <label className="form-label">
+              <span>Embed shows</span>
+            </label>
+            <div className="pipeline-pick">
+              {EMBED_VIEWS.map((v) => (
+                <label key={v.value}>
+                  <input
+                    type="radio"
+                    name="embed-view"
+                    checked={embedView === v.value}
+                    onChange={() => setEmbedView(v.value)}
+                  />
+                  {v.label}
+                </label>
+              ))}
+            </div>
+          </div>
           <CopyRow
             label="Embed"
-            hint="Read-only pipeline canvas for other pages, with a link back to this configuration."
+            hint={
+              embedView === 'both'
+                ? 'Read-only view for other pages: the pipeline canvas on top, the configuration below, and a link back here.'
+                : embedView === 'config'
+                  ? 'Read-only configuration for other pages, with a link back to this page.'
+                  : 'Read-only pipeline canvas for other pages, with a link back to this configuration.'
+            }
             value={iframeCode}
             multiline
           />

@@ -3,7 +3,7 @@ import { fetchComponents, fetchMeta, validateConfig } from './api'
 import { parseConfigModel } from './lib/parse'
 import { addComponent, addPipeline, getComponentConfig, removeComponent, setComponentConfig } from './lib/mutate'
 import { AddPipelineDialog } from './components/AddPipelineDialog'
-import { Editor } from './components/Editor'
+import { ConfigViewer, Editor } from './components/Editor'
 import { FlowGraph, type Selection } from './components/FlowGraph'
 import { DiagnosticsPanel } from './components/DiagnosticsPanel'
 import { AddComponentDialog } from './components/AddComponentDialog'
@@ -135,8 +135,9 @@ export default function App() {
     const onHashChange = () => {
       const h = parseShareHash()
       if (!h) return
-      // Switching between app and embed presentation needs a full reinit.
-      if ((h.mode === 'embed') !== embed) {
+      // Switching between app and embed presentation — or between embed
+      // views — needs a full reinit.
+      if ((h.mode === 'embed') !== embed || embed) {
         window.location.reload()
         return
       }
@@ -253,20 +254,28 @@ export default function App() {
   // the full, editable configuration.
   if (embed) {
     const openUrl = `${window.location.origin}${window.location.pathname}#share=${shareHash!.payload}`
+    const view = shareHash!.view
     return (
       <div className="app embed">
-        <div className="graph-scroll" style={{ flex: 1 }}>
-          <FlowGraph
-            model={model}
-            componentIndex={componentIndex}
-            diagnostics={diagnostics}
-            selected={null}
-            onSelect={() => {}}
-            onAdd={() => {}}
-            onAddPipeline={() => {}}
-            readOnly
-          />
-        </div>
+        {view !== 'config' && (
+          <div className="graph-scroll" style={{ flex: view === 'both' ? '3 1 0' : '1 1 0' }}>
+            <FlowGraph
+              model={model}
+              componentIndex={componentIndex}
+              diagnostics={diagnostics}
+              selected={null}
+              onSelect={() => {}}
+              onAdd={() => {}}
+              onAddPipeline={() => {}}
+              readOnly
+            />
+          </div>
+        )}
+        {view !== 'canvas' && (
+          <div className="embed-config" style={{ flex: view === 'both' ? '2 1 0' : '1 1 0' }}>
+            <ConfigViewer value={yamlText} dark={isDark} />
+          </div>
+        )}
         <div className="embed-bar">
           <span className="brand" style={{ gap: 7 }}>
             <BlockS size={16} />

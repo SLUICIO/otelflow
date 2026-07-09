@@ -690,6 +690,16 @@ a.brand-sub:hover { color: var(--primary); text-decoration: underline; }
 .pick-row input { accent-color: var(--primary); width: 15px; height: 15px; flex-shrink: 0; }
 
 /* ── Embed mode ── */
+.embed-config {
+  min-height: 0;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+}
+.embed-config:first-child { border-top: none; }
+.embed-config .cm-editor { height: 100%; font-size: 12.5px; }
+.embed-config .cm-scroller { font-family: var(--mono); }
+
 .embed-bar {
   display: flex;
   align-items: center;
