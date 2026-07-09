@@ -272,8 +272,9 @@ export default function App() {
             <BlockS size={16} />
             <span className="brand-name" style={{ fontSize: 13 }}>OTelFlow</span>
           </span>
-          {version && <span className="pill pill--outline">v{version}</span>}
+          {version && <span className="pill pill--outline">collector v{version}</span>}
           <StatusBadge state={valState} errors={errors} />
+          <VersionLink />
           <a className="btn btn--link" style={{ marginLeft: 'auto' }} href={openUrl} target="_blank" rel="noreferrer">
             Open configuration →
           </a>
@@ -290,6 +291,7 @@ export default function App() {
           <span className="brand-name">OTelFlow</span>
           <span className="brand-sub">by Sluicio</span>
         </div>
+        <VersionLink />
         <div className="header-spacer" />
         <button className="btn btn--link" onClick={() => setShareOpen(true)}>
           Share
@@ -477,6 +479,21 @@ function StatusBadge({ state, errors }: { state: ValState; errors: number }) {
         </span>
       )
   }
+}
+
+/** App version, injected at build time; links to the GitHub releases. */
+function VersionLink() {
+  return (
+    <a
+      className="app-version mono"
+      href="https://github.com/SLUICIO/otelflow/releases"
+      target="_blank"
+      rel="noreferrer"
+      title={`OTelFlow v${__APP_VERSION__} · ${__GIT_SHA__}`}
+    >
+      v{__APP_VERSION__}
+    </a>
+  )
 }
 
 /**

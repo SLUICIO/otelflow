@@ -2,6 +2,9 @@
 # Result: a ~20 MB image containing one static binary and the built frontend.
 
 FROM node:22-alpine AS frontend
+# Provenance for the in-app version link; .git is not in the build context.
+ARG GIT_SHA=""
+ENV GIT_SHA=$GIT_SHA
 WORKDIR /app/web
 COPY web/package.json web/package-lock.json ./
 RUN npm ci

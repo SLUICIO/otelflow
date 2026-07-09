@@ -190,6 +190,14 @@ textarea:focus-visible,
 .header .btn { white-space: nowrap; }
 .brand-name { white-space: nowrap; }
 
+.app-version {
+  color: var(--muted);
+  font-size: 11.5px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.app-version:hover { color: var(--primary); text-decoration: underline; }
+
 @media (max-width: 1180px) {
   .brand-sub { display: none; }
 }
