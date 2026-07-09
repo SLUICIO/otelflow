@@ -1,5 +1,35 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { encodeShare } from '../lib/share'
+
+/**
+ * Copies text to the clipboard, falling back to the legacy execCommand path
+ * when the async Clipboard API is unavailable (non-secure contexts) or
+ * rejects. Returns whether the copy actually succeeded.
+ */
+async function copyText(value: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(value)
+      return true
+    }
+  } catch {
+    // fall through to the legacy path
+  }
+  try {
+    const ta = document.createElement('textarea')
+    ta.value = value
+    ta.style.position = 'fixed'
+    ta.style.opacity = '0'
+    document.body.appendChild(ta)
+    ta.focus()
+    ta.select()
+    const ok = document.execCommand('copy')
+    document.body.removeChild(ta)
+    return ok
+  } catch {
+    return false
+  }
+}
 
 interface Props {
   yaml: string
@@ -70,13 +100,20 @@ function CopyRow({
   value: string
   multiline?: boolean
 }) {
-  const [copied, setCopied] = useState(false)
-  const copy = () => {
-    navigator.clipboard.writeText(value).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1600)
-    })
+  const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle')
+  const fieldRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null)
+
+  const copy = async () => {
+    const ok = await copyText(value)
+    setState(ok ? 'copied' : 'failed')
+    if (!ok) {
+      // Honest fallback: select the text so a manual copy is one keystroke.
+      fieldRef.current?.focus()
+      fieldRef.current?.select()
+    }
+    setTimeout(() => setState('idle'), 2200)
   }
+
   return (
     <div className="form-field">
       <label className="form-label">
@@ -84,15 +121,30 @@ function CopyRow({
       </label>
       <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
         {multiline ? (
-          <textarea className="yaml-textarea" style={{ minHeight: 64 }} readOnly value={value} onFocus={(e) => e.target.select()} />
+          <textarea
+            ref={fieldRef as React.RefObject<HTMLTextAreaElement>}
+            className="yaml-textarea"
+            style={{ minHeight: 64 }}
+            readOnly
+            value={value}
+            onFocus={(e) => e.target.select()}
+          />
         ) : (
-          <input className="text-input mono" readOnly value={value} onFocus={(e) => e.target.select()} />
+          <input
+            ref={fieldRef as React.RefObject<HTMLInputElement>}
+            className="text-input mono"
+            readOnly
+            value={value}
+            onFocus={(e) => e.target.select()}
+          />
         )}
         <button className="btn btn--primary" style={{ flexShrink: 0 }} disabled={!value} onClick={copy}>
-          {copied ? 'Copied' : 'Copy'}
+          {state === 'copied' ? 'Copied' : state === 'failed' ? 'Copy failed' : 'Copy'}
         </button>
       </div>
-      <div className="form-desc">{hint}</div>
+      <div className="form-desc">
+        {state === 'failed' ? 'Copying was blocked by the browser — the text is selected, copy it manually.' : hint}
+      </div>
     </div>
   )
 }

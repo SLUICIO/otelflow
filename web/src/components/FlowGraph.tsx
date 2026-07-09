@@ -99,16 +99,19 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
       y += height + LANE_GAP
     }
 
-    // Pipeline add zone, then extensions rail
+    // Pipeline add zone (edit mode only), then extensions rail. Read-only
+    // embeds skip the zones, and skip the rail entirely when the config
+    // defines no extensions.
     const pipelineZoneY = y
-    y += ADD_H + 20
+    if (!readOnly) y += ADD_H + 20
+    const showExtensions = !readOnly || model.sections.extensions.length > 0
     const extY = y + 8
     const extRailH = 30 + NODE_H + 16
-    const totalH = extY + extRailH + MARGIN
+    const totalH = (showExtensions ? extY + extRailH : y) + MARGIN
     // Extra width on the right for the connector-edge routing channel.
     const totalW = Math.max(laneWidth + MARGIN * 2 + 56, 720)
-    return { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW, maxProc }
-  }, [model, connectorIds])
+    return { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW, maxProc, showExtensions }
+  }, [model, connectorIds, readOnly])
 
   // Cross-lane connector edges: exporter-side instance -> receiver-side
   // instance, with the lanes they sit in (needed for routing).
@@ -153,7 +156,7 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
     )
   }
 
-  const { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW } = layout
+  const { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW, showExtensions } = layout
 
   const renderNode = (n: NodePos, signal?: string) => {
     const typeName = componentType(n.id)
@@ -341,9 +344,11 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
       )}
 
       {/* extensions rail */}
-      <text className="section-heading" x={MARGIN} y={extY + 12}>
-        Extensions
-      </text>
+      {showExtensions && (
+        <text className="section-heading" x={MARGIN} y={extY + 12}>
+          Extensions
+        </text>
+      )}
       {model.sections.extensions.map((id, i) => {
         const enabled = model.serviceExtensions.includes(id)
         return (
