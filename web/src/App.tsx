@@ -129,6 +129,30 @@ export default function App() {
     })
   }, [])
 
+  // A share link opened in an already-running tab only changes the hash —
+  // the browser does not reload. Apply the new fragment live.
+  useEffect(() => {
+    const onHashChange = () => {
+      const h = parseShareHash()
+      if (!h) return
+      // Switching between app and embed presentation needs a full reinit.
+      if ((h.mode === 'embed') !== embed) {
+        window.location.reload()
+        return
+      }
+      decodeShare(h.payload).then((cfg) => {
+        if (!cfg) return
+        setYamlText(cfg.yaml)
+        if (cfg.version) setVersion(cfg.version)
+        if (h.mode === 'share') {
+          history.replaceState(null, '', window.location.pathname)
+        }
+      })
+    }
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [embed])
+
   // Bootstrap: versions + default
   useEffect(() => {
     fetchMeta()
