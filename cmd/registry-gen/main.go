@@ -64,6 +64,7 @@ type genComponent struct {
 	Removed       string       `json:"removed,omitempty"`
 	Stability     string       `json:"stability"`
 	Distributions []string     `json:"distributions"`
+	DocsURL       string       `json:"docsUrl"`
 }
 
 type output struct {
@@ -149,6 +150,7 @@ func main() {
 			Signals: signals, Connects: connects,
 			Added: added, Removed: removed,
 			Stability: stability, Distributions: dists,
+			DocsURL: fmt.Sprintf("https://github.com/%s/tree/main/%s", src.repo, dirKey),
 		})
 	}
 

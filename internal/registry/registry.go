@@ -45,6 +45,7 @@ type Component struct {
 	Removed       string          `json:"removed,omitempty"`
 	Stability     string          `json:"stability"`
 	Distributions []string        `json:"distributions,omitempty"`
+	DocsURL       string          `json:"docsUrl,omitempty"`
 	Description   string          `json:"description"`
 	Schema        json.RawMessage `json:"schema,omitempty"`
 }

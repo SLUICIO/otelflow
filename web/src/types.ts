@@ -30,6 +30,7 @@ export interface Component {
   removed?: string
   stability: string
   distributions?: string[]
+  docsUrl?: string
   description: string
   schema?: SchemaNode
   available: boolean

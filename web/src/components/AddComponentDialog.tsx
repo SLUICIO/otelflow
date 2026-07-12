@@ -179,6 +179,17 @@ export function AddComponentDialog({ initialKind, initialPipeline, version, comp
                     <span className="pill pill--outline">since v{c.added}</span>
                     {c.isDeprecated && <span className="pill pill--warn">deprecated</span>}
                     {!c.available && <span className="pill pill--err">{availabilityNote(c, version)}</span>}
+                    {c.docsUrl && (
+                      <a
+                        className="docs-link"
+                        href={c.docsUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        docs ↗
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}
@@ -187,7 +198,14 @@ export function AddComponentDialog({ initialKind, initialPipeline, version, comp
           </div>
         ) : (
           <div className="modal-body">
-            <p className="dialog-desc" style={{ marginBottom: 14 }}>{picked.description}</p>
+            <p className="dialog-desc" style={{ marginBottom: 14 }}>
+              {picked.description}{' '}
+              {picked.docsUrl && (
+                <a className="docs-link" href={picked.docsUrl} target="_blank" rel="noreferrer">
+                  Documentation ↗
+                </a>
+              )}
+            </p>
 
             <div className="form-field" style={{ marginBottom: 14 }}>
               <label className="form-label">

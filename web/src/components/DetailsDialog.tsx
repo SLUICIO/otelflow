@@ -55,6 +55,16 @@ export function DetailsDialog({ kind, id, component, initialConfig, onApply, onR
                     {component.removed ? `removed in v${component.removed}` : `added in v${component.added}`}
                   </span>
                 )}
+                {component.docsUrl && (
+                  <a
+                    className="docs-link"
+                    href={component.docsUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Documentation ↗
+                  </a>
+                )}
               </div>
               <fieldset className="form-fieldset">
                 <legend>Configuration</legend>
