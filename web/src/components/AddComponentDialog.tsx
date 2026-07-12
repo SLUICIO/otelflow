@@ -45,13 +45,20 @@ interface Props {
   initialKind: Kind
   initialPipeline?: string
   version: string
+  distro: string
   components: Component[]
   model: ConfigModel
   onAdd: (kind: Kind, id: string, config: unknown, opts: AddOpts) => void
   onClose: () => void
 }
 
-export function AddComponentDialog({ initialKind, initialPipeline, version, components, model, onAdd, onClose }: Props) {
+/** "core" → "OTel Collector Core v0.127.0" etc. */
+export function distroLabel(distro: string, version: string): string {
+  const names: Record<string, string> = { core: 'OTel Collector Core', contrib: 'OTel Collector Contrib' }
+  return `${names[distro] ?? distro} v${version}`
+}
+
+export function AddComponentDialog({ initialKind, initialPipeline, version, distro, components, model, onAdd, onClose }: Props) {
   const [kind, setKind] = useState<Kind>(initialKind)
   const [query, setQuery] = useState('')
   const [picked, setPicked] = useState<Component | null>(null)
@@ -111,7 +118,7 @@ export function AddComponentDialog({ initialKind, initialPipeline, version, comp
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>{picked ? `Configure ${picked.type}` : 'Add component'}</h2>
-          <span className="muted small mono">collector v{version}</span>
+          <span className="muted small mono">{distroLabel(distro, version)}</span>
           <div className="header-spacer" style={{ flex: 1 }} />
           <button className="btn btn--link" onClick={onClose} aria-label="Close">✕</button>
         </div>

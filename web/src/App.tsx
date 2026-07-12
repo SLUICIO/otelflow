@@ -509,6 +509,7 @@ export default function App() {
           initialKind={dialog.kind}
           initialPipeline={dialog.pipeline}
           version={version}
+          distro={distro}
           components={catalogComponents}
           model={model}
           onAdd={handleAdd}
