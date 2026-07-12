@@ -52,7 +52,7 @@ func messages(r Result) string {
 }
 
 func TestValidConfig(t *testing.T) {
-	r := Validate(mustRegistry(t), validConfig, "0.127.0")
+	r := Validate(mustRegistry(t), validConfig, "0.127.0", "contrib")
 	if !r.Valid {
 		t.Fatalf("expected valid, got diagnostics:\n%s", messages(r))
 	}
@@ -349,7 +349,7 @@ service:
 
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			r := Validate(reg, tc.config, tc.version)
+			r := Validate(reg, tc.config, tc.version, "contrib")
 			if r.Valid != tc.valid {
 				t.Errorf("valid = %v, want %v; diagnostics:\n%s", r.Valid, tc.valid, messages(r))
 			}
@@ -357,6 +357,32 @@ service:
 				t.Errorf("expected a diagnostic containing %q, got:\n%s", tc.want, messages(r))
 			}
 		})
+	}
+}
+
+func TestDistributionChecks(t *testing.T) {
+	reg := mustRegistry(t)
+	cfg := `
+receivers:
+  filestats:
+    include: /var/log/*.log
+exporters:
+  debug:
+service:
+  pipelines:
+    metrics:
+      receivers: [filestats]
+      exporters: [debug]
+`
+	if r := Validate(reg, cfg, "0.127.0", "contrib"); !r.Valid {
+		t.Errorf("expected valid under contrib, got:\n%s", messages(r))
+	}
+	r := Validate(reg, cfg, "0.127.0", "core")
+	if r.Valid {
+		t.Fatal("expected invalid under core")
+	}
+	if !strings.Contains(messages(r), "not part of the core distribution") {
+		t.Errorf("expected distribution diagnostic, got:\n%s", messages(r))
 	}
 }
 
@@ -370,7 +396,7 @@ service:
     traces:
       receivers: [bogus_receiver]
       exporters: [debug]
-`, "0.127.0")
+`, "0.127.0", "contrib")
 	found := false
 	for _, d := range r.Diagnostics {
 		if strings.Contains(d.Message, "Unknown receiver type") {

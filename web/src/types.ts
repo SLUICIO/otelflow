@@ -29,6 +29,7 @@ export interface Component {
   deprecated?: string
   removed?: string
   stability: string
+  distributions?: string[]
   description: string
   schema?: SchemaNode
   available: boolean
@@ -52,6 +53,7 @@ export interface ValidationResult {
 export interface Meta {
   versions: string[]
   defaultVersion: string
+  distributions: string[]
 }
 
 /** Parsed view of the config used to draw the flow graph. */

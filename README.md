@@ -55,16 +55,16 @@ YAML for you.**
 |  | OTelFlow | OTelBin |
 | --- | --- | --- |
 | Editing | YAML editor plus a GUI that writes YAML: click-to-add components with schema-driven forms, a guided pipeline wizard, click-to-edit and remove — comment-preserving | YAML editor; the diagram is a read-only visualization |
-| Validation | In your browser (WebAssembly) against a curated, version-aware registry, with added/deprecated/removed guidance and fix hints | On OTelBin's backend against real collector distributions (core, contrib, ADOT, Splunk) — authoritative per distribution |
+| Validation | In your browser (WebAssembly) against a registry generated from the collector repositories — per-version component presence, signals, core/contrib distribution checks — plus curated schemas and fix hints | On OTelBin's backend against real collector distributions (core, contrib, ADOT, Splunk) — authoritative per distribution |
 | Privacy | The configuration never leaves the page; share links carry the data in the URL fragment | Visualization is client-side; distribution validation sends the configuration to the backend |
 | Self-hosting | One ~15 MB container, or any static file host | Self-hostable; the validation backend is a separate deployment |
 | Sharing | Share links plus an embeddable read-only canvas (iframe) with a link back to the configuration | Share links |
 
-The honest gap: validating against real collector binaries catches things a
-curated registry cannot, and OTelBin covers more distributions. Closing that
-gap without giving up in-browser validation is on the roadmap — generating
-the registry from the collector-contrib component metadata instead of
-curating it by hand.
+The honest gap: validating against real collector binaries catches config
+mistakes a metadata-derived registry cannot (deep struct fields, factory
+defaults), and OTelBin covers the ADOT and Splunk distributions. Both are
+candidates for later; the catalog itself is already derived from the
+collector repositories, not curated by hand.
 
 ## Features
 
@@ -77,11 +77,14 @@ curating it by hand.
   (e.g. `filelog` cannot feed a traces pipeline), connector role rules
   (must be used as both exporter and receiver), required/typed config fields,
   and unused components.
-- **Version-aware** — pick the collector version in the header; components
-  added later (e.g. `filestats` in v0.77.0) or removed earlier (e.g. the
-  `jaeger` exporter in v0.86.0) are flagged with actionable hints, and the
-  catalog grays them out. Deprecations (e.g. `logging` → `debug`) surface as
-  warnings.
+- **Version- and distribution-aware** — pick the collector version and
+  distribution (core or contrib) in the header. Components added later
+  (e.g. `filestats` in v0.77.0), removed earlier (e.g. the `jaeger`
+  exporter in v0.86.0), or missing from the selected distribution are
+  flagged with actionable hints; the catalog offers only what your
+  selection actually ships. Deprecations (e.g. `logging` → `debug`)
+  surface as warnings. The full contrib catalog (250+ components) is
+  generated from the collector repositories themselves.
 - **Click-to-add GUI** — "+" zones in each pipeline open a searchable catalog;
   picking a component generates a schema-driven form (required fields, enums,
   durations, secrets, YAML fallback for free-form blocks) and writes the
@@ -214,11 +217,14 @@ Cloud Run. `-addr` and `-static` flags override the defaults.
 
 ## Notes
 
-- The component registry (`internal/registry/data/components.json`) is a
-  curated snapshot: the most common components with hand-written simplified
-  schemas and availability versions. Exact added/deprecated/removed versions
-  are approximations for some components. Extend or regenerate it there —
-  the backend and frontend both consume it as-is.
+- The component registry is two files merged at load time:
+  `internal/registry/data/generated.json` is derived from the collector
+  repositories by `cmd/registry-gen` (component presence per version,
+  signals, stability, core/contrib membership) and
+  `internal/registry/data/components.json` is the hand-curated overlay
+  contributing config schemas, descriptions and deprecation guidance for
+  the popular components. Regenerate with
+  `GITHUB_TOKEN=$(gh auth token) go run ./cmd/registry-gen`.
 - Custom/vendor components not in the registry are flagged as unknown but
   the rest of the config still validates.
 - Styling follows the Sluicio design guidelines (v2 — sluice azure): the two

@@ -36,13 +36,19 @@ web/src/components/   Editor, flow graph, dialogs, schema-driven forms
 
 ## Common contributions
 
-**Adding or correcting a component** — edit
-`internal/registry/data/components.json`. Each entry carries the component's
-kind, supported signals, availability versions (`added` / `deprecated` /
-`removed`), and a simplified schema that drives both validation and the GUI
-form. Version data should be verifiable against the
-opentelemetry-collector(-contrib) changelogs. Restart the Go server to pick
-up changes (the JSON is embedded at build time).
+**The component catalog** is generated, not hand-written: `cmd/registry-gen`
+derives component presence per version, signals, stability and core/contrib
+membership from the collector repositories
+(`GITHUB_TOKEN=$(gh auth token) go run ./cmd/registry-gen`). Don't edit
+`generated.json` by hand — re-run the generator (e.g. when adding a new
+supported collector version to its version list).
+
+**Adding or improving a component schema** — edit the curated overlay,
+`internal/registry/data/components.json`. Overlay entries contribute the
+config schema (drives both validation and the GUI form), the description
+and deprecation guidance; availability and distribution data come from the
+generated file. Rebuild the WASM validator to see changes in the app
+(`npm run build:wasm` in `web/`).
 
 **Adding a validation rule** — extend `internal/validate/validate.go` and add
 a table-driven case to `validate_test.go`. Every diagnostic needs a clear

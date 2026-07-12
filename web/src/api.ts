@@ -38,7 +38,11 @@ export async function fetchComponents(version: string): Promise<Component[]> {
   return JSON.parse(window.otelflowComponents(version)).components
 }
 
-export async function validateConfig(config: string, version: string): Promise<ValidationResult> {
+export async function validateConfig(
+  config: string,
+  version: string,
+  distribution: string,
+): Promise<ValidationResult> {
   await initValidator()
-  return JSON.parse(window.otelflowValidate(config, version))
+  return JSON.parse(window.otelflowValidate(config, version, distribution))
 }

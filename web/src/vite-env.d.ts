@@ -14,5 +14,5 @@ declare class Go {
 interface Window {
   otelflowMeta: () => string
   otelflowComponents: (version: string) => string
-  otelflowValidate: (config: string, version: string) => string
+  otelflowValidate: (config: string, version: string, distribution?: string) => string
 }

@@ -1,0 +1,3273 @@
+{
+ "generatedAt": "2026-07-12T07:37:18Z",
+ "versions": [
+  "0.70.0",
+  "0.77.0",
+  "0.80.0",
+  "0.86.0",
+  "0.90.1",
+  "0.96.0",
+  "0.102.1",
+  "0.109.0",
+  "0.115.1",
+  "0.120.0",
+  "0.127.0"
+ ],
+ "components": [
+  {
+   "type": "count",
+   "kind": "connector",
+   "connects": [
+    {
+     "from": "logs",
+     "to": "metrics"
+    },
+    {
+     "from": "metrics",
+     "to": "metrics"
+    },
+    {
+     "from": "profiles",
+     "to": "metrics"
+    },
+    {
+     "from": "traces",
+     "to": "metrics"
+    }
+   ],
+   "added": "0.77.0",
+   "stability": "unmaintained",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "datadog",
+   "kind": "connector",
+   "connects": [
+    {
+     "from": "traces",
+     "to": "metrics"
+    },
+    {
+     "from": "traces",
+     "to": "traces"
+    }
+   ],
+   "added": "0.86.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "exceptions",
+   "kind": "connector",
+   "connects": [
+    {
+     "from": "traces",
+     "to": "logs"
+    },
+    {
+     "from": "traces",
+     "to": "metrics"
+    }
+   ],
+   "added": "0.86.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "failover",
+   "kind": "connector",
+   "connects": [
+    {
+     "from": "logs",
+     "to": "logs"
+    },
+    {
+     "from": "metrics",
+     "to": "metrics"
+    },
+    {
+     "from": "traces",
+     "to": "traces"
+    }
+   ],
+   "added": "0.90.1",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "forward",
+   "kind": "connector",
+   "connects": [
+    {
+     "from": "logs",
+     "to": "logs"
+    },
+    {
+     "from": "metrics",
+     "to": "metrics"
+    },
+    {
+     "from": "traces",
+     "to": "traces"
+    }
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "core"
+   ]
+  },
+  {
+   "type": "grafanacloud",
+   "kind": "connector",
+   "connects": [
+    {
+     "from": "traces",
+     "to": "metrics"
+    }
+   ],
+   "added": "0.102.1",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "otlpjson",
+   "kind": "connector",
+   "connects": [
+    {
+     "from": "logs",
+     "to": "logs"
+    },
+    {
+     "from": "logs",
+     "to": "metrics"
+    },
+    {
+     "from": "logs",
+     "to": "traces"
+    }
+   ],
+   "added": "0.109.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "roundrobin",
+   "kind": "connector",
+   "connects": [
+    {
+     "from": "logs",
+     "to": "logs"
+    },
+    {
+     "from": "metrics",
+     "to": "metrics"
+    },
+    {
+     "from": "traces",
+     "to": "traces"
+    }
+   ],
+   "added": "0.102.1",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "routing",
+   "kind": "connector",
+   "connects": [
+    {
+     "from": "logs",
+     "to": "logs"
+    },
+    {
+     "from": "metrics",
+     "to": "metrics"
+    },
+    {
+     "from": "traces",
+     "to": "traces"
+    }
+   ],
+   "added": "0.86.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "servicegraph",
+   "kind": "connector",
+   "connects": [
+    {
+     "from": "traces",
+     "to": "metrics"
+    }
+   ],
+   "added": "0.77.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "signaltometrics",
+   "kind": "connector",
+   "connects": [
+    {
+     "from": "logs",
+     "to": "metrics"
+    },
+    {
+     "from": "metrics",
+     "to": "metrics"
+    },
+    {
+     "from": "profiles",
+     "to": "metrics"
+    },
+    {
+     "from": "traces",
+     "to": "metrics"
+    }
+   ],
+   "added": "0.115.1",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "spanmetrics",
+   "kind": "connector",
+   "connects": [
+    {
+     "from": "traces",
+     "to": "metrics"
+    }
+   ],
+   "added": "0.77.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "sum",
+   "kind": "connector",
+   "connects": [
+    {
+     "from": "logs",
+     "to": "metrics"
+    },
+    {
+     "from": "metrics",
+     "to": "metrics"
+    },
+    {
+     "from": "traces",
+     "to": "metrics"
+    }
+   ],
+   "added": "0.109.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "alertmanager",
+   "kind": "exporter",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.90.1",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "alibabacloud_logservice",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "awscloudwatchlogs",
+   "kind": "exporter",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "awsemf",
+   "kind": "exporter",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "awskinesis",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "awss3",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.77.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "awsxray",
+   "kind": "exporter",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "azureblob",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.127.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "azuredataexplorer",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "azuremonitor",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "bmchelix",
+   "kind": "exporter",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.120.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "carbon",
+   "kind": "exporter",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "unmaintained",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "cassandra",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "logs"
+   ],
+   "added": "0.77.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "clickhouse",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "coralogix",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "datadog",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "dataset",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "logs"
+   ],
+   "added": "0.77.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "debug",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.86.0",
+   "stability": "development",
+   "distributions": [
+    "core"
+   ]
+  },
+  {
+   "type": "doris",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.109.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "dynatrace",
+   "kind": "exporter",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "removed": "0.102.1",
+   "stability": "deprecated",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "elasticsearch",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "f5cloud",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "removed": "0.96.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "faro",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "logs"
+   ],
+   "added": "0.127.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "file",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "googlecloud",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "googlecloudpubsub",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "googlemanagedprometheus",
+   "kind": "exporter",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "honeycombmarker",
+   "kind": "exporter",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.90.1",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "influxdb",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "instana",
+   "kind": "exporter",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "removed": "0.115.1",
+   "stability": "deprecated",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "jaeger",
+   "kind": "exporter",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "removed": "0.86.0",
+   "stability": "deprecated",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "jaeger_thrift",
+   "kind": "exporter",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "removed": "0.86.0",
+   "stability": "deprecated",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "kafka",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "kinetica",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.86.0",
+   "stability": "unmaintained",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "loadbalancing",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "logging",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "removed": "0.115.1",
+   "stability": "deprecated",
+   "distributions": [
+    "core"
+   ]
+  },
+  {
+   "type": "logicmonitor",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "logzio",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "loki",
+   "kind": "exporter",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "deprecated",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "mezmo",
+   "kind": "exporter",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "nop",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.102.1",
+   "stability": "beta",
+   "distributions": [
+    "core"
+   ]
+  },
+  {
+   "type": "opencensus",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "deprecated",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "opensearch",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "logs"
+   ],
+   "added": "0.86.0",
+   "stability": "unmaintained",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "otelarrow",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.96.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "otlp",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "stable",
+   "distributions": [
+    "core"
+   ]
+  },
+  {
+   "type": "otlphttp",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "stable",
+   "distributions": [
+    "core"
+   ]
+  },
+  {
+   "type": "parquet",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "removed": "0.90.1",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "prometheus",
+   "kind": "exporter",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "prometheusremotewrite",
+   "kind": "exporter",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "pulsar",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "rabbitmq",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.102.1",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "sapm",
+   "kind": "exporter",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "stability": "deprecated",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "sematext",
+   "kind": "exporter",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.120.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "sentry",
+   "kind": "exporter",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "signalfx",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "skywalking",
+   "kind": "exporter",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "removed": "0.109.0",
+   "stability": "unmaintained",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "splunk_hec",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "stef",
+   "kind": "exporter",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.120.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "sumologic",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "syslog",
+   "kind": "exporter",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.80.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "tanzuobservability",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "removed": "0.96.0",
+   "stability": "deprecated",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "tencentcloud_logservice",
+   "kind": "exporter",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "zipkin",
+   "kind": "exporter",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "ack",
+   "kind": "extension",
+   "added": "0.96.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "asapclient",
+   "kind": "extension",
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "awsproxy",
+   "kind": "extension",
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "azureauth",
+   "kind": "extension",
+   "added": "0.127.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "basicauth",
+   "kind": "extension",
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "bearertokenauth",
+   "kind": "extension",
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "cgroupruntime",
+   "kind": "extension",
+   "added": "0.115.1",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "datadog",
+   "kind": "extension",
+   "added": "0.127.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "encoding",
+   "kind": "extension",
+   "added": "0.86.0",
+   "removed": "0.90.1",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "googleclientauth",
+   "kind": "extension",
+   "added": "0.102.1",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "headers_setter",
+   "kind": "extension",
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "health_check",
+   "kind": "extension",
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "healthcheckv2",
+   "kind": "extension",
+   "added": "0.102.1",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "http_forwarder",
+   "kind": "extension",
+   "added": "0.70.0",
+   "removed": "0.96.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "http_forwarder",
+   "kind": "extension",
+   "added": "0.96.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "jaegerremotesampling",
+   "kind": "extension",
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "k8s_leader_elector",
+   "kind": "extension",
+   "added": "0.120.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "memory_ballast",
+   "kind": "extension",
+   "added": "0.70.0",
+   "removed": "0.109.0",
+   "stability": "deprecated",
+   "distributions": [
+    "core"
+   ]
+  },
+  {
+   "type": "memory_limiter",
+   "kind": "extension",
+   "added": "0.96.0",
+   "stability": "development",
+   "distributions": [
+    "core"
+   ]
+  },
+  {
+   "type": "oauth2client",
+   "kind": "extension",
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "oidc",
+   "kind": "extension",
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "opamp",
+   "kind": "extension",
+   "added": "0.90.1",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "pprof",
+   "kind": "extension",
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "remotetap",
+   "kind": "extension",
+   "added": "0.90.1",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "sigv4auth",
+   "kind": "extension",
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "solarwindsapmsettings",
+   "kind": "extension",
+   "added": "0.96.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "sumologic",
+   "kind": "extension",
+   "added": "0.96.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "xextension",
+   "kind": "extension",
+   "added": "0.120.0",
+   "stability": "development",
+   "distributions": [
+    "core"
+   ]
+  },
+  {
+   "type": "zpages",
+   "kind": "extension",
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "core"
+   ]
+  },
+  {
+   "type": "attributes",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "batch",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "core"
+   ]
+  },
+  {
+   "type": "coralogix",
+   "kind": "processor",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.109.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "cumulativetodelta",
+   "kind": "processor",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "datadog",
+   "kind": "processor",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "removed": "0.96.0",
+   "stability": "deprecated",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "datadogsemantics",
+   "kind": "processor",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.127.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "deltatocumulative",
+   "kind": "processor",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.96.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "deltatorate",
+   "kind": "processor",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "dnslookup",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.127.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "filter",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "geoip",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.102.1",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "groupbyattrs",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "groupbytrace",
+   "kind": "processor",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "interval",
+   "kind": "processor",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.96.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "k8sattributes",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "logdedup",
+   "kind": "processor",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.109.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "logstransform",
+   "kind": "processor",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "memory_limiter",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "core"
+   ]
+  },
+  {
+   "type": "metricsgeneration",
+   "kind": "processor",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "metricstarttime",
+   "kind": "processor",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.120.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "metricstransform",
+   "kind": "processor",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "probabilistic_sampler",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "redaction",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "remoteobserver",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.86.0",
+   "removed": "0.90.1",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "remotetap",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.90.1",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "resource",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "resourcedetection",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "routing",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "deprecated",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "schema",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "servicegraph",
+   "kind": "processor",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "removed": "0.96.0",
+   "stability": "deprecated",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "span",
+   "kind": "processor",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "spanmetrics",
+   "kind": "processor",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "removed": "0.96.0",
+   "stability": "deprecated",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "sumologic",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.90.1",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "tail_sampling",
+   "kind": "processor",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "transform",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "websocket",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.80.0",
+   "removed": "0.86.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "active_directory_ds",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "aerospike",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "apache",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "apachespark",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.80.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "awscloudwatch",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "awscloudwatchmetrics",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.80.0",
+   "stability": "unmaintained",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "awscontainerinsightreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "awsecscontainermetrics",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "awsfirehose",
+   "kind": "receiver",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "awss3",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.102.1",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "awsxray",
+   "kind": "receiver",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "azureblob",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "azureeventhub",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "azuremonitor",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.77.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "bigip",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "carbon",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "unmaintained",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "chrony",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "cloudflare",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.77.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "cloudfoundry",
+   "kind": "receiver",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "collectd",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "couchdb",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "datadog",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics"
+   ],
+   "added": "0.77.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "docker_stats",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "elasticsearch",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "envoyals",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.120.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "expvar",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "faro",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "logs"
+   ],
+   "added": "0.127.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "file",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.77.0",
+   "removed": "0.96.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "filelog",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "filestats",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.77.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "flinkmetrics",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "fluentforward",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "github",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics"
+   ],
+   "added": "0.109.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "gitlab",
+   "kind": "receiver",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.120.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "gitprovider",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.86.0",
+   "removed": "0.109.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "googlecloudmonitoring",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.109.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "googlecloudpubsub",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "googlecloudspanner",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "haproxy",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "hostmetrics",
+   "kind": "receiver",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "httpcheck",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "huaweicloudcesreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.115.1",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "iis",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "influxdb",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "jaeger",
+   "kind": "receiver",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "jmx",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "journald",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "k8s_cluster",
+   "kind": "receiver",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "k8s_events",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "k8slog",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.127.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "k8sobjects",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "kafka",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "kafkametrics",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "kubeletstats",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "libhoney",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "logs"
+   ],
+   "added": "0.120.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "loki",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.77.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "memcached",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "mongodb",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "mongodbatlas",
+   "kind": "receiver",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "mysql",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "namedpipe",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.96.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "netflow",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.115.1",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "nginx",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "nop",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.102.1",
+   "stability": "beta",
+   "distributions": [
+    "core"
+   ]
+  },
+  {
+   "type": "nsxt",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "ntp",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.115.1",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "opencensus",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "deprecated",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "oracledb",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "osquery",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.96.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "otelarrow",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.96.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "otlp",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "stable",
+   "distributions": [
+    "core"
+   ]
+  },
+  {
+   "type": "otlpjsonfile",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "podman_stats",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "postgresql",
+   "kind": "receiver",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "pprof",
+   "kind": "receiver",
+   "added": "0.127.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "prometheus",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "prometheus_exec",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "removed": "0.86.0",
+   "stability": "deprecated",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "prometheus_simple",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "prometheusremotewrite",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.115.1",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "pulsar",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "purefa",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "purefb",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.77.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "rabbitmq",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "receiver_creator",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "redis",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "riak",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "saphana",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "sapm",
+   "kind": "receiver",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "stability": "deprecated",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "signalfx",
+   "kind": "receiver",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "skywalking",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "snmp",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "snowflake",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "solace",
+   "kind": "receiver",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "splunk_hec",
+   "kind": "receiver",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "splunkenterprise",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.80.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "sqlquery",
+   "kind": "receiver",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "sqlserver",
+   "kind": "receiver",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "sshcheck",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.77.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "statsd",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "stef",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.127.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "syslog",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "systemd",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.115.1",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "tcpcheck",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.127.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "tcplog",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "tlscheck",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.115.1",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "udplog",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "vcenter",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "wavefront",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "webhookevent",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.77.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "windowseventlog",
+   "kind": "receiver",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "windowsperfcounters",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "windowsservice",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.127.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "zipkin",
+   "kind": "receiver",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.70.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ]
+  },
+  {
+   "type": "zookeeper",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ]
+  }
+ ]
+}

@@ -59,6 +59,7 @@ const connectorsMinVersion = "0.71.0"
 type validator struct {
 	reg     *registry.Registry
 	version string
+	distro  string
 	diags   []Diagnostic
 
 	// defined[kind][fullID] -> key node, for reference checks and
@@ -74,11 +75,12 @@ type validator struct {
 }
 
 // Validate checks a raw YAML collector config against the registry for the
-// given collector version.
-func Validate(reg *registry.Registry, configYAML, version string) Result {
+// given collector version and distribution ("" skips distribution checks).
+func Validate(reg *registry.Registry, configYAML, version, distro string) Result {
 	v := &validator{
 		reg:            reg,
 		version:        version,
+		distro:         distro,
 		defined:        map[registry.Kind]map[string]*yaml.Node{},
 		used:           map[registry.Kind]map[string]bool{},
 		connAsExporter: map[string]bool{},
@@ -179,6 +181,12 @@ func (v *validator) checkComponentSection(section string, kind registry.Kind, no
 					path, key, fmt.Sprintf("Select collector version v%s or newer to use it.", comp.Added))
 			}
 			return
+		}
+		if !comp.InDistribution(v.distro) {
+			v.add(SevError,
+				fmt.Sprintf("The %s '%s' is not part of the %s distribution.", kind, typeName, v.distro),
+				path, key,
+				"It ships in the contrib distribution — switch the distribution selector, or use a collector build that includes it.")
 		}
 		if comp.DeprecatedIn(v.version) {
 			v.add(SevWarning,

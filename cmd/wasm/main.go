@@ -31,6 +31,7 @@ func main() {
 		return marshal(map[string]any{
 			"versions":       reg.Versions,
 			"defaultVersion": reg.DefaultVersion,
+			"distributions":  reg.Distributions,
 		})
 	}))
 
@@ -52,13 +53,17 @@ func main() {
 
 	js.Global().Set("otelflowValidate", js.FuncOf(func(_ js.Value, args []js.Value) any {
 		if len(args) < 2 {
-			return marshal(map[string]any{"error": "expected (config, version)"})
+			return marshal(map[string]any{"error": "expected (config, version, distribution?)"})
 		}
 		version := args[1].String()
 		if version == "" || !reg.ValidVersion(version) {
 			version = reg.DefaultVersion
 		}
-		return marshal(validate.Validate(reg, args[0].String(), version))
+		distro := "contrib"
+		if len(args) > 2 && reg.ValidDistribution(args[2].String()) {
+			distro = args[2].String()
+		}
+		return marshal(validate.Validate(reg, args[0].String(), version, distro))
 	}))
 
 	// Keep the Go runtime alive; the registered functions are the program.

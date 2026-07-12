@@ -21,6 +21,7 @@ const shareHash = parseShareHash()
 
 const LS_YAML = 'sluicio.otelcol.yaml'
 const LS_VERSION = 'sluicio.otelcol.version'
+const LS_DISTRO = 'sluicio.otelcol.distro'
 const LS_THEME = 'sluicio.theme'
 const LS_EDITOR_WIDTH = 'sluicio.editorWidth'
 const LS_EDITOR_HIDDEN = 'sluicio.editorHidden'
@@ -63,6 +64,11 @@ export default function App() {
   const embed = shareHash?.mode === 'embed'
   const [meta, setMeta] = useState<Meta | null>(null)
   const [version, setVersion] = useState<string>('')
+  // Distribution is a local view setting; embeds validate against contrib
+  // (the superset) since the share payload carries no distribution.
+  const [distro, setDistro] = useState<string>(() =>
+    embed ? 'contrib' : (localStorage.getItem(LS_DISTRO) ?? 'contrib'),
+  )
   const [components, setComponents] = useState<Component[]>([])
   const [yamlText, setYamlText] = useState<string>(() =>
     shareHash ? '' : (localStorage.getItem(LS_YAML) ?? SAMPLE_CONFIG),
@@ -186,6 +192,10 @@ export default function App() {
     fetchComponents(version).then(setComponents).catch(() => setValState('offline'))
   }, [version, embed])
 
+  useEffect(() => {
+    if (!embed) localStorage.setItem(LS_DISTRO, distro)
+  }, [distro, embed])
+
   // Debounced real-time validation
   const validateSeq = useRef(0)
   useEffect(() => {
@@ -194,7 +204,7 @@ export default function App() {
     setValState('pending')
     const seq = ++validateSeq.current
     const t = setTimeout(() => {
-      validateConfig(yamlText, version)
+      validateConfig(yamlText, version, distro)
         .then((r) => {
           if (validateSeq.current !== seq) return
           setDiagnostics(r.diagnostics)
@@ -205,7 +215,7 @@ export default function App() {
         })
     }, 350)
     return () => clearTimeout(t)
-  }, [yamlText, version])
+  }, [yamlText, version, distro])
 
   const model = useMemo(() => parseConfigModel(yamlText), [yamlText])
 
@@ -214,6 +224,14 @@ export default function App() {
     for (const c of components) m.set(`${c.kind}:${c.type}`, c)
     return m
   }, [components])
+
+  // The catalog offers only components of the selected distribution; the
+  // graph and wizard keep the full index so existing config entries are
+  // still recognized (the validator flags distribution mismatches).
+  const catalogComponents = useMemo(
+    () => components.filter((c) => !c.distributions || c.distributions.includes(distro)),
+    [components, distro],
+  )
 
   // Drop selection if the component disappeared from the config
   useEffect(() => {
@@ -347,7 +365,19 @@ export default function App() {
         </div>
         <div className="version-select">
           <span>Collector</span>
-          <select value={version} onChange={(e) => setVersion(e.target.value)} disabled={!meta}>
+          <select
+            value={distro}
+            onChange={(e) => setDistro(e.target.value)}
+            disabled={!meta}
+            aria-label="Distribution"
+          >
+            {(meta?.distributions ?? [distro]).map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+          <select value={version} onChange={(e) => setVersion(e.target.value)} disabled={!meta} aria-label="Version">
             {(meta?.versions ?? [version]).map((v) => (
               <option key={v} value={v}>
                 v{v}
@@ -479,7 +509,7 @@ export default function App() {
           initialKind={dialog.kind}
           initialPipeline={dialog.pipeline}
           version={version}
-          components={components}
+          components={catalogComponents}
           model={model}
           onAdd={handleAdd}
           onClose={() => setDialog(null)}

@@ -28,6 +28,7 @@ func (s *Server) handleMeta(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{
 		"versions":       s.reg.Versions,
 		"defaultVersion": s.reg.DefaultVersion,
+		"distributions":  s.reg.Distributions,
 	})
 }
 
@@ -63,8 +64,9 @@ func (s *Server) handleComponents(w http.ResponseWriter, r *http.Request) {
 }
 
 type validateRequest struct {
-	Config  string `json:"config"`
-	Version string `json:"version"`
+	Config       string `json:"config"`
+	Version      string `json:"version"`
+	Distribution string `json:"distribution"`
 }
 
 func (s *Server) handleValidate(w http.ResponseWriter, r *http.Request) {
@@ -80,7 +82,14 @@ func (s *Server) handleValidate(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid version: "+req.Version)
 		return
 	}
-	writeJSON(w, http.StatusOK, validate.Validate(s.reg, req.Config, req.Version))
+	if req.Distribution == "" {
+		req.Distribution = "contrib"
+	}
+	if !s.reg.ValidDistribution(req.Distribution) {
+		writeError(w, http.StatusBadRequest, "invalid distribution: "+req.Distribution)
+		return
+	}
+	writeJSON(w, http.StatusOK, validate.Validate(s.reg, req.Config, req.Version, req.Distribution))
 }
 
 // CORS wraps a handler with permissive CORS for local development, where the
