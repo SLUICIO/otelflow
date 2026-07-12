@@ -13,20 +13,52 @@ import { KIND_TO_SECTION } from '../types'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Doc = any
 
+// Canonical top-level section order for generated configs.
+const TOP_LEVEL_ORDER = ['receivers', 'processors', 'exporters', 'extensions', 'connectors', 'service']
+
+// Serialize with bare nulls: `docker_stats:` instead of `docker_stats: null`.
+const TO_STRING = { nullStr: '' }
+
 function ensureMap(doc: Doc, path: string[]): YAMLMap {
   if (!(doc.contents instanceof YAMLMap)) {
     doc.contents = doc.createNode({})
   }
   let current: YAMLMap = doc.contents
-  for (const key of path) {
+  for (let i = 0; i < path.length; i++) {
+    const key = path[i]
     let next: unknown = current.get(key, true)
     if (!(next instanceof YAMLMap)) {
       next = doc.createNode({})
-      current.set(doc.createNode(key), next)
+      if (i === 0 && TOP_LEVEL_ORDER.includes(key)) {
+        insertTopLevelOrdered(doc, current, key, next)
+      } else {
+        current.set(doc.createNode(key), next)
+      }
     }
+    // Structural containers (sections, service, pipelines) render as block
+    // maps — an empty `{}` re-parses as flow style and would otherwise
+    // collapse everything added later onto one line.
+    ;(next as YAMLMap).flow = false
     current = next as YAMLMap
   }
   return current
+}
+
+// Inserts a new top-level section before the first known section that
+// should come after it, so generated configs read in the conventional
+// order regardless of the order the user clicked things together.
+function insertTopLevelOrdered(doc: Doc, root: YAMLMap, key: string, value: unknown) {
+  const rank = TOP_LEVEL_ORDER.indexOf(key)
+  let index = root.items.length
+  for (let j = 0; j < root.items.length; j++) {
+    const existing = String((root.items[j].key as any)?.value ?? '')
+    const r = TOP_LEVEL_ORDER.indexOf(existing)
+    if (r !== -1 && r > rank) {
+      index = j
+      break
+    }
+  }
+  root.items.splice(index, 0, doc.createPair(key, value))
 }
 
 function configNode(doc: Doc, config: unknown) {
@@ -69,7 +101,7 @@ export function addComponent(
       appendToSeq(doc, ['service', 'pipelines', p, 'receivers'], id)
     }
   }
-  return String(doc)
+  return doc.toString(TO_STRING)
 }
 
 function appendToSeq(doc: Doc, path: string[], value: string) {
@@ -97,7 +129,7 @@ export function addPipeline(
   for (const r of lists.receivers) appendToSeq(doc, ['service', 'pipelines', id, 'receivers'], r)
   for (const p of lists.processors) appendToSeq(doc, ['service', 'pipelines', id, 'processors'], p)
   for (const e of lists.exporters) appendToSeq(doc, ['service', 'pipelines', id, 'exporters'], e)
-  return String(doc)
+  return doc.toString(TO_STRING)
 }
 
 /** Replaces the config block of an existing component. */
@@ -105,7 +137,7 @@ export function setComponentConfig(yamlText: string, section: SectionName, id: s
   const doc: Doc = parseDocument(yamlText)
   const sectionMap = ensureMap(doc, [section])
   sectionMap.set(doc.createNode(id), configNode(doc, config))
-  return String(doc)
+  return doc.toString(TO_STRING)
 }
 
 /** Reads the current config object of a component (or undefined). */
@@ -142,5 +174,5 @@ export function removeComponent(yamlText: string, section: SectionName, id: stri
       }
     }
   }
-  return String(doc)
+  return doc.toString(TO_STRING)
 }
