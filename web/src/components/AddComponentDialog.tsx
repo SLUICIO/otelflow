@@ -68,13 +68,35 @@ export function AddComponentDialog({ initialKind, initialPipeline, version, dist
   const [recvPipelines, setRecvPipelines] = useState<string[]>([])
   const [enableExt, setEnableExt] = useState(true)
 
+  // When opened from a pipeline's add zone, only offer components that can
+  // actually carry that pipeline's signal.
+  const pipelineSignal = useMemo(() => {
+    if (!initialPipeline) return null
+    const p = model.pipelines.find((x) => x.id === initialPipeline)
+    return p && p.signal !== 'unknown' ? p.signal : null
+  }, [initialPipeline, model])
+
+  const supportsSignal = (c: Component): boolean => {
+    if (!pipelineSignal || c.kind === 'extension') return true
+    if (c.kind === 'connector') {
+      // Opened from an exporter zone, the connector consumes the pipeline
+      // (from-side); from a receiver zone it feeds it (to-side).
+      const dir = initialKind === 'exporter' ? 'from' : 'to'
+      return (c.connects ?? []).some((cn) => cn[dir] === pipelineSignal)
+    }
+    if (!c.signals || c.signals.length === 0) return true // unknown — don't hide
+    return c.signals.includes(pipelineSignal)
+  }
+
   const list = useMemo(() => {
     const q = query.trim().toLowerCase()
     return components
       .filter((c) => c.kind === kind)
+      .filter(supportsSignal)
       .filter((c) => !q || c.type.includes(q) || c.description.toLowerCase().includes(q))
       .sort((a, b) => Number(b.available) - Number(a.available) || a.type.localeCompare(b.type))
-  }, [components, kind, query])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [components, kind, query, pipelineSignal, initialKind])
 
   const pickPreset = (p: Preset) => {
     const base = components.find((c) => c.kind === p.kind && c.type === p.type && c.available)
@@ -142,10 +164,17 @@ export function AddComponentDialog({ initialKind, initialPipeline, version, dist
                 onChange={(e) => setQuery(e.target.value)}
               />
             </div>
+            {pipelineSignal && kind !== 'extension' && (
+              <p className="dialog-desc" style={{ marginTop: 10 }}>
+                Showing {kind}s that can handle {pipelineSignal} — the pipeline '{initialPipeline}'
+                carries {pipelineSignal}.
+              </p>
+            )}
             <div className="catalog-grid">
               {PRESETS.filter(
                 (p) =>
                   p.kind === kind &&
+                  (!pipelineSignal || p.signals.includes(pipelineSignal)) &&
                   (!query.trim() ||
                     p.label.includes(query.trim().toLowerCase()) ||
                     p.description.toLowerCase().includes(query.trim().toLowerCase())),
