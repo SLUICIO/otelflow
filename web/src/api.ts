@@ -28,21 +28,36 @@ function initValidator(): Promise<void> {
   return wasmReady
 }
 
-export async function fetchMeta(): Promise<Meta> {
+/**
+ * Runs a validator call, and if the runtime has died (a call throwing is
+ * the symptom — e.g. "Go program has already exited"), re-instantiates the
+ * module once and retries. Without this, a single runtime death would
+ * freeze the last diagnostics on screen forever.
+ */
+async function call<T>(fn: () => string): Promise<T> {
   await initValidator()
-  return JSON.parse(window.otelflowMeta())
+  try {
+    return JSON.parse(fn())
+  } catch {
+    wasmReady = null
+    await initValidator()
+    return JSON.parse(fn())
+  }
+}
+
+export function fetchMeta(): Promise<Meta> {
+  return call(() => window.otelflowMeta())
 }
 
 export async function fetchComponents(version: string): Promise<Component[]> {
-  await initValidator()
-  return JSON.parse(window.otelflowComponents(version)).components
+  const res = await call<{ components: Component[] }>(() => window.otelflowComponents(version))
+  return res.components
 }
 
-export async function validateConfig(
+export function validateConfig(
   config: string,
   version: string,
   distribution: string,
 ): Promise<ValidationResult> {
-  await initValidator()
-  return JSON.parse(window.otelflowValidate(config, version, distribution))
+  return call(() => window.otelflowValidate(config, version, distribution))
 }
