@@ -13,6 +13,9 @@ jobs:
   publish:
     name: Build and push to GHCR
     runs-on: ubuntu-latest
+    # Healthy multi-arch builds take ~7 minutes; runs have hung indefinitely
+    # on flaky runners. Self-cancel so a re-run can be triggered promptly.
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-qemu-action@v3
