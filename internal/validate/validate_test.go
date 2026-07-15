@@ -347,6 +347,72 @@ service:
 `,
 		},
 		{
+			name:    "authenticator not defined",
+			version: "0.127.0",
+			valid:   false,
+			want:    "authenticator 'basicauth/grafana' used by exporters.otlphttp/g is not defined",
+			config: `
+receivers:
+  otlp:
+    protocols: {http: {}}
+exporters:
+  otlphttp/g:
+    endpoint: https://x
+    auth:
+      authenticator: basicauth/grafana
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlphttp/g]
+`,
+		},
+		{
+			name:    "authenticator defined but not enabled",
+			version: "0.127.0",
+			valid:   false,
+			want:    "defined but not enabled. (Add 'basicauth/grafana' to service.extensions",
+			config: `
+receivers:
+  otlp:
+    protocols: {http: {}}
+exporters:
+  otlphttp/g:
+    endpoint: https://x
+    auth:
+      authenticator: basicauth/grafana
+extensions:
+  basicauth/grafana:
+    client_auth: {username: u, password: p}
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlphttp/g]
+`,
+		},
+		{
+			name:    "nested receiver protocol auth reference checked",
+			version: "0.127.0",
+			valid:   false,
+			want:    "authenticator 'bearertokenauth/x' used by receivers.otlp is not defined",
+			config: `
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        auth:
+          authenticator: bearertokenauth/x
+exporters:
+  debug:
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [debug]
+`,
+		},
+		{
 			name:    "yaml syntax error",
 			version: "0.127.0",
 			valid:   false,

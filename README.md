@@ -76,7 +76,8 @@ collector repositories, not curated by hand.
   mean" suggestions), undefined pipeline references, signal compatibility
   (e.g. `filelog` cannot feed a traces pipeline), connector role rules
   (must be used as both exporter and receiver), required/typed config fields,
-  and unused components.
+  auth references (`auth.authenticator` must point to a defined and enabled
+  extension), and unused components.
 - **Version- and distribution-aware** — pick the collector version and
   distribution (core or contrib) in the header. Components added later
   (e.g. `filestats` in v0.77.0), removed earlier (e.g. the `jaeger`

@@ -72,6 +72,17 @@ type validator struct {
 	connAsExporter map[string]bool
 	connAsReceiver map[string]bool
 	connNodes      map[string]*yaml.Node
+
+	// auth.authenticator references found in component configs, checked
+	// against defined and enabled extensions once the service section is
+	// known.
+	authRefs []authRef
+}
+
+type authRef struct {
+	id    string
+	owner string // component path that references it
+	node  *yaml.Node
 }
 
 // Validate checks a raw YAML collector config against the registry for the
@@ -138,6 +149,7 @@ func Validate(reg *registry.Registry, configYAML, version, distro string) Result
 
 	v.checkUnused()
 	v.checkConnectorRoles()
+	v.checkAuthReferences()
 	return v.result()
 }
 
@@ -196,7 +208,63 @@ func (v *validator) checkComponentSection(section string, kind registry.Kind, no
 		if len(comp.Schema) > 0 {
 			v.checkAgainstSchema(comp.Schema, val, path)
 		}
+		if kind == registry.KindReceiver || kind == registry.KindExporter {
+			v.collectAuthRefs(val, path)
+		}
 	})
+}
+
+// collectAuthRefs finds auth.authenticator references anywhere in a
+// component config — they also appear nested, e.g. under a receiver's
+// protocols.grpc block.
+func (v *validator) collectAuthRefs(node *yaml.Node, owner string) {
+	node = resolve(node)
+	if node == nil {
+		return
+	}
+	switch node.Kind {
+	case yaml.MappingNode:
+		forEachEntry(node, func(k, val *yaml.Node) {
+			val = resolve(val)
+			if k.Value == "auth" && val != nil && val.Kind == yaml.MappingNode {
+				forEachEntry(val, func(ak, av *yaml.Node) {
+					av = resolve(av)
+					if ak.Value == "authenticator" && av != nil && av.Kind == yaml.ScalarNode && av.Value != "" {
+						v.authRefs = append(v.authRefs, authRef{id: av.Value, owner: owner, node: av})
+					}
+				})
+			}
+			v.collectAuthRefs(val, owner)
+		})
+	case yaml.SequenceNode:
+		for _, item := range node.Content {
+			v.collectAuthRefs(item, owner)
+		}
+	}
+}
+
+// checkAuthReferences verifies every auth.authenticator points to a defined
+// extension that is also enabled — the collector only starts extensions
+// listed in service.extensions.
+func (v *validator) checkAuthReferences() {
+	for _, ref := range v.authRefs {
+		if strings.Contains(ref.id, "${") {
+			continue // expansion — opaque to us
+		}
+		if _, defined := v.defined[registry.KindExtension][ref.id]; !defined {
+			v.add(SevError,
+				fmt.Sprintf("The authenticator '%s' used by %s is not defined in the extensions section.", ref.id, ref.owner),
+				ref.owner, ref.node,
+				"Define an auth extension with this ID (e.g. basicauth, bearertokenauth, oauth2client) and enable it in service.extensions.")
+			continue
+		}
+		if !v.used[registry.KindExtension][ref.id] {
+			v.add(SevError,
+				fmt.Sprintf("The authenticator '%s' used by %s is defined but not enabled.", ref.id, ref.owner),
+				ref.owner, ref.node,
+				fmt.Sprintf("Add '%s' to service.extensions — the collector only starts extensions listed there.", ref.id))
+		}
+	}
 }
 
 // removalHint suggests the replacement for well-known deprecations.
