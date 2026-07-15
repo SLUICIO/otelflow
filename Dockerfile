@@ -28,5 +28,7 @@ COPY --from=backend /otelflow /app/otelflow
 COPY --from=frontend /app/web/dist /app/web/dist
 COPY --from=backend /validate.wasm /app/web/dist/validate.wasm
 COPY --from=backend /wasm_exec.js /app/web/dist/wasm_exec.js
+# Notice retention for the licenses of everything distributed in this image.
+COPY LICENSE THIRD_PARTY_NOTICES.md /app/
 EXPOSE 7317
 ENTRYPOINT ["/app/otelflow"]

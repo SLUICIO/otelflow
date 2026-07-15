@@ -6,6 +6,6 @@ web/dist
 web/public/validate.wasm
 web/public/wasm_exec.js
 *.md
-LICENSE
+!THIRD_PARTY_NOTICES.md
 deploy
 docker-compose.yml

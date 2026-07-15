@@ -69,9 +69,13 @@ type genComponent struct {
 
 type output struct {
 	GeneratedAt string         `json:"generatedAt"`
+	Source      string         `json:"source"`
 	Versions    []string       `json:"versions"`
 	Components  []genComponent `json:"components"`
 }
+
+const sourceNote = "Derived from the Apache-2.0 licensed repositories " +
+	"open-telemetry/opentelemetry-collector and open-telemetry/opentelemetry-collector-contrib."
 
 var httpClient = &http.Client{Timeout: 60 * time.Second}
 
@@ -163,6 +167,7 @@ func main() {
 
 	data, _ := json.MarshalIndent(output{
 		GeneratedAt: time.Now().UTC().Format(time.RFC3339),
+		Source:      sourceNote,
 		Versions:    versions,
 		Components:  comps,
 	}, "", " ")

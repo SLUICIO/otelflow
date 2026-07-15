@@ -7,6 +7,7 @@ OTelFlow bundles or depends on the following third-party software.
 | Module | License |
 | --- | --- |
 | gopkg.in/yaml.v3 | Apache-2.0 / MIT (libyaml-derived files) |
+| The Go standard library and vendored golang.org/x packages | BSD-3-Clause |
 
 ## npm (production bundle)
 
@@ -39,3 +40,10 @@ OTelFlow bundles or depends on the following third-party software.
 | style-mod@4.1.3 | MIT | https://github.com/marijnh/style-mod |
 | w3c-keyname@2.2.8 | MIT | https://github.com/marijnh/w3c-keyname |
 | yaml@2.9.0 | ISC | https://github.com/eemeli/yaml |
+
+## Data
+
+The component catalog (internal/registry/data/generated.json) is derived
+from the metadata published in the Apache-2.0 licensed repositories
+open-telemetry/opentelemetry-collector and
+open-telemetry/opentelemetry-collector-contrib.

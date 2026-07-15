@@ -1,5 +1,6 @@
 {
  "generatedAt": "2026-07-12T07:59:58Z",
+ "source": "Derived from the Apache-2.0 licensed repositories open-telemetry/opentelemetry-collector and open-telemetry/opentelemetry-collector-contrib.",
  "versions": [
   "0.70.0",
   "0.77.0",
