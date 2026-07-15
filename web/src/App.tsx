@@ -352,6 +352,9 @@ export default function App() {
         <button className="btn btn--link" onClick={() => setShareOpen(true)}>
           Share
         </button>
+        <button className="btn btn--link" onClick={() => downloadConfig(yamlText)}>
+          Download
+        </button>
         <button className="btn btn--link" onClick={() => setYamlText(SAMPLE_CONFIG)}>
           Load sample
         </button>
@@ -544,6 +547,19 @@ export default function App() {
       )}
     </div>
   )
+}
+
+/** Downloads the current configuration as config.yaml. */
+function downloadConfig(yaml: string) {
+  const blob = new Blob([yaml], { type: 'application/yaml' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'config.yaml'
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
 }
 
 /** How many times a component ID is referenced across all pipelines and

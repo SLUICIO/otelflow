@@ -320,6 +320,33 @@ service:
 `,
 		},
 		{
+			name:    "exporter auth via extension is recognized",
+			version: "0.127.0",
+			valid:   true,
+			want:    "",
+			config: `
+receivers:
+  otlp:
+    protocols: {http: {}}
+exporters:
+  otlphttp/grafana:
+    endpoint: https://otlp.grafana.net/otlp
+    auth:
+      authenticator: basicauth/grafana_cloud
+extensions:
+  basicauth/grafana_cloud:
+    client_auth:
+      username: ${env:ID}
+      password: ${env:KEY}
+service:
+  extensions: [basicauth/grafana_cloud]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlphttp/grafana]
+`,
+		},
+		{
 			name:    "yaml syntax error",
 			version: "0.127.0",
 			valid:   false,

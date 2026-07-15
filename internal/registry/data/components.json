@@ -1,14 +1,27 @@
 {
   "versions": [
-    "0.70.0", "0.77.0", "0.80.0", "0.86.0", "0.90.1", "0.96.0",
-    "0.102.1", "0.109.0", "0.115.1", "0.120.0", "0.127.0"
+    "0.70.0",
+    "0.77.0",
+    "0.80.0",
+    "0.86.0",
+    "0.90.1",
+    "0.96.0",
+    "0.102.1",
+    "0.109.0",
+    "0.115.1",
+    "0.120.0",
+    "0.127.0"
   ],
   "defaultVersion": "0.127.0",
   "components": [
     {
       "type": "otlp",
       "kind": "receiver",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.1.0",
       "stability": "stable",
       "description": "Receives telemetry via the OpenTelemetry Protocol over gRPC and/or HTTP.",
@@ -22,30 +35,63 @@
               "grpc": {
                 "type": "object",
                 "properties": {
-                  "endpoint": { "type": "string", "default": "0.0.0.0:4317", "description": "host:port to listen on for gRPC." },
-                  "max_recv_msg_size_mib": { "type": "int", "description": "Maximum gRPC message size in MiB." },
-                  "transport": { "type": "string", "enum": ["tcp", "tcp4", "tcp6", "unix"], "default": "tcp" }
+                  "endpoint": {
+                    "type": "string",
+                    "default": "0.0.0.0:4317",
+                    "description": "host:port to listen on for gRPC."
+                  },
+                  "max_recv_msg_size_mib": {
+                    "type": "int",
+                    "description": "Maximum gRPC message size in MiB."
+                  },
+                  "transport": {
+                    "type": "string",
+                    "enum": [
+                      "tcp",
+                      "tcp4",
+                      "tcp6",
+                      "unix"
+                    ],
+                    "default": "tcp"
+                  }
                 }
               },
               "http": {
                 "type": "object",
                 "properties": {
-                  "endpoint": { "type": "string", "default": "0.0.0.0:4318", "description": "host:port to listen on for HTTP." },
-                  "traces_url_path": { "type": "string", "default": "/v1/traces" },
-                  "metrics_url_path": { "type": "string", "default": "/v1/metrics" },
-                  "logs_url_path": { "type": "string", "default": "/v1/logs" }
+                  "endpoint": {
+                    "type": "string",
+                    "default": "0.0.0.0:4318",
+                    "description": "host:port to listen on for HTTP."
+                  },
+                  "traces_url_path": {
+                    "type": "string",
+                    "default": "/v1/traces"
+                  },
+                  "metrics_url_path": {
+                    "type": "string",
+                    "default": "/v1/metrics"
+                  },
+                  "logs_url_path": {
+                    "type": "string",
+                    "default": "/v1/logs"
+                  }
                 }
               }
             }
           }
         },
-        "required": ["protocols"]
+        "required": [
+          "protocols"
+        ]
       }
     },
     {
       "type": "jaeger",
       "kind": "receiver",
-      "signals": ["traces"],
+      "signals": [
+        "traces"
+      ],
       "added": "0.1.0",
       "stability": "beta",
       "description": "Receives trace data in Jaeger format (gRPC, Thrift HTTP, Thrift compact/binary UDP).",
@@ -55,35 +101,80 @@
           "protocols": {
             "type": "object",
             "properties": {
-              "grpc": { "type": "object", "properties": { "endpoint": { "type": "string", "default": "0.0.0.0:14250" } } },
-              "thrift_http": { "type": "object", "properties": { "endpoint": { "type": "string", "default": "0.0.0.0:14268" } } },
-              "thrift_compact": { "type": "object", "properties": { "endpoint": { "type": "string", "default": "0.0.0.0:6831" } } },
-              "thrift_binary": { "type": "object", "properties": { "endpoint": { "type": "string", "default": "0.0.0.0:6832" } } }
+              "grpc": {
+                "type": "object",
+                "properties": {
+                  "endpoint": {
+                    "type": "string",
+                    "default": "0.0.0.0:14250"
+                  }
+                }
+              },
+              "thrift_http": {
+                "type": "object",
+                "properties": {
+                  "endpoint": {
+                    "type": "string",
+                    "default": "0.0.0.0:14268"
+                  }
+                }
+              },
+              "thrift_compact": {
+                "type": "object",
+                "properties": {
+                  "endpoint": {
+                    "type": "string",
+                    "default": "0.0.0.0:6831"
+                  }
+                }
+              },
+              "thrift_binary": {
+                "type": "object",
+                "properties": {
+                  "endpoint": {
+                    "type": "string",
+                    "default": "0.0.0.0:6832"
+                  }
+                }
+              }
             }
           }
         },
-        "required": ["protocols"]
+        "required": [
+          "protocols"
+        ]
       }
     },
     {
       "type": "zipkin",
       "kind": "receiver",
-      "signals": ["traces"],
+      "signals": [
+        "traces"
+      ],
       "added": "0.1.0",
       "stability": "beta",
       "description": "Receives spans in Zipkin v1/v2 format.",
       "schema": {
         "type": "object",
         "properties": {
-          "endpoint": { "type": "string", "default": "0.0.0.0:9411" },
-          "parse_string_tags": { "type": "bool", "default": false, "description": "Parse string tags into typed values." }
+          "endpoint": {
+            "type": "string",
+            "default": "0.0.0.0:9411"
+          },
+          "parse_string_tags": {
+            "type": "bool",
+            "default": false,
+            "description": "Parse string tags into typed values."
+          }
         }
       }
     },
     {
       "type": "prometheus",
       "kind": "receiver",
-      "signals": ["metrics"],
+      "signals": [
+        "metrics"
+      ],
       "added": "0.1.0",
       "stability": "beta",
       "description": "Scrapes metrics from Prometheus-instrumented targets using standard scrape_configs.",
@@ -96,174 +187,376 @@
             "additionalProperties": true
           }
         },
-        "required": ["config"]
+        "required": [
+          "config"
+        ]
       }
     },
     {
       "type": "hostmetrics",
       "kind": "receiver",
-      "signals": ["metrics"],
+      "signals": [
+        "metrics"
+      ],
       "added": "0.2.0",
       "stability": "beta",
       "description": "Collects host-level metrics: CPU, memory, disk, filesystem, network, load, processes.",
       "schema": {
         "type": "object",
         "properties": {
-          "collection_interval": { "type": "duration", "default": "1m" },
-          "root_path": { "type": "string", "description": "Host filesystem root when running in a container." },
+          "collection_interval": {
+            "type": "duration",
+            "default": "1m"
+          },
+          "root_path": {
+            "type": "string",
+            "description": "Host filesystem root when running in a container."
+          },
           "scrapers": {
             "type": "object",
             "description": "Enable individual scrapers (cpu, memory, disk, filesystem, network, load, paging, processes, process).",
             "additionalProperties": true
           }
         },
-        "required": ["scrapers"]
+        "required": [
+          "scrapers"
+        ]
       }
     },
     {
       "type": "filelog",
       "kind": "receiver",
-      "signals": ["logs"],
+      "signals": [
+        "logs"
+      ],
       "added": "0.29.0",
       "stability": "beta",
       "description": "Tails and parses log files from disk.",
       "schema": {
         "type": "object",
         "properties": {
-          "include": { "type": "array", "items": { "type": "string" }, "description": "Glob patterns of files to read.", "examples": ["/var/log/**/*.log"] },
-          "exclude": { "type": "array", "items": { "type": "string" }, "description": "Glob patterns of files to skip." },
-          "start_at": { "type": "string", "enum": ["beginning", "end"], "default": "end" },
-          "include_file_name": { "type": "bool", "default": true },
-          "include_file_path": { "type": "bool", "default": false },
-          "operators": { "type": "array", "items": { "type": "object", "additionalProperties": true }, "description": "Stanza parsing operators applied in order." }
+          "include": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Glob patterns of files to read.",
+            "examples": [
+              "/var/log/**/*.log"
+            ]
+          },
+          "exclude": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Glob patterns of files to skip."
+          },
+          "start_at": {
+            "type": "string",
+            "enum": [
+              "beginning",
+              "end"
+            ],
+            "default": "end"
+          },
+          "include_file_name": {
+            "type": "bool",
+            "default": true
+          },
+          "include_file_path": {
+            "type": "bool",
+            "default": false
+          },
+          "operators": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "description": "Stanza parsing operators applied in order."
+          }
         },
-        "required": ["include"]
+        "required": [
+          "include"
+        ]
       }
     },
     {
       "type": "filestats",
       "kind": "receiver",
-      "signals": ["metrics"],
+      "signals": [
+        "metrics"
+      ],
       "added": "0.77.0",
       "stability": "beta",
       "description": "Collects metrics about files on disk: size, modification time, access time.",
       "schema": {
         "type": "object",
         "properties": {
-          "include": { "type": "string", "description": "Glob pattern of files to observe.", "examples": ["/var/log/*.log"] },
-          "collection_interval": { "type": "duration", "default": "1m" },
-          "initial_delay": { "type": "duration", "default": "1s" },
+          "include": {
+            "type": "string",
+            "description": "Glob pattern of files to observe.",
+            "examples": [
+              "/var/log/*.log"
+            ]
+          },
+          "collection_interval": {
+            "type": "duration",
+            "default": "1m"
+          },
+          "initial_delay": {
+            "type": "duration",
+            "default": "1s"
+          },
           "metrics": {
             "type": "object",
             "description": "Enable/disable individual metrics (file.size, file.mtime, file.atime, file.ctime, file.count).",
             "additionalProperties": true
           }
         },
-        "required": ["include"]
+        "required": [
+          "include"
+        ]
       }
     },
     {
       "type": "kafka",
       "kind": "receiver",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.6.0",
       "stability": "beta",
       "description": "Consumes telemetry from Kafka topics.",
       "schema": {
         "type": "object",
         "properties": {
-          "brokers": { "type": "array", "items": { "type": "string" }, "default": ["localhost:9092"] },
-          "topic": { "type": "string", "description": "Topic to consume (defaults per signal, e.g. otlp_spans)." },
-          "group_id": { "type": "string", "default": "otel-collector" },
-          "encoding": { "type": "string", "default": "otlp_proto", "enum": ["otlp_proto", "otlp_json", "jaeger_proto", "jaeger_json", "zipkin_proto", "zipkin_json", "raw", "text", "json"] }
+          "brokers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [
+              "localhost:9092"
+            ]
+          },
+          "topic": {
+            "type": "string",
+            "description": "Topic to consume (defaults per signal, e.g. otlp_spans)."
+          },
+          "group_id": {
+            "type": "string",
+            "default": "otel-collector"
+          },
+          "encoding": {
+            "type": "string",
+            "default": "otlp_proto",
+            "enum": [
+              "otlp_proto",
+              "otlp_json",
+              "jaeger_proto",
+              "jaeger_json",
+              "zipkin_proto",
+              "zipkin_json",
+              "raw",
+              "text",
+              "json"
+            ]
+          }
         }
       }
     },
     {
       "type": "syslog",
       "kind": "receiver",
-      "signals": ["logs"],
+      "signals": [
+        "logs"
+      ],
       "added": "0.31.0",
       "stability": "beta",
       "description": "Receives syslog messages over TCP or UDP (RFC 3164 / RFC 5424).",
       "schema": {
         "type": "object",
         "properties": {
-          "tcp": { "type": "object", "properties": { "listen_address": { "type": "string", "examples": ["0.0.0.0:54526"] } } },
-          "udp": { "type": "object", "properties": { "listen_address": { "type": "string", "examples": ["0.0.0.0:54526"] } } },
-          "protocol": { "type": "string", "enum": ["rfc3164", "rfc5424"], "default": "rfc5424" }
+          "tcp": {
+            "type": "object",
+            "properties": {
+              "listen_address": {
+                "type": "string",
+                "examples": [
+                  "0.0.0.0:54526"
+                ]
+              }
+            }
+          },
+          "udp": {
+            "type": "object",
+            "properties": {
+              "listen_address": {
+                "type": "string",
+                "examples": [
+                  "0.0.0.0:54526"
+                ]
+              }
+            }
+          },
+          "protocol": {
+            "type": "string",
+            "enum": [
+              "rfc3164",
+              "rfc5424"
+            ],
+            "default": "rfc5424"
+          }
         }
       }
     },
     {
       "type": "tcplog",
       "kind": "receiver",
-      "signals": ["logs"],
+      "signals": [
+        "logs"
+      ],
       "added": "0.31.0",
       "stability": "beta",
       "description": "Receives raw log lines over TCP.",
       "schema": {
         "type": "object",
         "properties": {
-          "listen_address": { "type": "string", "examples": ["0.0.0.0:54525"] },
-          "operators": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+          "listen_address": {
+            "type": "string",
+            "examples": [
+              "0.0.0.0:54525"
+            ]
+          },
+          "operators": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
         },
-        "required": ["listen_address"]
+        "required": [
+          "listen_address"
+        ]
       }
     },
     {
       "type": "docker_stats",
       "kind": "receiver",
-      "signals": ["metrics"],
+      "signals": [
+        "metrics"
+      ],
       "added": "0.35.0",
       "stability": "beta",
       "description": "Collects container metrics from the Docker daemon.",
       "schema": {
         "type": "object",
         "properties": {
-          "endpoint": { "type": "string", "default": "unix:///var/run/docker.sock" },
-          "collection_interval": { "type": "duration", "default": "10s" },
-          "container_labels_to_metric_labels": { "type": "map", "values": { "type": "string" } }
+          "endpoint": {
+            "type": "string",
+            "default": "unix:///var/run/docker.sock"
+          },
+          "collection_interval": {
+            "type": "duration",
+            "default": "10s"
+          },
+          "container_labels_to_metric_labels": {
+            "type": "map",
+            "values": {
+              "type": "string"
+            }
+          }
         }
       }
     },
     {
       "type": "kubeletstats",
       "kind": "receiver",
-      "signals": ["metrics"],
+      "signals": [
+        "metrics"
+      ],
       "added": "0.4.0",
       "stability": "beta",
       "description": "Pulls pod, container and node metrics from the kubelet API.",
       "schema": {
         "type": "object",
         "properties": {
-          "collection_interval": { "type": "duration", "default": "20s" },
-          "auth_type": { "type": "string", "enum": ["none", "serviceAccount", "tls", "kubeConfig"], "default": "tls" },
-          "endpoint": { "type": "string", "examples": ["${env:K8S_NODE_NAME}:10250"] },
-          "insecure_skip_verify": { "type": "bool", "default": false }
+          "collection_interval": {
+            "type": "duration",
+            "default": "20s"
+          },
+          "auth_type": {
+            "type": "string",
+            "enum": [
+              "none",
+              "serviceAccount",
+              "tls",
+              "kubeConfig"
+            ],
+            "default": "tls"
+          },
+          "endpoint": {
+            "type": "string",
+            "examples": [
+              "${env:K8S_NODE_NAME}:10250"
+            ]
+          },
+          "insecure_skip_verify": {
+            "type": "bool",
+            "default": false
+          }
         }
       }
     },
     {
       "type": "k8s_cluster",
       "kind": "receiver",
-      "signals": ["metrics", "logs"],
+      "signals": [
+        "metrics",
+        "logs"
+      ],
       "added": "0.4.0",
       "stability": "beta",
       "description": "Collects cluster-level metrics and entity events from the Kubernetes API server.",
       "schema": {
         "type": "object",
         "properties": {
-          "auth_type": { "type": "string", "enum": ["none", "serviceAccount", "kubeConfig"], "default": "serviceAccount" },
-          "collection_interval": { "type": "duration", "default": "10s" },
-          "node_conditions_to_report": { "type": "array", "items": { "type": "string" }, "default": ["Ready"] }
+          "auth_type": {
+            "type": "string",
+            "enum": [
+              "none",
+              "serviceAccount",
+              "kubeConfig"
+            ],
+            "default": "serviceAccount"
+          },
+          "collection_interval": {
+            "type": "duration",
+            "default": "10s"
+          },
+          "node_conditions_to_report": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [
+              "Ready"
+            ]
+          }
         }
       }
     },
     {
       "type": "httpcheck",
       "kind": "receiver",
-      "signals": ["metrics"],
+      "signals": [
+        "metrics"
+      ],
       "added": "0.66.0",
       "stability": "alpha",
       "description": "Performs synthetic HTTP checks against endpoints and reports availability metrics.",
@@ -275,91 +568,180 @@
             "items": {
               "type": "object",
               "properties": {
-                "endpoint": { "type": "string", "examples": ["https://example.com/health"] },
-                "method": { "type": "string", "enum": ["GET", "POST", "PUT", "HEAD"], "default": "GET" }
+                "endpoint": {
+                  "type": "string",
+                  "examples": [
+                    "https://example.com/health"
+                  ]
+                },
+                "method": {
+                  "type": "string",
+                  "enum": [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "HEAD"
+                  ],
+                  "default": "GET"
+                }
               }
             }
           },
-          "collection_interval": { "type": "duration", "default": "60s" }
+          "collection_interval": {
+            "type": "duration",
+            "default": "60s"
+          }
         },
-        "required": ["targets"]
+        "required": [
+          "targets"
+        ]
       }
     },
     {
       "type": "redis",
       "kind": "receiver",
-      "signals": ["metrics"],
+      "signals": [
+        "metrics"
+      ],
       "added": "0.8.0",
       "stability": "beta",
       "description": "Collects metrics from a Redis server via INFO.",
       "schema": {
         "type": "object",
         "properties": {
-          "endpoint": { "type": "string", "default": "localhost:6379" },
-          "collection_interval": { "type": "duration", "default": "10s" },
-          "password": { "type": "string", "secret": true }
+          "endpoint": {
+            "type": "string",
+            "default": "localhost:6379"
+          },
+          "collection_interval": {
+            "type": "duration",
+            "default": "10s"
+          },
+          "password": {
+            "type": "string",
+            "secret": true
+          }
         },
-        "required": ["endpoint"]
+        "required": [
+          "endpoint"
+        ]
       }
     },
     {
       "type": "postgresql",
       "kind": "receiver",
-      "signals": ["metrics"],
+      "signals": [
+        "metrics"
+      ],
       "added": "0.43.0",
       "stability": "beta",
       "description": "Collects metrics from a PostgreSQL server.",
       "schema": {
         "type": "object",
         "properties": {
-          "endpoint": { "type": "string", "default": "localhost:5432" },
-          "username": { "type": "string" },
-          "password": { "type": "string", "secret": true },
-          "databases": { "type": "array", "items": { "type": "string" } },
-          "collection_interval": { "type": "duration", "default": "10s" }
+          "endpoint": {
+            "type": "string",
+            "default": "localhost:5432"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "secret": true
+          },
+          "databases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "collection_interval": {
+            "type": "duration",
+            "default": "10s"
+          }
         },
-        "required": ["username", "password"]
+        "required": [
+          "username",
+          "password"
+        ]
       }
     },
-
     {
       "type": "batch",
       "kind": "processor",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.1.0",
       "stability": "stable",
       "description": "Batches telemetry before export to reduce outgoing connections. Recommended in every pipeline.",
       "schema": {
         "type": "object",
         "properties": {
-          "timeout": { "type": "duration", "default": "200ms", "description": "Send batch after this duration regardless of size." },
-          "send_batch_size": { "type": "int", "default": 8192 },
-          "send_batch_max_size": { "type": "int", "default": 0, "description": "Upper bound on batch size; 0 means no limit." }
+          "timeout": {
+            "type": "duration",
+            "default": "200ms",
+            "description": "Send batch after this duration regardless of size."
+          },
+          "send_batch_size": {
+            "type": "int",
+            "default": 8192
+          },
+          "send_batch_max_size": {
+            "type": "int",
+            "default": 0,
+            "description": "Upper bound on batch size; 0 means no limit."
+          }
         }
       }
     },
     {
       "type": "memory_limiter",
       "kind": "processor",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.1.0",
       "stability": "beta",
       "description": "Drops or refuses data when memory usage exceeds limits. Place first in each pipeline.",
       "schema": {
         "type": "object",
         "properties": {
-          "check_interval": { "type": "duration", "default": "1s" },
-          "limit_mib": { "type": "int", "description": "Hard memory limit in MiB." },
-          "spike_limit_mib": { "type": "int", "description": "Spike allowance in MiB (default 20% of limit_mib)." },
-          "limit_percentage": { "type": "int", "description": "Alternative to limit_mib: percentage of total memory." }
+          "check_interval": {
+            "type": "duration",
+            "default": "1s"
+          },
+          "limit_mib": {
+            "type": "int",
+            "description": "Hard memory limit in MiB."
+          },
+          "spike_limit_mib": {
+            "type": "int",
+            "description": "Spike allowance in MiB (default 20% of limit_mib)."
+          },
+          "limit_percentage": {
+            "type": "int",
+            "description": "Alternative to limit_mib: percentage of total memory."
+          }
         },
-        "required": ["check_interval"]
+        "required": [
+          "check_interval"
+        ]
       }
     },
     {
       "type": "attributes",
       "kind": "processor",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.2.0",
       "stability": "beta",
       "description": "Inserts, updates, deletes or hashes attributes on spans, metrics and logs.",
@@ -371,22 +753,48 @@
             "items": {
               "type": "object",
               "properties": {
-                "key": { "type": "string" },
-                "action": { "type": "string", "enum": ["insert", "update", "upsert", "delete", "hash", "extract", "convert"] },
-                "value": { "type": "string" },
-                "from_attribute": { "type": "string" }
+                "key": {
+                  "type": "string"
+                },
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "insert",
+                    "update",
+                    "upsert",
+                    "delete",
+                    "hash",
+                    "extract",
+                    "convert"
+                  ]
+                },
+                "value": {
+                  "type": "string"
+                },
+                "from_attribute": {
+                  "type": "string"
+                }
               },
-              "required": ["key", "action"]
+              "required": [
+                "key",
+                "action"
+              ]
             }
           }
         },
-        "required": ["actions"]
+        "required": [
+          "actions"
+        ]
       }
     },
     {
       "type": "resource",
       "kind": "processor",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.2.0",
       "stability": "beta",
       "description": "Applies attribute changes to resource attributes.",
@@ -398,403 +806,997 @@
             "items": {
               "type": "object",
               "properties": {
-                "key": { "type": "string" },
-                "action": { "type": "string", "enum": ["insert", "update", "upsert", "delete", "hash", "extract", "convert"] },
-                "value": { "type": "string" }
+                "key": {
+                  "type": "string"
+                },
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "insert",
+                    "update",
+                    "upsert",
+                    "delete",
+                    "hash",
+                    "extract",
+                    "convert"
+                  ]
+                },
+                "value": {
+                  "type": "string"
+                }
               },
-              "required": ["key", "action"]
+              "required": [
+                "key",
+                "action"
+              ]
             }
           }
         },
-        "required": ["attributes"]
+        "required": [
+          "attributes"
+        ]
       }
     },
     {
       "type": "resourcedetection",
       "kind": "processor",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.6.0",
       "stability": "beta",
       "description": "Detects resource information from the host environment (system, env, cloud providers, k8s).",
       "schema": {
         "type": "object",
         "properties": {
-          "detectors": { "type": "array", "items": { "type": "string" }, "examples": ["env", "system", "gcp", "ec2", "azure", "eks", "gke"] },
-          "timeout": { "type": "duration", "default": "5s" },
-          "override": { "type": "bool", "default": true }
+          "detectors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "examples": [
+              "env",
+              "system",
+              "gcp",
+              "ec2",
+              "azure",
+              "eks",
+              "gke"
+            ]
+          },
+          "timeout": {
+            "type": "duration",
+            "default": "5s"
+          },
+          "override": {
+            "type": "bool",
+            "default": true
+          }
         },
-        "required": ["detectors"]
+        "required": [
+          "detectors"
+        ]
       }
     },
     {
       "type": "filter",
       "kind": "processor",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.8.0",
       "stability": "alpha",
       "description": "Drops telemetry matching OTTL conditions or include/exclude rules.",
       "schema": {
         "type": "object",
         "properties": {
-          "error_mode": { "type": "string", "enum": ["ignore", "silent", "propagate"], "default": "propagate" },
-          "traces": { "type": "object", "properties": { "span": { "type": "array", "items": { "type": "string" } }, "spanevent": { "type": "array", "items": { "type": "string" } } } },
-          "metrics": { "type": "object", "properties": { "metric": { "type": "array", "items": { "type": "string" } }, "datapoint": { "type": "array", "items": { "type": "string" } } } },
-          "logs": { "type": "object", "properties": { "log_record": { "type": "array", "items": { "type": "string" } } } }
+          "error_mode": {
+            "type": "string",
+            "enum": [
+              "ignore",
+              "silent",
+              "propagate"
+            ],
+            "default": "propagate"
+          },
+          "traces": {
+            "type": "object",
+            "properties": {
+              "span": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "spanevent": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "metrics": {
+            "type": "object",
+            "properties": {
+              "metric": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "datapoint": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "logs": {
+            "type": "object",
+            "properties": {
+              "log_record": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
         }
       }
     },
     {
       "type": "transform",
       "kind": "processor",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.57.0",
       "stability": "alpha",
       "description": "Modifies telemetry using OTTL statements.",
       "schema": {
         "type": "object",
         "properties": {
-          "error_mode": { "type": "string", "enum": ["ignore", "silent", "propagate"], "default": "propagate" },
-          "trace_statements": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
-          "metric_statements": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
-          "log_statements": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+          "error_mode": {
+            "type": "string",
+            "enum": [
+              "ignore",
+              "silent",
+              "propagate"
+            ],
+            "default": "propagate"
+          },
+          "trace_statements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "metric_statements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "log_statements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
         }
       }
     },
     {
       "type": "tail_sampling",
       "kind": "processor",
-      "signals": ["traces"],
+      "signals": [
+        "traces"
+      ],
       "added": "0.5.0",
       "stability": "beta",
       "description": "Samples whole traces after completion based on latency, status, attributes and rate policies.",
       "schema": {
         "type": "object",
         "properties": {
-          "decision_wait": { "type": "duration", "default": "30s" },
-          "num_traces": { "type": "int", "default": 50000 },
-          "expected_new_traces_per_sec": { "type": "int", "default": 0 },
-          "policies": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+          "decision_wait": {
+            "type": "duration",
+            "default": "30s"
+          },
+          "num_traces": {
+            "type": "int",
+            "default": 50000
+          },
+          "expected_new_traces_per_sec": {
+            "type": "int",
+            "default": 0
+          },
+          "policies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
         },
-        "required": ["policies"]
+        "required": [
+          "policies"
+        ]
       }
     },
     {
       "type": "probabilistic_sampler",
       "kind": "processor",
-      "signals": ["traces", "logs"],
+      "signals": [
+        "traces",
+        "logs"
+      ],
       "added": "0.3.0",
       "stability": "beta",
       "description": "Head-samples a fixed percentage of traces or logs.",
       "schema": {
         "type": "object",
         "properties": {
-          "sampling_percentage": { "type": "number", "default": 15, "description": "Percentage of items to keep (0–100)." },
-          "hash_seed": { "type": "int" }
+          "sampling_percentage": {
+            "type": "number",
+            "default": 15,
+            "description": "Percentage of items to keep (0\u2013100)."
+          },
+          "hash_seed": {
+            "type": "int"
+          }
         },
-        "required": ["sampling_percentage"]
+        "required": [
+          "sampling_percentage"
+        ]
       }
     },
     {
       "type": "k8sattributes",
       "kind": "processor",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.32.0",
       "stability": "beta",
       "description": "Enriches telemetry with Kubernetes pod, namespace and node metadata.",
       "schema": {
         "type": "object",
         "properties": {
-          "auth_type": { "type": "string", "enum": ["none", "serviceAccount", "kubeConfig"], "default": "serviceAccount" },
-          "passthrough": { "type": "bool", "default": false },
-          "extract": { "type": "object", "additionalProperties": true },
-          "pod_association": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+          "auth_type": {
+            "type": "string",
+            "enum": [
+              "none",
+              "serviceAccount",
+              "kubeConfig"
+            ],
+            "default": "serviceAccount"
+          },
+          "passthrough": {
+            "type": "bool",
+            "default": false
+          },
+          "extract": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "pod_association": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
         }
       }
     },
     {
       "type": "groupbyattrs",
       "kind": "processor",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.13.0",
       "stability": "beta",
       "description": "Regroups telemetry by resource attributes; also compacts duplicate resources.",
       "schema": {
         "type": "object",
         "properties": {
-          "keys": { "type": "array", "items": { "type": "string" } }
+          "keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
         }
       }
     },
     {
       "type": "cumulativetodelta",
       "kind": "processor",
-      "signals": ["metrics"],
+      "signals": [
+        "metrics"
+      ],
       "added": "0.34.0",
       "stability": "beta",
       "description": "Converts cumulative sum/histogram metrics to delta temporality.",
       "schema": {
         "type": "object",
         "properties": {
-          "include": { "type": "object", "additionalProperties": true },
-          "exclude": { "type": "object", "additionalProperties": true },
-          "max_staleness": { "type": "duration" }
+          "include": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "exclude": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "max_staleness": {
+            "type": "duration"
+          }
         }
       }
     },
     {
       "type": "metricstransform",
       "kind": "processor",
-      "signals": ["metrics"],
+      "signals": [
+        "metrics"
+      ],
       "added": "0.7.0",
       "stability": "beta",
       "description": "Renames metrics and labels, aggregates and scales values.",
       "schema": {
         "type": "object",
         "properties": {
-          "transforms": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+          "transforms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
         },
-        "required": ["transforms"]
+        "required": [
+          "transforms"
+        ]
       }
     },
     {
       "type": "span",
       "kind": "processor",
-      "signals": ["traces"],
+      "signals": [
+        "traces"
+      ],
       "added": "0.5.0",
       "stability": "alpha",
       "description": "Renames spans and extracts attributes from span names.",
       "schema": {
         "type": "object",
         "properties": {
-          "name": { "type": "object", "additionalProperties": true },
-          "status": { "type": "object", "additionalProperties": true }
+          "name": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "status": {
+            "type": "object",
+            "additionalProperties": true
+          }
         }
       }
     },
     {
       "type": "redaction",
       "kind": "processor",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.36.0",
       "stability": "beta",
       "description": "Deletes or masks attribute values that are not on an allowlist or that match blocked patterns.",
       "schema": {
         "type": "object",
         "properties": {
-          "allow_all_keys": { "type": "bool", "default": false },
-          "allowed_keys": { "type": "array", "items": { "type": "string" } },
-          "blocked_values": { "type": "array", "items": { "type": "string" } },
-          "summary": { "type": "string", "enum": ["debug", "info", "silent"], "default": "info" }
+          "allow_all_keys": {
+            "type": "bool",
+            "default": false
+          },
+          "allowed_keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "blocked_values": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "summary": {
+            "type": "string",
+            "enum": [
+              "debug",
+              "info",
+              "silent"
+            ],
+            "default": "info"
+          }
         }
       }
     },
-
     {
       "type": "otlp",
       "kind": "exporter",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.1.0",
       "stability": "stable",
       "description": "Exports telemetry via OTLP over gRPC.",
       "schema": {
         "type": "object",
         "properties": {
-          "endpoint": { "type": "string", "examples": ["backend.example.com:4317"] },
+          "endpoint": {
+            "type": "string",
+            "examples": [
+              "backend.example.com:4317"
+            ]
+          },
           "tls": {
             "type": "object",
             "properties": {
-              "insecure": { "type": "bool", "default": false },
-              "ca_file": { "type": "string" },
-              "cert_file": { "type": "string" },
-              "key_file": { "type": "string" }
+              "insecure": {
+                "type": "bool",
+                "default": false
+              },
+              "ca_file": {
+                "type": "string"
+              },
+              "cert_file": {
+                "type": "string"
+              },
+              "key_file": {
+                "type": "string"
+              }
             }
           },
-          "compression": { "type": "string", "enum": ["gzip", "snappy", "zstd", "none"], "default": "gzip" },
-          "headers": { "type": "map", "values": { "type": "string" } },
+          "compression": {
+            "type": "string",
+            "enum": [
+              "gzip",
+              "snappy",
+              "zstd",
+              "none"
+            ],
+            "default": "gzip"
+          },
+          "headers": {
+            "type": "map",
+            "values": {
+              "type": "string"
+            }
+          },
           "sending_queue": {
             "type": "object",
             "properties": {
-              "enabled": { "type": "bool", "default": true },
-              "num_consumers": { "type": "int", "default": 10 },
-              "queue_size": { "type": "int", "default": 1000 }
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "num_consumers": {
+                "type": "int",
+                "default": 10
+              },
+              "queue_size": {
+                "type": "int",
+                "default": 1000
+              }
             }
           },
           "retry_on_failure": {
             "type": "object",
             "properties": {
-              "enabled": { "type": "bool", "default": true },
-              "initial_interval": { "type": "duration", "default": "5s" },
-              "max_interval": { "type": "duration", "default": "30s" },
-              "max_elapsed_time": { "type": "duration", "default": "5m" }
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "initial_interval": {
+                "type": "duration",
+                "default": "5s"
+              },
+              "max_interval": {
+                "type": "duration",
+                "default": "30s"
+              },
+              "max_elapsed_time": {
+                "type": "duration",
+                "default": "5m"
+              }
             }
+          },
+          "auth": {
+            "type": "object",
+            "description": "Authenticate using an auth extension (e.g. basicauth, bearertokenauth, oauth2client).",
+            "properties": {
+              "authenticator": {
+                "type": "string",
+                "description": "ID of the auth extension to use.",
+                "examples": [
+                  "basicauth/client"
+                ]
+              }
+            },
+            "required": [
+              "authenticator"
+            ]
           }
         },
-        "required": ["endpoint"]
+        "required": [
+          "endpoint"
+        ]
       }
     },
     {
       "type": "otlphttp",
       "kind": "exporter",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.8.0",
       "stability": "stable",
       "description": "Exports telemetry via OTLP over HTTP (protobuf or JSON).",
       "schema": {
         "type": "object",
         "properties": {
-          "endpoint": { "type": "string", "examples": ["https://backend.example.com:4318"] },
-          "encoding": { "type": "string", "enum": ["proto", "json"], "default": "proto" },
-          "compression": { "type": "string", "enum": ["gzip", "snappy", "zstd", "none"], "default": "gzip" },
-          "headers": { "type": "map", "values": { "type": "string" } },
-          "tls": { "type": "object", "properties": { "insecure": { "type": "bool" }, "ca_file": { "type": "string" } } }
+          "endpoint": {
+            "type": "string",
+            "examples": [
+              "https://backend.example.com:4318"
+            ]
+          },
+          "encoding": {
+            "type": "string",
+            "enum": [
+              "proto",
+              "json"
+            ],
+            "default": "proto"
+          },
+          "compression": {
+            "type": "string",
+            "enum": [
+              "gzip",
+              "snappy",
+              "zstd",
+              "none"
+            ],
+            "default": "gzip"
+          },
+          "headers": {
+            "type": "map",
+            "values": {
+              "type": "string"
+            }
+          },
+          "tls": {
+            "type": "object",
+            "properties": {
+              "insecure": {
+                "type": "bool"
+              },
+              "ca_file": {
+                "type": "string"
+              }
+            }
+          },
+          "auth": {
+            "type": "object",
+            "description": "Authenticate using an auth extension (e.g. basicauth, bearertokenauth, oauth2client).",
+            "properties": {
+              "authenticator": {
+                "type": "string",
+                "description": "ID of the auth extension to use.",
+                "examples": [
+                  "basicauth/client"
+                ]
+              }
+            },
+            "required": [
+              "authenticator"
+            ]
+          },
+          "timeout": {
+            "type": "duration",
+            "default": "30s"
+          }
         },
-        "required": ["endpoint"]
+        "required": [
+          "endpoint"
+        ]
       }
     },
     {
       "type": "logging",
       "kind": "exporter",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.1.0",
       "deprecated": "0.86.0",
       "removed": "0.107.0",
       "stability": "deprecated",
-      "description": "Logs telemetry to the console. Deprecated — use the debug exporter instead.",
+      "description": "Logs telemetry to the console. Deprecated \u2014 use the debug exporter instead.",
       "schema": {
         "type": "object",
         "properties": {
-          "loglevel": { "type": "string", "enum": ["debug", "info", "warn", "error"], "default": "info" },
-          "sampling_initial": { "type": "int", "default": 2 },
-          "sampling_thereafter": { "type": "int", "default": 500 }
+          "loglevel": {
+            "type": "string",
+            "enum": [
+              "debug",
+              "info",
+              "warn",
+              "error"
+            ],
+            "default": "info"
+          },
+          "sampling_initial": {
+            "type": "int",
+            "default": 2
+          },
+          "sampling_thereafter": {
+            "type": "int",
+            "default": 500
+          }
         }
       }
     },
     {
       "type": "debug",
       "kind": "exporter",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.86.0",
       "stability": "stable",
       "description": "Prints telemetry to the console for debugging. Replaces the logging exporter.",
       "schema": {
         "type": "object",
         "properties": {
-          "verbosity": { "type": "string", "enum": ["basic", "normal", "detailed"], "default": "basic" },
-          "sampling_initial": { "type": "int", "default": 2 },
-          "sampling_thereafter": { "type": "int", "default": 1 }
+          "verbosity": {
+            "type": "string",
+            "enum": [
+              "basic",
+              "normal",
+              "detailed"
+            ],
+            "default": "basic"
+          },
+          "sampling_initial": {
+            "type": "int",
+            "default": 2
+          },
+          "sampling_thereafter": {
+            "type": "int",
+            "default": 1
+          }
         }
       }
     },
     {
       "type": "jaeger",
       "kind": "exporter",
-      "signals": ["traces"],
+      "signals": [
+        "traces"
+      ],
       "added": "0.1.0",
       "deprecated": "0.85.0",
       "removed": "0.86.0",
       "stability": "deprecated",
-      "description": "Exports traces to Jaeger via gRPC. Removed — Jaeger natively accepts OTLP; use the otlp exporter instead.",
+      "description": "Exports traces to Jaeger via gRPC. Removed \u2014 Jaeger natively accepts OTLP; use the otlp exporter instead.",
       "schema": {
         "type": "object",
         "properties": {
-          "endpoint": { "type": "string", "examples": ["jaeger-collector:14250"] },
-          "tls": { "type": "object", "properties": { "insecure": { "type": "bool" } } }
+          "endpoint": {
+            "type": "string",
+            "examples": [
+              "jaeger-collector:14250"
+            ]
+          },
+          "tls": {
+            "type": "object",
+            "properties": {
+              "insecure": {
+                "type": "bool"
+              }
+            }
+          }
         },
-        "required": ["endpoint"]
+        "required": [
+          "endpoint"
+        ]
       }
     },
     {
       "type": "prometheus",
       "kind": "exporter",
-      "signals": ["metrics"],
+      "signals": [
+        "metrics"
+      ],
       "added": "0.1.0",
       "stability": "beta",
       "description": "Exposes metrics on an HTTP endpoint for Prometheus to scrape.",
       "schema": {
         "type": "object",
         "properties": {
-          "endpoint": { "type": "string", "examples": ["0.0.0.0:8889"] },
-          "namespace": { "type": "string" },
-          "const_labels": { "type": "map", "values": { "type": "string" } },
-          "enable_open_metrics": { "type": "bool", "default": false },
-          "resource_to_telemetry_conversion": { "type": "object", "properties": { "enabled": { "type": "bool", "default": false } } }
+          "endpoint": {
+            "type": "string",
+            "examples": [
+              "0.0.0.0:8889"
+            ]
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "const_labels": {
+            "type": "map",
+            "values": {
+              "type": "string"
+            }
+          },
+          "enable_open_metrics": {
+            "type": "bool",
+            "default": false
+          },
+          "resource_to_telemetry_conversion": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": false
+              }
+            }
+          }
         },
-        "required": ["endpoint"]
+        "required": [
+          "endpoint"
+        ]
       }
     },
     {
       "type": "prometheusremotewrite",
       "kind": "exporter",
-      "signals": ["metrics"],
+      "signals": [
+        "metrics"
+      ],
       "added": "0.9.0",
       "stability": "beta",
       "description": "Pushes metrics to a Prometheus remote-write compatible backend.",
       "schema": {
         "type": "object",
         "properties": {
-          "endpoint": { "type": "string", "examples": ["https://prom.example.com/api/v1/write"] },
-          "headers": { "type": "map", "values": { "type": "string" } },
-          "external_labels": { "type": "map", "values": { "type": "string" } },
-          "tls": { "type": "object", "properties": { "insecure": { "type": "bool" } } }
+          "endpoint": {
+            "type": "string",
+            "examples": [
+              "https://prom.example.com/api/v1/write"
+            ]
+          },
+          "headers": {
+            "type": "map",
+            "values": {
+              "type": "string"
+            }
+          },
+          "external_labels": {
+            "type": "map",
+            "values": {
+              "type": "string"
+            }
+          },
+          "tls": {
+            "type": "object",
+            "properties": {
+              "insecure": {
+                "type": "bool"
+              }
+            }
+          },
+          "auth": {
+            "type": "object",
+            "description": "Authenticate using an auth extension (e.g. basicauth, bearertokenauth, oauth2client).",
+            "properties": {
+              "authenticator": {
+                "type": "string",
+                "description": "ID of the auth extension to use.",
+                "examples": [
+                  "basicauth/client"
+                ]
+              }
+            },
+            "required": [
+              "authenticator"
+            ]
+          }
         },
-        "required": ["endpoint"]
+        "required": [
+          "endpoint"
+        ]
       }
     },
     {
       "type": "kafka",
       "kind": "exporter",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.6.0",
       "stability": "beta",
       "description": "Publishes telemetry to Kafka topics.",
       "schema": {
         "type": "object",
         "properties": {
-          "brokers": { "type": "array", "items": { "type": "string" }, "default": ["localhost:9092"] },
-          "topic": { "type": "string" },
-          "encoding": { "type": "string", "default": "otlp_proto" },
-          "partition_traces_by_id": { "type": "bool", "default": false }
+          "brokers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [
+              "localhost:9092"
+            ]
+          },
+          "topic": {
+            "type": "string"
+          },
+          "encoding": {
+            "type": "string",
+            "default": "otlp_proto"
+          },
+          "partition_traces_by_id": {
+            "type": "bool",
+            "default": false
+          },
+          "auth": {
+            "type": "object",
+            "description": "Kafka authentication (sasl, tls, kerberos).",
+            "additionalProperties": true
+          }
         }
       }
     },
     {
       "type": "file",
       "kind": "exporter",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.8.0",
       "stability": "alpha",
       "description": "Writes telemetry to a file as JSON or protobuf.",
       "schema": {
         "type": "object",
         "properties": {
-          "path": { "type": "string", "examples": ["/var/lib/otelcol/out.json"] },
-          "format": { "type": "string", "enum": ["json", "proto"], "default": "json" },
-          "rotation": { "type": "object", "properties": { "max_megabytes": { "type": "int" }, "max_days": { "type": "int" }, "max_backups": { "type": "int" } } }
+          "path": {
+            "type": "string",
+            "examples": [
+              "/var/lib/otelcol/out.json"
+            ]
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "json",
+              "proto"
+            ],
+            "default": "json"
+          },
+          "rotation": {
+            "type": "object",
+            "properties": {
+              "max_megabytes": {
+                "type": "int"
+              },
+              "max_days": {
+                "type": "int"
+              },
+              "max_backups": {
+                "type": "int"
+              }
+            }
+          }
         },
-        "required": ["path"]
+        "required": [
+          "path"
+        ]
       }
     },
     {
       "type": "loadbalancing",
       "kind": "exporter",
-      "signals": ["traces", "logs"],
+      "signals": [
+        "traces",
+        "logs"
+      ],
       "added": "0.19.0",
       "stability": "beta",
       "description": "Consistently routes telemetry to a pool of downstream collectors by trace ID or service name.",
       "schema": {
         "type": "object",
         "properties": {
-          "routing_key": { "type": "string", "enum": ["traceID", "service"], "default": "traceID" },
-          "protocol": { "type": "object", "additionalProperties": true },
-          "resolver": { "type": "object", "additionalProperties": true }
+          "routing_key": {
+            "type": "string",
+            "enum": [
+              "traceID",
+              "service"
+            ],
+            "default": "traceID"
+          },
+          "protocol": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "resolver": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "auth": {
+            "type": "object",
+            "description": "Authenticate using an auth extension (e.g. basicauth, bearertokenauth, oauth2client).",
+            "properties": {
+              "authenticator": {
+                "type": "string",
+                "description": "ID of the auth extension to use.",
+                "examples": [
+                  "basicauth/client"
+                ]
+              }
+            },
+            "required": [
+              "authenticator"
+            ]
+          }
         },
-        "required": ["resolver"]
+        "required": [
+          "resolver"
+        ]
       }
     },
     {
       "type": "awss3",
       "kind": "exporter",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.71.0",
       "stability": "alpha",
       "description": "Stores telemetry in an Amazon S3 bucket.",
@@ -804,74 +1806,192 @@
           "s3uploader": {
             "type": "object",
             "properties": {
-              "region": { "type": "string", "default": "us-east-1" },
-              "s3_bucket": { "type": "string" },
-              "s3_prefix": { "type": "string" },
-              "compression": { "type": "string", "enum": ["none", "gzip"], "default": "none" }
+              "region": {
+                "type": "string",
+                "default": "us-east-1"
+              },
+              "s3_bucket": {
+                "type": "string"
+              },
+              "s3_prefix": {
+                "type": "string"
+              },
+              "compression": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "gzip"
+                ],
+                "default": "none"
+              }
             },
-            "required": ["s3_bucket"]
+            "required": [
+              "s3_bucket"
+            ]
           },
-          "marshaler": { "type": "string", "enum": ["otlp_json", "otlp_proto", "sumo_ic", "body"], "default": "otlp_json" }
+          "marshaler": {
+            "type": "string",
+            "enum": [
+              "otlp_json",
+              "otlp_proto",
+              "sumo_ic",
+              "body"
+            ],
+            "default": "otlp_json"
+          }
         },
-        "required": ["s3uploader"]
+        "required": [
+          "s3uploader"
+        ]
       }
     },
     {
       "type": "clickhouse",
       "kind": "exporter",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.56.0",
       "stability": "alpha",
       "description": "Writes telemetry to ClickHouse tables.",
       "schema": {
         "type": "object",
         "properties": {
-          "endpoint": { "type": "string", "examples": ["tcp://clickhouse:9000"] },
-          "database": { "type": "string", "default": "otel" },
-          "username": { "type": "string" },
-          "password": { "type": "string", "secret": true },
-          "ttl": { "type": "duration" }
+          "endpoint": {
+            "type": "string",
+            "examples": [
+              "tcp://clickhouse:9000"
+            ]
+          },
+          "database": {
+            "type": "string",
+            "default": "otel"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "secret": true
+          },
+          "ttl": {
+            "type": "duration"
+          }
         },
-        "required": ["endpoint"]
+        "required": [
+          "endpoint"
+        ]
       }
     },
     {
       "type": "elasticsearch",
       "kind": "exporter",
-      "signals": ["traces", "logs"],
+      "signals": [
+        "traces",
+        "logs"
+      ],
       "added": "0.47.0",
       "stability": "beta",
       "description": "Writes telemetry to Elasticsearch.",
       "schema": {
         "type": "object",
         "properties": {
-          "endpoints": { "type": "array", "items": { "type": "string" }, "examples": ["https://es:9200"] },
-          "logs_index": { "type": "string" },
-          "traces_index": { "type": "string" },
-          "api_key": { "type": "string", "secret": true }
+          "endpoints": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "examples": [
+              "https://es:9200"
+            ]
+          },
+          "logs_index": {
+            "type": "string"
+          },
+          "traces_index": {
+            "type": "string"
+          },
+          "api_key": {
+            "type": "string",
+            "secret": true
+          },
+          "auth": {
+            "type": "object",
+            "description": "Authenticate using an auth extension (e.g. basicauth, bearertokenauth, oauth2client).",
+            "properties": {
+              "authenticator": {
+                "type": "string",
+                "description": "ID of the auth extension to use.",
+                "examples": [
+                  "basicauth/client"
+                ]
+              }
+            },
+            "required": [
+              "authenticator"
+            ]
+          }
         }
       }
     },
     {
       "type": "splunk_hec",
       "kind": "exporter",
-      "signals": ["traces", "metrics", "logs"],
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
       "added": "0.16.0",
       "stability": "beta",
       "description": "Sends telemetry to Splunk via the HTTP Event Collector.",
       "schema": {
         "type": "object",
         "properties": {
-          "token": { "type": "string", "secret": true },
-          "endpoint": { "type": "string", "examples": ["https://splunk:8088/services/collector"] },
-          "source": { "type": "string" },
-          "sourcetype": { "type": "string" },
-          "index": { "type": "string" }
+          "token": {
+            "type": "string",
+            "secret": true
+          },
+          "endpoint": {
+            "type": "string",
+            "examples": [
+              "https://splunk:8088/services/collector"
+            ]
+          },
+          "source": {
+            "type": "string"
+          },
+          "sourcetype": {
+            "type": "string"
+          },
+          "index": {
+            "type": "string"
+          },
+          "auth": {
+            "type": "object",
+            "description": "Authenticate using an auth extension (e.g. basicauth, bearertokenauth, oauth2client).",
+            "properties": {
+              "authenticator": {
+                "type": "string",
+                "description": "ID of the auth extension to use.",
+                "examples": [
+                  "basicauth/client"
+                ]
+              }
+            },
+            "required": [
+              "authenticator"
+            ]
+          }
         },
-        "required": ["token", "endpoint"]
+        "required": [
+          "token",
+          "endpoint"
+        ]
       }
     },
-
     {
       "type": "health_check",
       "kind": "extension",
@@ -881,8 +2001,14 @@
       "schema": {
         "type": "object",
         "properties": {
-          "endpoint": { "type": "string", "default": "0.0.0.0:13133" },
-          "path": { "type": "string", "default": "/" }
+          "endpoint": {
+            "type": "string",
+            "default": "0.0.0.0:13133"
+          },
+          "path": {
+            "type": "string",
+            "default": "/"
+          }
         }
       }
     },
@@ -895,9 +2021,18 @@
       "schema": {
         "type": "object",
         "properties": {
-          "endpoint": { "type": "string", "default": "localhost:1777" },
-          "block_profile_fraction": { "type": "int", "default": 0 },
-          "mutex_profile_fraction": { "type": "int", "default": 0 }
+          "endpoint": {
+            "type": "string",
+            "default": "localhost:1777"
+          },
+          "block_profile_fraction": {
+            "type": "int",
+            "default": 0
+          },
+          "mutex_profile_fraction": {
+            "type": "int",
+            "default": 0
+          }
         }
       }
     },
@@ -910,7 +2045,10 @@
       "schema": {
         "type": "object",
         "properties": {
-          "endpoint": { "type": "string", "default": "localhost:55679" }
+          "endpoint": {
+            "type": "string",
+            "default": "localhost:55679"
+          }
         }
       }
     },
@@ -921,12 +2059,16 @@
       "deprecated": "0.99.0",
       "removed": "0.104.0",
       "stability": "deprecated",
-      "description": "Pre-allocates heap to reduce GC churn. Removed — use GOMEMLIMIT instead.",
+      "description": "Pre-allocates heap to reduce GC churn. Removed \u2014 use GOMEMLIMIT instead.",
       "schema": {
         "type": "object",
         "properties": {
-          "size_mib": { "type": "int" },
-          "size_in_percentage": { "type": "int" }
+          "size_mib": {
+            "type": "int"
+          },
+          "size_in_percentage": {
+            "type": "int"
+          }
         }
       }
     },
@@ -939,8 +2081,29 @@
       "schema": {
         "type": "object",
         "properties": {
-          "client_auth": { "type": "object", "properties": { "username": { "type": "string" }, "password": { "type": "string", "secret": true } } },
-          "htpasswd": { "type": "object", "properties": { "file": { "type": "string" }, "inline": { "type": "string" } } }
+          "client_auth": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              },
+              "password": {
+                "type": "string",
+                "secret": true
+              }
+            }
+          },
+          "htpasswd": {
+            "type": "object",
+            "properties": {
+              "file": {
+                "type": "string"
+              },
+              "inline": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     },
@@ -953,9 +2116,18 @@
       "schema": {
         "type": "object",
         "properties": {
-          "token": { "type": "string", "secret": true },
-          "filename": { "type": "string", "description": "Read the token from this file instead." },
-          "scheme": { "type": "string", "default": "Bearer" }
+          "token": {
+            "type": "string",
+            "secret": true
+          },
+          "filename": {
+            "type": "string",
+            "description": "Read the token from this file instead."
+          },
+          "scheme": {
+            "type": "string",
+            "default": "Bearer"
+          }
         }
       }
     },
@@ -968,12 +2140,28 @@
       "schema": {
         "type": "object",
         "properties": {
-          "client_id": { "type": "string" },
-          "client_secret": { "type": "string", "secret": true },
-          "token_url": { "type": "string" },
-          "scopes": { "type": "array", "items": { "type": "string" } }
+          "client_id": {
+            "type": "string"
+          },
+          "client_secret": {
+            "type": "string",
+            "secret": true
+          },
+          "token_url": {
+            "type": "string"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
         },
-        "required": ["client_id", "client_secret", "token_url"]
+        "required": [
+          "client_id",
+          "client_secret",
+          "token_url"
+        ]
       }
     },
     {
@@ -990,16 +2178,35 @@
             "items": {
               "type": "object",
               "properties": {
-                "key": { "type": "string" },
-                "value": { "type": "string" },
-                "from_context": { "type": "string" },
-                "action": { "type": "string", "enum": ["insert", "update", "upsert", "delete"], "default": "upsert" }
+                "key": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "from_context": {
+                  "type": "string"
+                },
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "insert",
+                    "update",
+                    "upsert",
+                    "delete"
+                  ],
+                  "default": "upsert"
+                }
               },
-              "required": ["key"]
+              "required": [
+                "key"
+              ]
             }
           }
         },
-        "required": ["headers"]
+        "required": [
+          "headers"
+        ]
       }
     },
     {
@@ -1007,17 +2214,27 @@
       "kind": "extension",
       "added": "0.36.0",
       "stability": "beta",
-      "description": "Persists component state to disk — enables durable sending queues and checkpoints.",
+      "description": "Persists component state to disk \u2014 enables durable sending queues and checkpoints.",
       "schema": {
         "type": "object",
         "properties": {
-          "directory": { "type": "string", "examples": ["/var/lib/otelcol/storage"] },
-          "timeout": { "type": "duration", "default": "1s" },
-          "compaction": { "type": "object", "additionalProperties": true }
+          "directory": {
+            "type": "string",
+            "examples": [
+              "/var/lib/otelcol/storage"
+            ]
+          },
+          "timeout": {
+            "type": "duration",
+            "default": "1s"
+          },
+          "compaction": {
+            "type": "object",
+            "additionalProperties": true
+          }
         }
       }
     },
-
     {
       "type": "forward",
       "kind": "connector",
@@ -1025,11 +2242,23 @@
       "stability": "beta",
       "description": "Forwards data unchanged from one pipeline to another of the same signal type.",
       "connects": [
-        { "from": "traces", "to": "traces" },
-        { "from": "metrics", "to": "metrics" },
-        { "from": "logs", "to": "logs" }
+        {
+          "from": "traces",
+          "to": "traces"
+        },
+        {
+          "from": "metrics",
+          "to": "metrics"
+        },
+        {
+          "from": "logs",
+          "to": "logs"
+        }
       ],
-      "schema": { "type": "object", "properties": {} }
+      "schema": {
+        "type": "object",
+        "properties": {}
+      }
     },
     {
       "type": "count",
@@ -1038,16 +2267,34 @@
       "stability": "alpha",
       "description": "Counts spans, data points or log records and emits the counts as metrics.",
       "connects": [
-        { "from": "traces", "to": "metrics" },
-        { "from": "metrics", "to": "metrics" },
-        { "from": "logs", "to": "metrics" }
+        {
+          "from": "traces",
+          "to": "metrics"
+        },
+        {
+          "from": "metrics",
+          "to": "metrics"
+        },
+        {
+          "from": "logs",
+          "to": "metrics"
+        }
       ],
       "schema": {
         "type": "object",
         "properties": {
-          "spans": { "type": "object", "additionalProperties": true },
-          "logs": { "type": "object", "additionalProperties": true },
-          "datapoints": { "type": "object", "additionalProperties": true }
+          "spans": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "logs": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "datapoints": {
+            "type": "object",
+            "additionalProperties": true
+          }
         }
       }
     },
@@ -1057,13 +2304,30 @@
       "added": "0.74.0",
       "stability": "alpha",
       "description": "Aggregates R.E.D metrics (request rate, errors, duration) from span data.",
-      "connects": [{ "from": "traces", "to": "metrics" }],
+      "connects": [
+        {
+          "from": "traces",
+          "to": "metrics"
+        }
+      ],
       "schema": {
         "type": "object",
         "properties": {
-          "histogram": { "type": "object", "additionalProperties": true },
-          "dimensions": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
-          "metrics_flush_interval": { "type": "duration", "default": "60s" }
+          "histogram": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "dimensions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "metrics_flush_interval": {
+            "type": "duration",
+            "default": "60s"
+          }
         }
       }
     },
@@ -1073,13 +2337,31 @@
       "added": "0.79.0",
       "stability": "alpha",
       "description": "Builds service-dependency graph metrics from traces.",
-      "connects": [{ "from": "traces", "to": "metrics" }],
+      "connects": [
+        {
+          "from": "traces",
+          "to": "metrics"
+        }
+      ],
       "schema": {
         "type": "object",
         "properties": {
-          "latency_histogram_buckets": { "type": "array", "items": { "type": "duration" } },
-          "dimensions": { "type": "array", "items": { "type": "string" } },
-          "store": { "type": "object", "additionalProperties": true }
+          "latency_histogram_buckets": {
+            "type": "array",
+            "items": {
+              "type": "duration"
+            }
+          },
+          "dimensions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "store": {
+            "type": "object",
+            "additionalProperties": true
+          }
         }
       }
     },
@@ -1090,18 +2372,48 @@
       "stability": "alpha",
       "description": "Routes telemetry to different pipelines based on OTTL conditions on resource attributes.",
       "connects": [
-        { "from": "traces", "to": "traces" },
-        { "from": "metrics", "to": "metrics" },
-        { "from": "logs", "to": "logs" }
+        {
+          "from": "traces",
+          "to": "traces"
+        },
+        {
+          "from": "metrics",
+          "to": "metrics"
+        },
+        {
+          "from": "logs",
+          "to": "logs"
+        }
       ],
       "schema": {
         "type": "object",
         "properties": {
-          "default_pipelines": { "type": "array", "items": { "type": "string" } },
-          "table": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
-          "error_mode": { "type": "string", "enum": ["ignore", "silent", "propagate"], "default": "propagate" }
+          "default_pipelines": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "table": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "error_mode": {
+            "type": "string",
+            "enum": [
+              "ignore",
+              "silent",
+              "propagate"
+            ],
+            "default": "propagate"
+          }
         },
-        "required": ["table"]
+        "required": [
+          "table"
+        ]
       }
     },
     {
@@ -1111,14 +2423,29 @@
       "stability": "alpha",
       "description": "Generates metrics and logs from span exception events.",
       "connects": [
-        { "from": "traces", "to": "metrics" },
-        { "from": "traces", "to": "logs" }
+        {
+          "from": "traces",
+          "to": "metrics"
+        },
+        {
+          "from": "traces",
+          "to": "logs"
+        }
       ],
       "schema": {
         "type": "object",
         "properties": {
-          "dimensions": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
-          "exemplars": { "type": "object", "additionalProperties": true }
+          "dimensions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "exemplars": {
+            "type": "object",
+            "additionalProperties": true
+          }
         }
       }
     }
