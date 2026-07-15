@@ -12,9 +12,15 @@ const LANE_GAP = 24
 const ADD_H = 32
 const MARGIN = 24
 
+export type PipelineRole = 'receivers' | 'processors' | 'exporters'
+
 export interface Selection {
   kind: Kind
   id: string
+  /** The pipeline lane the node was clicked in (absent for extensions). */
+  pipeline?: string
+  /** Which list of that pipeline the node came from. */
+  role?: PipelineRole
 }
 
 interface Props {
@@ -33,6 +39,7 @@ interface NodePos {
   y: number
   id: string
   kind: Kind
+  role?: PipelineRole
 }
 
 interface LaneLayout {
@@ -87,18 +94,21 @@ export function computeLayout(model: ConfigModel, readOnly = false): GraphLayout
     const receivers = p.receivers.map((id, i) => ({
       id,
       kind: (connectorIds.has(id) ? 'connector' : 'receiver') as Kind,
+      role: 'receivers' as PipelineRole,
       x: LANE_PAD,
       y: y + LANE_HEADER + i * (NODE_H + NODE_GAP),
     }))
     const exporters = p.exporters.map((id, i) => ({
       id,
       kind: (connectorIds.has(id) ? 'connector' : 'exporter') as Kind,
+      role: 'exporters' as PipelineRole,
       x: exporterX,
       y: y + LANE_HEADER + i * (NODE_H + NODE_GAP),
     }))
     const processors = p.processors.map((id, j) => ({
       id,
       kind: 'processor' as Kind,
+      role: 'processors' as PipelineRole,
       x: LANE_PAD + NODE_W + COL_GAP + j * (NODE_W + COL_GAP),
       y: midY,
     }))
@@ -183,12 +193,15 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
 
   const { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW, showExtensions } = layout
 
-  const renderNode = (n: NodePos, signal?: string) => {
+  const renderNode = (n: NodePos, signal?: string, pipelineId?: string) => {
     const typeName = componentType(n.id)
     const comp = componentIndex.get(`${n.kind}:${typeName}`)
     const section = n.kind + 's'
     const problem = problems.get(`${section}.${n.id}`)
-    const isSel = selected?.kind === n.kind && selected?.id === n.id
+    const isSel =
+      selected?.kind === n.kind &&
+      selected?.id === n.id &&
+      (!selected?.pipeline || selected.pipeline === pipelineId)
     const instance = n.id.includes('/') ? n.id.slice(n.id.indexOf('/') + 1) : null
     // Only flag unknown types once the catalog has actually loaded —
     // otherwise every node flashes red during the initial fetch.
@@ -209,7 +222,7 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
         transform={`translate(${n.x},${n.y})`}
         onClick={(e) => {
           e.stopPropagation()
-          if (!readOnly) onSelect({ kind: n.kind, id: n.id })
+          if (!readOnly) onSelect({ kind: n.kind, id: n.id, pipeline: pipelineId, role: n.role })
         }}
       >
         <rect className="node-box" width={NODE_W} height={NODE_H} rx={8} />
@@ -285,7 +298,7 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
 
             {/* nodes (shifted by outer margin) */}
             {[...lane.receivers, ...lane.processors, ...lane.exporters].map((n) =>
-              renderNode({ ...n, x: n.x + MARGIN }, p.signal),
+              renderNode({ ...n, x: n.x + MARGIN }, p.signal, p.id),
             )}
 
             {/* add zones */}

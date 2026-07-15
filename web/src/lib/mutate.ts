@@ -151,6 +151,22 @@ export function getComponentConfig(yamlText: string, section: SectionName, id: s
   }
 }
 
+/** Removes a single reference from one pipeline's list; the definition and
+ * other pipelines are untouched. */
+export function removeFromPipeline(
+  yamlText: string,
+  pipelineId: string,
+  role: 'receivers' | 'processors' | 'exporters',
+  id: string,
+): string {
+  const doc: Doc = parseDocument(yamlText)
+  const seq = doc.getIn(['service', 'pipelines', pipelineId, role], true)
+  if (seq instanceof YAMLSeq) {
+    seq.items = seq.items.filter((it: any) => it?.value !== id)
+  }
+  return doc.toString(TO_STRING)
+}
+
 /** Removes a component definition and all references to it. */
 export function removeComponent(yamlText: string, section: SectionName, id: string): string {
   const doc: Doc = parseDocument(yamlText)

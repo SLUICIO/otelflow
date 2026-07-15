@@ -5,6 +5,8 @@ import { SchemaForm } from './SchemaForm'
 interface Props {
   kind: Kind
   id: string
+  /** Pipeline the node was clicked in; scopes what Remove does. */
+  pipeline?: string
   component: Component | undefined
   initialConfig: unknown
   onApply: (config: unknown) => void
@@ -16,7 +18,7 @@ interface Props {
  * Detail/edit dialog for an existing component. Same modal presentation as
  * the add-component dialog so both node interactions behave alike.
  */
-export function DetailsDialog({ kind, id, component, initialConfig, onApply, onRemove, onClose }: Props) {
+export function DetailsDialog({ kind, id, pipeline, component, initialConfig, onApply, onRemove, onClose }: Props) {
   const [config, setConfig] = useState<Record<string, unknown>>(
     initialConfig && typeof initialConfig === 'object' && !Array.isArray(initialConfig)
       ? (initialConfig as Record<string, unknown>)
@@ -86,7 +88,9 @@ export function DetailsDialog({ kind, id, component, initialConfig, onApply, onR
           )}
         </div>
         <div className="modal-footer" style={{ justifyContent: 'space-between' }}>
-          <button className="btn btn--danger" onClick={onRemove}>Remove</button>
+          <button className="btn btn--danger" onClick={onRemove} title={pipeline ? `Removes '${id}' from pipeline '${pipeline}' only` : undefined}>
+            {pipeline ? `Remove from ${pipeline}` : 'Remove'}
+          </button>
           <div style={{ display: 'flex', gap: 10 }}>
             <button className="btn" onClick={onClose}>Cancel</button>
             {component && (

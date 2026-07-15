@@ -1,7 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { fetchComponents, fetchMeta, validateConfig } from './api'
 import { parseConfigModel } from './lib/parse'
-import { addComponent, addPipeline, getComponentConfig, removeComponent, setComponentConfig } from './lib/mutate'
+import {
+  addComponent,
+  addPipeline,
+  getComponentConfig,
+  removeComponent,
+  removeFromPipeline,
+  setComponentConfig,
+} from './lib/mutate'
 import { AddPipelineDialog } from './components/AddPipelineDialog'
 import { ConfigViewer, Editor } from './components/Editor'
 import { FlowGraph, computeLayout, type Selection } from './components/FlowGraph'
@@ -477,14 +484,33 @@ export default function App() {
 
       {selected && (
         <DetailsDialog
-          key={`${selected.kind}:${selected.id}`}
+          key={`${selected.kind}:${selected.id}:${selected.pipeline ?? ''}`}
           kind={model.sections.connectors.includes(selected.id) ? 'connector' : selected.kind}
           id={selected.id}
+          pipeline={selected.pipeline}
           component={selectedComponent}
           initialConfig={getComponentConfig(yamlText, resolveSection(selected), selected.id)}
           onApply={(config) => setYamlText((prev) => setComponentConfig(prev, resolveSection(selected), selected.id, config))}
           onRemove={() => {
-            setYamlText((prev) => removeComponent(prev, resolveSection(selected), selected.id))
+            const sel = selected
+            const section = resolveSection(sel)
+            if (sel.pipeline && sel.role) {
+              // Scoped removal: only this pipeline's reference goes.
+              const usagesLeft = countUsages(model, sel.id) - 1
+              setYamlText((prev) => removeFromPipeline(prev, sel.pipeline!, sel.role!, sel.id))
+              if (
+                usagesLeft <= 0 &&
+                window.confirm(
+                  `'${sel.id}' is no longer used by any pipeline. Also remove its definition from the ${section} section? Its configuration will be deleted.`,
+                )
+              ) {
+                setYamlText((prev) => removeComponent(prev, section, sel.id))
+              }
+            } else {
+              // Extensions (and anything without pipeline context):
+              // remove the definition and every reference.
+              setYamlText((prev) => removeComponent(prev, section, sel.id))
+            }
             setSelected(null)
           }}
           onClose={() => setSelected(null)}
@@ -518,6 +544,19 @@ export default function App() {
       )}
     </div>
   )
+}
+
+/** How many times a component ID is referenced across all pipelines and
+ * service.extensions. */
+function countUsages(model: ReturnType<typeof parseConfigModel>, id: string): number {
+  let n = 0
+  for (const p of model.pipelines) {
+    for (const role of ['receivers', 'processors', 'exporters'] as const) {
+      n += p[role].filter((x) => x === id).length
+    }
+  }
+  n += model.serviceExtensions.filter((x) => x === id).length
+  return n
 }
 
 function StatusBadge({ state, errors }: { state: ValState; errors: number }) {
