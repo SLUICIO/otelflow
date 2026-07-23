@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/sluicio/otelflow/internal/api"
 	"github.com/sluicio/otelflow/internal/registry"
@@ -31,7 +32,7 @@ func main() {
 
 	if st, err := os.Stat(*staticDir); err == nil && st.IsDir() {
 		log.Printf("serving frontend from %s", *staticDir)
-		mux.Handle("/", spaHandler(*staticDir))
+		mux.Handle("/", withCachePolicy(spaHandler(*staticDir)))
 	}
 
 	log.Printf("Sluicio OTel Collector Designer API listening on %s", *addr)
@@ -47,6 +48,21 @@ func defaultAddr() string {
 		return ":" + p
 	}
 	return ":7317"
+}
+
+// withCachePolicy sets explicit caching: content-hashed assets are immutable,
+// everything else (index.html, validate.wasm, wasm_exec.js) must revalidate.
+// Without this, browsers cache the validator heuristically and keep using an
+// outdated registry after upgrades.
+func withCachePolicy(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/assets/") {
+			w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+		} else {
+			w.Header().Set("Cache-Control", "no-cache")
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 // spaHandler serves static files, falling back to index.html for client-side

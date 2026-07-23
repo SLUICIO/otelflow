@@ -12,7 +12,9 @@ function initValidator(): Promise<void> {
   if (!wasmReady) {
     wasmReady = (async () => {
       const go = new Go()
-      const resp = await fetch('/validate.wasm')
+      // Version-busted URL: a new release always fetches a fresh validator,
+      // even through caches that ignore revalidation headers.
+      const resp = await fetch(`/validate.wasm?v=${encodeURIComponent(`${__APP_VERSION__}-${__GIT_SHA__}`)}`)
       if (!resp.ok) throw new Error(`fetching validator: ${resp.status}`)
       const { instance } = await WebAssembly.instantiate(await resp.arrayBuffer(), go.importObject)
       void go.run(instance) // resolves only if the program exits; it shouldn't
