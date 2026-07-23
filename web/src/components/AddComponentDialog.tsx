@@ -11,8 +11,11 @@ const KINDS: Kind[] = ['receiver', 'processor', 'exporter', 'connector', 'extens
 interface Preset {
   label: string
   kind: Kind
-  type: string // real component type this resolves to
-  suffix: string // instance name, e.g. otlphttp/sluicio
+  /** Real component types this resolves to; the first one available at the
+   * selected version wins (types get renamed upstream, e.g. otlphttp →
+   * otlp_http in v0.146.0). */
+  types: string[]
+  suffix: string // instance name, e.g. otlp_http/sluicio
   signals: string[]
   description: string
   config: Record<string, unknown>
@@ -22,11 +25,11 @@ const PRESETS: Preset[] = [
   {
     label: 'sluicio',
     kind: 'exporter',
-    type: 'otlphttp',
+    types: ['otlp_http', 'otlphttp'],
     suffix: 'sluicio',
     signals: ['traces', 'metrics', 'logs'],
     description:
-      'Send telemetry to Sluicio: an otlphttp exporter pre-configured with the Sluicio ingest endpoint and bearer-token authentication.',
+      'Send telemetry to Sluicio: an OTLP/HTTP exporter pre-configured with the Sluicio ingest endpoint and bearer-token authentication.',
     config: {
       endpoint: 'https://ingest.sluicio.com',
       headers: { Authorization: 'Bearer ${env:SLUICIO_TOKEN}' },
@@ -99,7 +102,9 @@ export function AddComponentDialog({ initialKind, initialPipeline, version, dist
   }, [components, kind, query, pipelineSignal, initialKind])
 
   const pickPreset = (p: Preset) => {
-    const base = components.find((c) => c.kind === p.kind && c.type === p.type && c.available)
+    const base = p.types
+      .map((t) => components.find((c) => c.kind === p.kind && c.type === t && c.available))
+      .find(Boolean)
     if (!base) return
     pick(base)
     setSuffix(p.suffix)
@@ -189,7 +194,7 @@ export function AddComponentDialog({ initialKind, initialPipeline, version, dist
                     {p.signals.map((s) => (
                       <span key={s} className={`pill pill--${s}`}>{s}</span>
                     ))}
-                    <span className="pill pill--outline">{p.type}/{p.suffix}</span>
+                    <span className="pill pill--outline">{p.types[0]}/{p.suffix}</span>
                   </div>
                 </div>
               ))}

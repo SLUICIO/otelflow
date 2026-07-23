@@ -28,6 +28,8 @@ import (
 	"time"
 
 	"gopkg.in/yaml.v3"
+
+	"github.com/sluicio/otelflow/internal/registry"
 )
 
 var versions = []string{
@@ -63,6 +65,7 @@ type genComponent struct {
 	Connects      []connection `json:"connects,omitempty"`
 	Added         string       `json:"added"`
 	Removed       string       `json:"removed,omitempty"`
+	RenamedTo     string       `json:"renamedTo,omitempty"`
 	Stability     string       `json:"stability"`
 	Distributions []string     `json:"distributions"`
 	DocsURL       string       `json:"docsUrl"`
@@ -150,12 +153,41 @@ func main() {
 		if inContrib {
 			dists = append(dists, "contrib")
 		}
+		docsURL := fmt.Sprintf("https://github.com/%s/tree/main/%s", src.repo, dirKey)
+
+		// Upstream sometimes renames a component's config type while keeping
+		// its directory (e.g. otlphttp → otlp_http in core v0.146.0). Detect
+		// by comparing the earliest readable metadata (old components predate
+		// metadata.yaml at their first tags) with the latest, and emit the
+		// old and new type as separate, correctly-gated components.
+		if firstMeta, ferr := fetchEarliestMetadata(src.repo, dirKey, present); ferr == nil &&
+			firstMeta.Type != "" && firstMeta.Type != meta.Type {
+			renameVersion := findRenameVersion(src.repo, dirKey, meta.Type, present, added, lastPresent)
+			oldSignals, oldConnects, oldStability := interpretStability(kind, firstMeta.Status.Stability)
+			comps = append(comps, genComponent{
+				Type: firstMeta.Type, Kind: kind,
+				Signals: oldSignals, Connects: oldConnects,
+				Added: added, Removed: renameVersion, RenamedTo: meta.Type,
+				Stability: oldStability, Distributions: dists,
+				DocsURL: docsURL,
+			})
+			comps = append(comps, genComponent{
+				Type: meta.Type, Kind: kind,
+				Signals: signals, Connects: connects,
+				Added: renameVersion, Removed: removed,
+				Stability: stability, Distributions: dists,
+				DocsURL: docsURL,
+			})
+			log.Printf("rename detected: %s %s → %s at v%s", dirKey, firstMeta.Type, meta.Type, renameVersion)
+			continue
+		}
+
 		comps = append(comps, genComponent{
 			Type: meta.Type, Kind: kind,
 			Signals: signals, Connects: connects,
 			Added: added, Removed: removed,
 			Stability: stability, Distributions: dists,
-			DocsURL: fmt.Sprintf("https://github.com/%s/tree/main/%s", src.repo, dirKey),
+			DocsURL: docsURL,
 		})
 	}
 
@@ -176,6 +208,38 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Printf("wrote %d components to %s", len(comps), *out)
+}
+
+// fetchEarliestMetadata returns the metadata at the earliest present tag
+// where it is readable — old components predate metadata.yaml.
+func fetchEarliestMetadata(repo, dirKey string, present map[string]bool) (*metadataFile, error) {
+	for _, v := range versions {
+		if !present[v] {
+			continue
+		}
+		if meta, err := fetchMetadataAnyTag(repo, v, dirKey); err == nil {
+			return meta, nil
+		}
+	}
+	return nil, fmt.Errorf("no readable metadata at any present tag")
+}
+
+// findRenameVersion returns the first supported version at which the
+// component's metadata declares the new type name.
+func findRenameVersion(repo, dirKey, newType string, present map[string]bool, added, lastPresent string) string {
+	for _, v := range versions {
+		if registry.CompareVersions(v, added) < 0 || !present[v] {
+			continue
+		}
+		meta, err := fetchMetadataAnyTag(repo, v, dirKey)
+		if err != nil {
+			continue
+		}
+		if meta.Type == newType {
+			return v
+		}
+	}
+	return lastPresent
 }
 
 // availability derives added/removed from the presence set, relative to the

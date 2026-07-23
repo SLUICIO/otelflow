@@ -6,12 +6,12 @@ receivers:
         endpoint: 0.0.0.0:4317
       http:
         endpoint: 0.0.0.0:4318
-  hostmetrics:
+  host_metrics:
     collection_interval: 30s
     scrapers:
       cpu:
       memory:
-  filelog:
+  file_log:
     include:
       - /var/log/app/*.log
     start_at: end
@@ -25,7 +25,7 @@ processors:
     send_batch_size: 8192
 
 exporters:
-  otlphttp/sluicio:
+  otlp_http/sluicio:
     endpoint: https://ingest.sluicio.com
     headers:
       Authorization: Bearer \${env:SLUICIO_TOKEN}
@@ -34,7 +34,7 @@ exporters:
     verbosity: basic
 
 connectors:
-  spanmetrics:
+  span_metrics:
     metrics_flush_interval: 60s
 
 extensions:
@@ -48,13 +48,13 @@ service:
     traces:
       receivers: [otlp]
       processors: [memory_limiter, batch]
-      exporters: [otlphttp/sluicio, spanmetrics]
+      exporters: [otlp_http/sluicio, span_metrics]
     metrics:
-      receivers: [otlp, hostmetrics, spanmetrics]
+      receivers: [otlp, host_metrics, span_metrics]
       processors: [memory_limiter, batch]
-      exporters: [otlphttp/sluicio]
+      exporters: [otlp_http/sluicio]
     logs:
-      receivers: [otlp, filelog]
+      receivers: [otlp, file_log]
       processors: [memory_limiter, batch]
-      exporters: [otlphttp/sluicio, debug]
+      exporters: [otlp_http/sluicio, debug]
 `

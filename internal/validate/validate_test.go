@@ -347,6 +347,81 @@ service:
 `,
 		},
 		{
+			name:    "metadata-corrected type is not gated (zipkin existed before its metadata fix)",
+			version: "0.70.0",
+			valid:   true,
+			want:    "",
+			config: `
+receivers:
+  zipkin:
+exporters:
+  otlp:
+    endpoint: x:4317
+service:
+  pipelines:
+    traces:
+      receivers: [zipkin]
+      exporters: [otlp]
+`,
+		},
+		{
+			name:    "renamed type flagged at new versions",
+			version: "0.157.0",
+			valid:   false,
+			want:    "It was renamed to 'otlp_http' in v0.146.0",
+			config: `
+receivers:
+  otlp:
+    protocols: {http: {}}
+exporters:
+  otlphttp/x:
+    endpoint: https://x
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlphttp/x]
+`,
+		},
+		{
+			name:    "old type valid before rename",
+			version: "0.140.0",
+			valid:   true,
+			want:    "",
+			config: `
+receivers:
+  otlp:
+    protocols: {http: {}}
+exporters:
+  otlphttp/x:
+    endpoint: https://x
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlphttp/x]
+`,
+		},
+		{
+			name:    "new type valid after rename, gated before",
+			version: "0.140.0",
+			valid:   false,
+			want:    "not available in v0.140.0 (added in v0.146.0)",
+			config: `
+receivers:
+  otlp:
+    protocols: {http: {}}
+exporters:
+  otlp_http/x:
+    endpoint: https://x
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlp_http/x]
+`,
+		},
+		{
 			name:    "authenticator not defined",
 			version: "0.127.0",
 			valid:   false,

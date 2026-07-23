@@ -269,6 +269,9 @@ func (v *validator) checkAuthReferences() {
 
 // removalHint suggests the replacement for well-known deprecations.
 func removalHint(c *registry.Component) string {
+	if c.RenamedTo != "" {
+		return fmt.Sprintf("It was renamed to '%s' in v%s — update the type name.", c.RenamedTo, c.Removed)
+	}
 	switch {
 	case c.Kind == registry.KindExporter && c.Type == "logging":
 		return "Use the 'debug' exporter instead."

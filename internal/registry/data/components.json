@@ -2453,6 +2453,201 @@
           }
         }
       }
+    },
+    {
+      "type": "otlp_grpc",
+      "kind": "exporter",
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
+      "added": "0.146.0",
+      "stability": "stable",
+      "description": "Exports telemetry via OTLP over gRPC. Renamed from 'otlp' in v0.146.0.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "examples": [
+              "backend.example.com:4317"
+            ]
+          },
+          "tls": {
+            "type": "object",
+            "properties": {
+              "insecure": {
+                "type": "bool",
+                "default": false
+              },
+              "ca_file": {
+                "type": "string"
+              },
+              "cert_file": {
+                "type": "string"
+              },
+              "key_file": {
+                "type": "string"
+              }
+            }
+          },
+          "compression": {
+            "type": "string",
+            "enum": [
+              "gzip",
+              "snappy",
+              "zstd",
+              "none"
+            ],
+            "default": "gzip"
+          },
+          "headers": {
+            "type": "map",
+            "values": {
+              "type": "string"
+            }
+          },
+          "sending_queue": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "num_consumers": {
+                "type": "int",
+                "default": 10
+              },
+              "queue_size": {
+                "type": "int",
+                "default": 1000
+              }
+            }
+          },
+          "retry_on_failure": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "initial_interval": {
+                "type": "duration",
+                "default": "5s"
+              },
+              "max_interval": {
+                "type": "duration",
+                "default": "30s"
+              },
+              "max_elapsed_time": {
+                "type": "duration",
+                "default": "5m"
+              }
+            }
+          },
+          "auth": {
+            "type": "object",
+            "description": "Authenticate using an auth extension (e.g. basicauth, bearertokenauth, oauth2client).",
+            "properties": {
+              "authenticator": {
+                "type": "string",
+                "description": "ID of the auth extension to use.",
+                "examples": [
+                  "basicauth/client"
+                ]
+              }
+            },
+            "required": [
+              "authenticator"
+            ]
+          }
+        },
+        "required": [
+          "endpoint"
+        ]
+      }
+    },
+    {
+      "type": "otlp_http",
+      "kind": "exporter",
+      "signals": [
+        "traces",
+        "metrics",
+        "logs"
+      ],
+      "added": "0.146.0",
+      "stability": "stable",
+      "description": "Exports telemetry via OTLP over HTTP (protobuf or JSON). Renamed from 'otlphttp' in v0.146.0.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "examples": [
+              "https://backend.example.com:4318"
+            ]
+          },
+          "encoding": {
+            "type": "string",
+            "enum": [
+              "proto",
+              "json"
+            ],
+            "default": "proto"
+          },
+          "compression": {
+            "type": "string",
+            "enum": [
+              "gzip",
+              "snappy",
+              "zstd",
+              "none"
+            ],
+            "default": "gzip"
+          },
+          "headers": {
+            "type": "map",
+            "values": {
+              "type": "string"
+            }
+          },
+          "tls": {
+            "type": "object",
+            "properties": {
+              "insecure": {
+                "type": "bool"
+              },
+              "ca_file": {
+                "type": "string"
+              }
+            }
+          },
+          "auth": {
+            "type": "object",
+            "description": "Authenticate using an auth extension (e.g. basicauth, bearertokenauth, oauth2client).",
+            "properties": {
+              "authenticator": {
+                "type": "string",
+                "description": "ID of the auth extension to use.",
+                "examples": [
+                  "basicauth/client"
+                ]
+              }
+            },
+            "required": [
+              "authenticator"
+            ]
+          },
+          "timeout": {
+            "type": "duration",
+            "default": "30s"
+          }
+        },
+        "required": [
+          "endpoint"
+        ]
+      }
     }
   ]
 }

@@ -43,6 +43,7 @@ type Component struct {
 	Added         string          `json:"added"`
 	Deprecated    string          `json:"deprecated,omitempty"`
 	Removed       string          `json:"removed,omitempty"`
+	RenamedTo     string          `json:"renamedTo,omitempty"`
 	Stability     string          `json:"stability"`
 	Distributions []string        `json:"distributions,omitempty"`
 	DocsURL       string          `json:"docsUrl,omitempty"`
@@ -122,6 +123,8 @@ func Load() (*Registry, error) {
 		}
 	}
 
+	merged = reconcileRenames(merged, curatedIdx)
+
 	reg = &Registry{
 		Versions:       curated.Versions,
 		DefaultVersion: curated.DefaultVersion,
@@ -129,6 +132,61 @@ func Load() (*Registry, error) {
 		Components:     merged,
 	}
 	return reg, nil
+}
+
+// reconcileRenames post-processes rename pairs emitted by the generator.
+//
+// Not every detected "rename" is real: early metadata.yaml files sometimes
+// carried the directory name as the type and were later corrected (e.g.
+// zipkinreceiver → zipkin). When the curated overlay shows the NEW name
+// existed before the supposed rename, the old entry is fictional: drop it
+// and give the new entry the directory's full availability range.
+//
+// For real renames, the new-name entry inherits the old name's curated
+// schema and description when it has none of its own.
+func reconcileRenames(merged []Component, curatedIdx map[string]*Component) []Component {
+	inheritFrom := map[string]*Component{} // kind:newType -> old curated entry
+	fixAdded := map[string]string{}        // kind:newType -> directory-presence start
+	drop := map[string]bool{}              // kind:oldType
+
+	for i := range merged {
+		m := &merged[i]
+		if m.RenamedTo == "" {
+			continue
+		}
+		newKey := string(m.Kind) + ":" + m.RenamedTo
+		oldKey := string(m.Kind) + ":" + m.Type
+		if c, ok := curatedIdx[newKey]; ok && c.Added != "" && CompareVersions(c.Added, m.Removed) < 0 {
+			// Metadata correction, not a real rename.
+			fixAdded[newKey] = m.Added
+			drop[oldKey] = true
+			continue
+		}
+		if c, ok := curatedIdx[oldKey]; ok {
+			inheritFrom[newKey] = c
+		}
+	}
+
+	out := merged[:0]
+	for _, m := range merged {
+		if m.RenamedTo != "" && drop[string(m.Kind)+":"+m.Type] {
+			continue
+		}
+		key := string(m.Kind) + ":" + m.Type
+		if a, ok := fixAdded[key]; ok {
+			m.Added = a
+		}
+		if c, ok := inheritFrom[key]; ok {
+			if len(m.Schema) == 0 {
+				m.Schema = c.Schema
+			}
+			if m.Description == fallbackDescription(m) && c.Description != "" {
+				m.Description = c.Description
+			}
+		}
+		out = append(out, m)
+	}
+	return out
 }
 
 func fallbackDescription(c Component) string {
