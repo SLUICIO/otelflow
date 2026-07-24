@@ -1,0 +1,102 @@
+name: Registry refresh
+
+# Checks weekly whether a newer OpenTelemetry Collector release exists and,
+# if so, adds it to the version grid, regenerates the component catalog from
+# the collector repositories, and opens a pull request with the result.
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Mondays 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Check for a newer collector release
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          latest=$(gh api repos/open-telemetry/opentelemetry-collector-contrib/releases/latest -q .tag_name | sed 's/^v//')
+          current=$(python3 -c "import json; print(json.load(open('internal/registry/data/components.json'))['versions'][-1])")
+          echo "upstream latest: $latest, grid newest: $current"
+          if [ "$latest" = "$current" ] || [ "$(printf '%s\n%s\n' "$latest" "$current" | sort -V | tail -1)" = "$current" ]; then
+            echo "Registry is up to date."
+            echo "newer=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "newer=true" >> "$GITHUB_OUTPUT"
+            echo "version=$latest" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Add version and regenerate the catalog
+        if: steps.check.outputs.newer == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_VERSION: ${{ steps.check.outputs.version }}
+        run: |
+          python3 - <<'EOF'
+          import json, os
+          p = 'internal/registry/data/components.json'
+          d = json.load(open(p))
+          v = os.environ['NEW_VERSION']
+          if v not in d['versions']:
+              d['versions'].append(v)
+          d['defaultVersion'] = v
+          json.dump(d, open(p, 'w'), indent=2)
+          open(p, 'a').write('\n')
+          EOF
+          go run ./cmd/registry-gen -out internal/registry/data/generated.json
+
+      - name: Verify
+        if: steps.check.outputs.newer == 'true'
+        run: |
+          go build ./... && go vet ./... && go test ./...
+          GOOS=js GOARCH=wasm go build ./cmd/wasm
+
+      - name: Summarize changes
+        if: steps.check.outputs.newer == 'true'
+        id: summary
+        run: |
+          count=$(python3 -c "import json; print(len(json.load(open('internal/registry/data/generated.json'))['components']))")
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+
+      - name: Open pull request
+        if: steps.check.outputs.newer == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: registry-refresh/v${{ steps.check.outputs.version }}
+          delete-branch: true
+          commit-message: |
+            Refresh registry through collector v${{ steps.check.outputs.version }}
+
+            Adds v${{ steps.check.outputs.version }} to the supported version
+            grid (new default) and regenerates the component catalog from the
+            collector repositories.
+          title: Refresh registry through collector v${{ steps.check.outputs.version }}
+          body: |
+            A new OpenTelemetry Collector release is available. This adds
+            **v${{ steps.check.outputs.version }}** to the supported version grid
+            (as the new default) and regenerates the component catalog from the
+            collector repositories: ${{ steps.summary.outputs.count }} generated
+            components.
+
+            Build, vet, tests and the WASM validator build passed in the
+            generating workflow run. Note: CI does not start automatically on
+            pull requests opened by workflows — close and reopen the PR to
+            trigger it, or rely on the checks above.
+
+            Review pointers: new components since the previous grid version,
+            any newly detected type renames (`renamedTo` entries), and whether
+            popular new components deserve a curated schema in
+            `components.json`.

@@ -37,11 +37,14 @@ web/src/components/   Editor, flow graph, dialogs, schema-driven forms
 ## Common contributions
 
 **The component catalog** is generated, not hand-written: `cmd/registry-gen`
-derives component presence per version, signals, stability and core/contrib
-membership from the collector repositories
+derives component presence per version, signals, stability, type renames and
+core/contrib membership from the collector repositories
 (`GITHUB_TOKEN=$(gh auth token) go run ./cmd/registry-gen`). Don't edit
-`generated.json` by hand — re-run the generator (e.g. when adding a new
-supported collector version to its version list).
+`generated.json` by hand. The supported version grid lives in one place —
+the `versions` list in `internal/registry/data/components.json` — and the
+scheduled registry-refresh workflow appends new collector releases and opens
+a pull request automatically; to do it manually, append the version there
+and re-run the generator.
 
 **Adding or improving a component schema** — edit the curated overlay,
 `internal/registry/data/components.json`. Overlay entries contribute the

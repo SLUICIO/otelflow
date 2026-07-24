@@ -32,11 +32,12 @@ import (
 	"github.com/sluicio/otelflow/internal/registry"
 )
 
-var versions = []string{
-	"0.70.0", "0.77.0", "0.80.0", "0.86.0", "0.90.1", "0.96.0",
-	"0.102.1", "0.109.0", "0.115.1", "0.120.0", "0.127.0",
-	"0.133.0", "0.140.0", "0.146.0", "0.152.0", "0.157.0",
-}
+// versions is the supported grid, loaded from the curated registry data —
+// a single source of truth shared with the app. To support a new collector
+// release, append it to the versions list in
+// internal/registry/data/components.json and re-run this generator (the
+// scheduled registry-refresh workflow does both automatically).
+var versions []string
 
 var repos = map[string]string{
 	"core":    "open-telemetry/opentelemetry-collector",
@@ -89,6 +90,13 @@ func main() {
 	if os.Getenv("GITHUB_TOKEN") == "" {
 		log.Println("warning: GITHUB_TOKEN not set — likely to hit rate limits")
 	}
+
+	reg, err := registry.Load()
+	if err != nil {
+		log.Fatalf("loading registry for version grid: %v", err)
+	}
+	versions = reg.Versions
+	log.Printf("version grid: %d versions, newest %s", len(versions), versions[len(versions)-1])
 
 	// presence[repo][dirKey] = set of versions where the component exists
 	presence := map[string]map[string]map[string]bool{}
@@ -189,6 +197,25 @@ func main() {
 			Stability: stability, Distributions: dists,
 			DocsURL: docsURL,
 		})
+	}
+
+	// Directory renames (e.g. extension/httpforwarder →
+	// extension/httpforwarderextension) yield two entries with the same
+	// type. Merge them into one continuous span — earliest added, newest
+	// entry's facts — so output is complete and deterministic.
+	byKey := map[string][]genComponent{}
+	for _, c := range comps {
+		k := c.Kind + ":" + c.Type
+		byKey[k] = append(byKey[k], c)
+	}
+	comps = comps[:0]
+	for _, group := range byKey {
+		sort.Slice(group, func(i, j int) bool {
+			return registry.CompareVersions(group[i].Added, group[j].Added) < 0
+		})
+		m := group[len(group)-1]
+		m.Added = group[0].Added
+		comps = append(comps, m)
 	}
 
 	sort.Slice(comps, func(i, j int) bool {

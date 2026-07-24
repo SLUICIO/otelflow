@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-07-23T07:29:40Z",
+ "generatedAt": "2026-07-24T14:49:56Z",
  "source": "Derived from the Apache-2.0 licensed repositories open-telemetry/opentelemetry-collector and open-telemetry/opentelemetry-collector-contrib.",
  "versions": [
   "0.70.0",
@@ -1762,23 +1762,12 @@
   {
    "type": "http_forwarder",
    "kind": "extension",
-   "added": "0.96.0",
+   "added": "0.80.0",
    "stability": "beta",
    "distributions": [
     "contrib"
    ],
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/httpforwarderextension"
-  },
-  {
-   "type": "http_forwarder",
-   "kind": "extension",
-   "added": "0.80.0",
-   "removed": "0.96.0",
-   "stability": "beta",
-   "distributions": [
-    "contrib"
-   ],
-   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/httpforwarder"
   },
   {
    "type": "httpforwarder",
