@@ -16,7 +16,11 @@ around that idea:
   and no connection to any product — including Sluicio's. The server is a
   single stateless binary; configurations live in your browser's local
   storage and share links carry the configuration inside the URL fragment,
-  which never reaches a server.
+  which never reaches a server. Analytics are off by default: an instance
+  operator can opt in to cookieless page-view counting (Plausible) via the
+  `PLAUSIBLE_SCRIPT_URL` environment variable — the public instance does —
+  but no cookies are set, no personal data is collected, and configurations
+  are never part of it.
 - **Self-hosting is the point.** A public instance runs at
   <https://otelflow.sluicio.com> (the URL may change) and is free to use.
   But the reason this project exists in the open is so that nobody has to
@@ -215,6 +219,11 @@ docker compose --profile proxy up -d  # + Caddy on :80/:443 with automatic TLS
 The server honors the `PORT` environment variable, so the same image runs
 unmodified on container platforms like Scaleway Serverless Containers or
 Cloud Run. `-addr` and `-static` flags override the defaults.
+
+Optional: set `PLAUSIBLE_SCRIPT_URL` to your Plausible script URL to enable
+cookieless page-view analytics on your instance (e.g.
+`-e PLAUSIBLE_SCRIPT_URL=https://plausible.example.com/js/script.js`).
+Without it, the app serves no analytics of any kind.
 
 ## Notes
 
