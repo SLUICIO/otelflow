@@ -1,0 +1,4 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sluicio">
+  <rect x="0" y="0" width="64" height="64" rx="16" fill="#0E6E9E"></rect>
+  <path d="M 47 19 H 19 V 31.5 H 45 V 45 H 17" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linejoin="miter" stroke-linecap="square"></path>
+</svg>
