@@ -5,6 +5,8 @@ A visual designer for OpenTelemetry Collector configurations, by
 [OTelBin](https://github.com/dash0hq/otelbin), with version-aware validation
 and a click-to-configure component catalog.
 
+![OTelFlow on otelflow.sluicio.com showing its default sample configuration: the YAML editor on the left, and traces, metrics and logs pipelines rendered as a live flow diagram on the right, connected by a span_metrics connector](docs/screenshot-default-config.webp)
+
 ## Purpose
 
 Collector configurations describe your infrastructure: endpoints, service
