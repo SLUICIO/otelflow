@@ -96,6 +96,8 @@ collector repositories, not curated by hand.
   picking a component generates a schema-driven form (required fields, enums,
   durations, secrets, YAML fallback for free-form blocks) and writes the
   component plus its pipeline references into the YAML, preserving comments.
+
+  ![The Add component dialog listing the contrib catalog for v0.157.0: searchable receiver cards with signal badges, the version each component appeared in, and links to the official docs](docs/screenshot-add-component.png)
 - **Click-to-edit** — select any node to inspect its docs/stability/signals,
   edit its config in a form, or remove it (references are cleaned up too).
 - **Share without a database** — the Share button encodes the whole
