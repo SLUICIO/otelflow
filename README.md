@@ -138,6 +138,8 @@ The Share button produces two things, and both work without any server-side
 storage — the entire configuration travels inside the URL fragment, which
 browsers never send to the server.
 
+![The Share configuration dialog: a share link that encodes the whole configuration in the URL, embed options for what the iframe shows (visual, configuration, or both) and its theme, and the generated iframe snippet](docs/screenshot-share-config.png)
+
 **Share links** open the configuration in the full editor:
 
 ```
