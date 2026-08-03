@@ -194,6 +194,15 @@ console.log(`https://otelflow.sluicio.com/#share=1.${payload}`)
 Run it directly: `node examples/make-share-link.mjs my-config.yaml 0.127.0`.
 Point the base URL at your own instance to keep everything on your premises.
 
+## VS Code extension
+
+The [vscode/](vscode/) directory contains a VS Code extension that runs the
+same WASM validation engine inside the editor: open a collector configuration
+and version-aware diagnostics appear in the Problems panel, with the collector
+version and distribution pickable from the status bar. Fully offline, like
+everything else here. CI attaches the packaged `.vsix` to every run; a
+Marketplace listing is planned. See [vscode/README.md](vscode/README.md).
+
 ## Development
 
 Requires Go 1.24+ and Node 22+. One terminal:

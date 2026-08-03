@@ -1,0 +1,71 @@
+{
+  "name": "otelflow",
+  "displayName": "OTelFlow",
+  "description": "Version-aware validation for OpenTelemetry Collector configurations — entirely offline, powered by the OTelFlow registry and validation engine.",
+  "publisher": "sluicio",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SLUICIO/otelflow",
+    "directory": "vscode"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Linters"
+  ],
+  "keywords": [
+    "opentelemetry",
+    "otel",
+    "collector",
+    "observability",
+    "yaml"
+  ],
+  "activationEvents": [
+    "onLanguage:yaml"
+  ],
+  "main": "./dist/extension.cjs",
+  "contributes": {
+    "commands": [
+      {
+        "command": "otelflow.selectTarget",
+        "title": "OTelFlow: Select collector version and distribution"
+      }
+    ],
+    "configuration": {
+      "title": "OTelFlow",
+      "properties": {
+        "otelflow.collectorVersion": {
+          "type": "string",
+          "default": "",
+          "description": "Collector version to validate against (e.g. 0.157.0). Empty means the registry's default (the newest supported version)."
+        },
+        "otelflow.distribution": {
+          "type": "string",
+          "enum": [
+            "contrib",
+            "core"
+          ],
+          "default": "contrib",
+          "description": "Collector distribution to validate against."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build:wasm": "sh -c 'cd .. && GOOS=js GOARCH=wasm go build -trimpath -ldflags=\"-s -w\" -o vscode/dist/validate.wasm ./cmd/wasm && cp \"$(go env GOROOT)/lib/wasm/wasm_exec.js\" vscode/dist/wasm_exec.js 2>/dev/null || cp \"$(go env GOROOT)/misc/wasm/wasm_exec.js\" vscode/dist/wasm_exec.js'",
+    "build:js": "node esbuild.mjs",
+    "build": "npm run build:js && npm run build:wasm",
+    "test": "node test/smoke.mjs",
+    "package": "cp ../LICENSE LICENSE && vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.2.1",
+    "esbuild": "^0.24.2",
+    "typescript": "^5.7.3"
+  }
+}
