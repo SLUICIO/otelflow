@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import * as path from 'node:path'
 import { meta, validate, type Meta, type ValidationResult } from './validator'
+import { PreviewPanel, type RevealRequest } from './preview'
 
 /**
  * A YAML document is treated as a collector configuration when it has a
@@ -36,6 +37,34 @@ export function activate(context: vscode.ExtensionContext): void {
   const timers = new Map<string, ReturnType<typeof setTimeout>>()
   const results = new Map<string, ValidationResult>()
   let registryMeta: Meta | undefined
+  let previewDoc: vscode.TextDocument | null = null
+  const preview = new PreviewPanel(context, assetDir, revealComponent)
+
+  /** Click-to-reveal from the preview: jump to the component's definition. */
+  function revealComponent(req: RevealRequest): void {
+    const doc = previewDoc
+    if (!doc) return
+    const section = `${req.kind}s:`
+    const lines = doc.getText().split('\n')
+    const start = lines.findIndex((l) => l === section || l.startsWith(section))
+    if (start === -1) return
+    for (let i = start + 1; i < lines.length; i++) {
+      const line = lines[i]
+      if (line.trim() !== '' && !/^[\s#]/.test(line)) break // next top-level section
+      const m = /^(\s+)(\S+):/.exec(line)
+      if (m && m[2] === req.id) {
+        const range = new vscode.Range(i, m[1].length, i, m[1].length + req.id.length)
+        const visible = vscode.window.visibleTextEditors.find(
+          (e) => e.document.uri.toString() === doc.uri.toString(),
+        )
+        void vscode.window.showTextDocument(doc, {
+          viewColumn: visible?.viewColumn ?? vscode.ViewColumn.One,
+          selection: range,
+        })
+        return
+      }
+    }
+  }
   void meta(assetDir).then((m) => {
     registryMeta = m
     updateStatus()
@@ -73,6 +102,16 @@ export function activate(context: vscode.ExtensionContext): void {
     const { version, distro } = target(doc)
     const result = await validate(assetDir, doc.getText(), version, distro)
     results.set(doc.uri.toString(), result)
+    // The preview follows whichever collector config was validated last while
+    // active; keep pushing updates for the shown doc even when it's not.
+    if (
+      preview.isOpen &&
+      (doc === vscode.window.activeTextEditor?.document || doc === previewDoc || !previewDoc)
+    ) {
+      previewDoc = doc
+      const shown = version || registryMeta?.defaultVersion || ''
+      void preview.update(doc, shown, distro, result)
+    }
     diagnostics.set(
       doc.uri,
       result.diagnostics.map((d) => {
@@ -125,7 +164,18 @@ export function activate(context: vscode.ExtensionContext): void {
       diagnostics.delete(doc.uri)
       results.delete(doc.uri.toString())
     }),
-    vscode.window.onDidChangeActiveTextEditor(() => updateStatus()),
+    vscode.window.onDidChangeActiveTextEditor((editor) => {
+      updateStatus()
+      // Retarget the preview when the user switches to another collector config.
+      if (preview.isOpen && editor && editor.document.languageId === 'yaml') {
+        schedule(editor.document)
+      }
+    }),
+    vscode.commands.registerCommand('otelflow.openPreview', () => {
+      preview.show()
+      const doc = vscode.window.activeTextEditor?.document ?? previewDoc
+      if (doc) void check(doc)
+    }),
     vscode.workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration('otelflow')) {
         for (const doc of vscode.workspace.textDocuments) schedule(doc)

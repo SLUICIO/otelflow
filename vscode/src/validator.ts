@@ -33,6 +33,7 @@ type WasmGlobals = {
   Go: new () => { importObject: WebAssembly.Imports; run(i: WebAssembly.Instance): Promise<void> }
   otelflowValidate?: (config: string, version: string, distribution: string) => string
   otelflowMeta?: () => string
+  otelflowComponents?: (version: string) => string
 }
 
 let ready: Promise<void> | null = null
@@ -81,6 +82,14 @@ async function call<T>(assetDir: string, fn: () => string): Promise<T> {
 
 export function meta(assetDir: string): Promise<Meta> {
   return call(assetDir, () => (globalThis as unknown as WasmGlobals).otelflowMeta!())
+}
+
+/** The component catalog with per-version availability, for the preview. */
+export async function components(assetDir: string, version: string): Promise<unknown[]> {
+  const res = await call<{ components: unknown[] }>(assetDir, () =>
+    (globalThis as unknown as WasmGlobals).otelflowComponents!(version),
+  )
+  return res.components
 }
 
 export function validate(

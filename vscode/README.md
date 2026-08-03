@@ -21,6 +21,14 @@ Problems panel:
 The status bar shows which collector version and distribution the file is
 validated against; click it to change them.
 
+**Pipeline preview**: run "OTelFlow: Open pipeline preview" (or click the
+graph icon in the editor title bar) to see the configuration as a live flow
+diagram beside the editor — the same signal-colored canvas as
+[otelflow.sluicio.com](https://otelflow.sluicio.com), with pipelines as lanes,
+connector edges routed across them, and invalid components flagged red. It
+follows the active editor and updates as you type; clicking a node jumps to
+its definition in the YAML.
+
 ## Settings
 
 | Setting | Description |
@@ -37,9 +45,9 @@ collectors on different versions:
 
 ## Roadmap
 
-This is phase one of bringing [OTelFlow](https://github.com/SLUICIO/otelflow)
-to VS Code. Planned next: a pipeline-flow preview panel, then the full
-click-to-configure designer writing YAML back into your editor.
+Diagnostics and the pipeline preview are phases one and two of bringing
+[OTelFlow](https://github.com/SLUICIO/otelflow) to VS Code. Planned next: the
+full click-to-configure designer writing YAML back into your editor.
 
 ## Development
 

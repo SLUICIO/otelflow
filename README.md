@@ -199,7 +199,9 @@ Point the base URL at your own instance to keep everything on your premises.
 The [vscode/](vscode/) directory contains a VS Code extension that runs the
 same WASM validation engine inside the editor: open a collector configuration
 and version-aware diagnostics appear in the Problems panel, with the collector
-version and distribution pickable from the status bar. Fully offline, like
+version and distribution pickable from the status bar. A pipeline preview
+panel renders the same flow canvas as the web app beside the editor, live as
+you type, with click-to-reveal into the YAML. Fully offline, like
 everything else here. Install it as
 [`sluicio.otelflow`](https://marketplace.visualstudio.com/items?itemName=sluicio.otelflow)
 from the Marketplace, or grab the `.vsix` CI attaches to every run. See

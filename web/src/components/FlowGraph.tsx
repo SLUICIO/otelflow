@@ -222,7 +222,9 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
         transform={`translate(${n.x},${n.y})`}
         onClick={(e) => {
           e.stopPropagation()
-          if (!readOnly) onSelect({ kind: n.kind, id: n.id, pipeline: pipelineId, role: n.role })
+          // Fires in readOnly mode too: the embed passes a no-op, while the
+          // VS Code preview uses it for click-to-reveal in the text editor.
+          onSelect({ kind: n.kind, id: n.id, pipeline: pipelineId, role: n.role })
         }}
       >
         <rect className="node-box" width={NODE_W} height={NODE_H} rx={8} />

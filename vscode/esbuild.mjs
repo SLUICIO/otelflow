@@ -1,4 +1,8 @@
 import { build } from 'esbuild'
+import { createRequire } from 'node:module'
+import { dirname } from 'node:path'
+
+const require = createRequire(import.meta.url)
 
 const common = {
   bundle: true,
@@ -22,4 +26,25 @@ await build({
   ...common,
   entryPoints: ['src/validator.ts'],
   outfile: 'dist/validator.cjs',
+})
+
+// The preview webview: bundles the web app's FlowGraph + parser + styles.
+// react/react-dom/yaml are aliased to THIS package's copies so the bundle
+// holds exactly one React and builds without web/node_modules installed.
+await build({
+  entryPoints: ['src/webview/main.tsx'],
+  bundle: true,
+  platform: 'browser',
+  format: 'iife',
+  target: 'es2022',
+  jsx: 'automatic',
+  minify: true,
+  sourcemap: true,
+  outfile: 'dist/webview/main.js',
+  alias: {
+    react: dirname(require.resolve('react/package.json')),
+    'react-dom': dirname(require.resolve('react-dom/package.json')),
+    yaml: dirname(require.resolve('yaml/package.json')),
+  },
+  define: { 'process.env.NODE_ENV': '"production"' },
 })
