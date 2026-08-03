@@ -26,6 +26,7 @@
   "activationEvents": [
     "onLanguage:yaml"
   ],
+  "icon": "icon.png",
   "main": "./dist/extension.cjs",
   "contributes": {
     "commands": [
@@ -55,6 +56,7 @@
     }
   },
   "scripts": {
+    "vscode:prepublish": "npm run build",
     "build:wasm": "sh -c 'cd .. && GOOS=js GOARCH=wasm go build -trimpath -ldflags=\"-s -w\" -o vscode/dist/validate.wasm ./cmd/wasm && cp \"$(go env GOROOT)/lib/wasm/wasm_exec.js\" vscode/dist/wasm_exec.js 2>/dev/null || cp \"$(go env GOROOT)/misc/wasm/wasm_exec.js\" vscode/dist/wasm_exec.js'",
     "build:js": "node esbuild.mjs",
     "build": "npm run build:js && npm run build:wasm",
