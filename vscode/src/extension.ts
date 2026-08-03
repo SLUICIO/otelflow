@@ -38,7 +38,34 @@ export function activate(context: vscode.ExtensionContext): void {
   const results = new Map<string, ValidationResult>()
   let registryMeta: Meta | undefined
   let previewDoc: vscode.TextDocument | null = null
-  const preview = new PreviewPanel(context, assetDir, revealComponent)
+  const preview = new PreviewPanel(context, assetDir, revealComponent, applyYaml)
+
+  /**
+   * A designer mutation: replace the document's text with the webview's
+   * result, as a minimal single-range edit so the editor keeps its scroll
+   * position and undo works naturally.
+   */
+  async function applyYaml(newYaml: string): Promise<void> {
+    const doc = previewDoc
+    if (!doc) return
+    const old = doc.getText()
+    if (old === newYaml) return
+    let start = 0
+    while (start < old.length && start < newYaml.length && old[start] === newYaml[start]) start++
+    let endOld = old.length
+    let endNew = newYaml.length
+    while (endOld > start && endNew > start && old[endOld - 1] === newYaml[endNew - 1]) {
+      endOld--
+      endNew--
+    }
+    const edit = new vscode.WorkspaceEdit()
+    edit.replace(
+      doc.uri,
+      new vscode.Range(doc.positionAt(start), doc.positionAt(endOld)),
+      newYaml.slice(start, endNew),
+    )
+    await vscode.workspace.applyEdit(edit)
+  }
 
   /** Click-to-reveal from the preview: jump to the component's definition. */
   function revealComponent(req: RevealRequest): void {
@@ -60,6 +87,7 @@ export function activate(context: vscode.ExtensionContext): void {
         void vscode.window.showTextDocument(doc, {
           viewColumn: visible?.viewColumn ?? vscode.ViewColumn.One,
           selection: range,
+          preserveFocus: true,
         })
         return
       }

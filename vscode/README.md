@@ -21,13 +21,23 @@ Problems panel:
 The status bar shows which collector version and distribution the file is
 validated against; click it to change them.
 
-**Pipeline preview**: run "OTelFlow: Open pipeline preview" (or click the
-graph icon in the editor title bar) to see the configuration as a live flow
-diagram beside the editor — the same signal-colored canvas as
+**The designer**: run "OTelFlow: Open designer" (or click the graph icon in
+the editor title bar) to work on the configuration as a live flow diagram
+beside the editor — the same signal-colored canvas as
 [otelflow.sluicio.com](https://otelflow.sluicio.com), with pipelines as lanes,
 connector edges routed across them, and invalid components flagged red. It
-follows the active editor and updates as you type; clicking a node jumps to
-its definition in the YAML.
+follows the active editor and updates as you type, and it edits both ways:
+
+- **"+" zones** in each pipeline open the searchable component catalog
+  (filtered to your collector version and distribution); picking a component
+  generates a schema-driven form and writes the component plus its pipeline
+  references into your YAML — comment-preserving, applied as a normal
+  editor edit so undo works.
+- **Click a node** to inspect and edit its configuration in a form, or
+  remove it — scoped to the pipeline you clicked in, with a prompt before a
+  no-longer-used definition is deleted. The text editor scrolls along to
+  the component you select.
+- **Add pipeline** opens the guided wizard.
 
 ## Settings
 
@@ -45,9 +55,9 @@ collectors on different versions:
 
 ## Roadmap
 
-Diagnostics and the pipeline preview are phases one and two of bringing
-[OTelFlow](https://github.com/SLUICIO/otelflow) to VS Code. Planned next: the
-full click-to-configure designer writing YAML back into your editor.
+The extension now carries the full [OTelFlow](https://github.com/SLUICIO/otelflow)
+experience: offline diagnostics, the live canvas, and the click-to-configure
+designer writing YAML back into your editor.
 
 ## Development
 

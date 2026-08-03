@@ -8,6 +8,15 @@ export interface RevealRequest {
   id: string
 }
 
+interface WebviewMessage {
+  type?: string
+  selection?: RevealRequest
+  yaml?: string
+  token?: number
+  message?: string
+  confirmLabel?: string
+}
+
 /**
  * The pipeline-flow preview: a single webview panel beside the editor that
  * renders the same read-only canvas as otelflow.sluicio.com's embed view.
@@ -22,6 +31,7 @@ export class PreviewPanel {
     private readonly context: vscode.ExtensionContext,
     private readonly assetDir: string,
     private readonly onReveal: (req: RevealRequest) => void,
+    private readonly onApplyYaml: (yaml: string) => Promise<void>,
   ) {}
 
   get isOpen(): boolean {
@@ -35,7 +45,7 @@ export class PreviewPanel {
     }
     this.panel = vscode.window.createWebviewPanel(
       'otelflowPreview',
-      'OTelFlow pipeline preview',
+      'OTelFlow designer',
       { viewColumn: vscode.ViewColumn.Beside, preserveFocus: true },
       {
         enableScripts: true,
@@ -45,8 +55,23 @@ export class PreviewPanel {
     )
     this.panel.iconPath = vscode.Uri.file(path.join(this.context.extensionPath, 'icon.png'))
     this.panel.webview.html = this.html(this.panel.webview)
-    this.panel.webview.onDidReceiveMessage((m: { type?: string; selection?: RevealRequest }) => {
-      if (m?.type === 'reveal' && m.selection) this.onReveal(m.selection)
+    this.panel.webview.onDidReceiveMessage((m: WebviewMessage) => {
+      if (m?.type === 'reveal' && m.selection) {
+        this.onReveal(m.selection)
+      } else if (m?.type === 'applyYaml' && typeof m.yaml === 'string') {
+        void this.onApplyYaml(m.yaml)
+      } else if (m?.type === 'confirm' && typeof m.token === 'number' && m.message) {
+        // window.confirm is unavailable in webviews; use a native modal.
+        void vscode.window
+          .showWarningMessage(m.message, { modal: true }, m.confirmLabel ?? 'Yes')
+          .then((choice) => {
+            void this.panel?.webview.postMessage({
+              type: 'confirmResult',
+              token: m.token,
+              ok: choice !== undefined,
+            })
+          })
+      }
     })
     this.panel.onDidDispose(() => {
       this.panel = null
