@@ -7,7 +7,11 @@ OTelFlow bundles or depends on the following third-party software.
 | Module | License |
 | --- | --- |
 | gopkg.in/yaml.v3 | Apache-2.0 / MIT (libyaml-derived files) |
-| The Go standard library and vendored golang.org/x packages | BSD-3-Clause |
+| github.com/modelcontextprotocol/go-sdk | Apache-2.0 / MIT (transitioning) |
+| github.com/google/jsonschema-go | MIT |
+| github.com/segmentio/encoding, github.com/segmentio/asm | MIT |
+| github.com/yosida95/uritemplate/v3 | BSD-3-Clause |
+| The Go standard library and golang.org/x packages | BSD-3-Clause |
 
 ## npm (production bundle)
 

@@ -194,6 +194,40 @@ console.log(`https://otelflow.sluicio.com/#share=1.${payload}`)
 Run it directly: `node examples/make-share-link.mjs my-config.yaml 0.127.0`.
 Point the base URL at your own instance to keep everything on your premises.
 
+## For AI assistants (MCP + CLI)
+
+AI models write collector configurations from stale training data — the
+component renames of v0.146.0–v0.157.0 (e.g. `filestats` → `file_stats`)
+happened after most cutoffs. OTelFlow gives agents current ground truth and a
+verification loop: diagnostics carry the fix ("renamed to `file_stats` in
+v0.152.0"), so generate → validate → apply hints converges immediately.
+
+The `otelflow` CLI bundles everything (registry, validator, share links) in
+one offline binary:
+
+```sh
+go install github.com/sluicio/otelflow/cmd/otelflow@latest
+
+otelflow validate config.yaml            # exit 1 + hints when invalid
+otelflow components -query kafka -kind receiver
+otelflow share config.yaml               # link that opens the visual editor
+```
+
+`otelflow mcp` runs it as a Model Context Protocol server over stdio — a
+local child process of the AI client, no network, no auth, configurations
+never leave the machine. Tools: `validate_config`, `search_components`,
+`get_component_schema`, `list_versions`, `make_share_link`.
+
+```sh
+claude mcp add otelflow -- otelflow mcp        # Claude Code
+```
+
+```json
+{ "mcpServers": { "otelflow": { "command": "otelflow", "args": ["mcp"] } } }
+```
+
+(Claude Desktop, Cursor and other MCP clients use the JSON form.)
+
 ## VS Code extension
 
 The [vscode/](vscode/) directory contains a VS Code extension that runs the
