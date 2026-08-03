@@ -51,7 +51,11 @@ window.postMessage({
   ],
 }, '*')
 
-await new Promise((r) => setTimeout(r, 100))
+// React mounts and flushes asynchronously; poll instead of guessing a delay.
+const deadline = Date.now() + 5000
+while (!window.document.querySelector('svg') && Date.now() < deadline) {
+  await new Promise((r) => setTimeout(r, 50))
+}
 
 const doc = window.document
 assert.equal(doc.documentElement.dataset.theme, 'dark', 'theme synced from vscode-dark body class')

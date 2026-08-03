@@ -27,6 +27,19 @@ interface PreviewState {
   diagnostics: Diagnostic[]
 }
 
+/**
+ * Messages can arrive before React has mounted and run its effects — the
+ * extension posts the first update as soon as validation completes. A
+ * module-level listener buffers anything that arrives early so nothing is
+ * lost in the gap.
+ */
+const pendingMessages: unknown[] = []
+let deliverMessage: ((msg: unknown) => void) | null = null
+window.addEventListener('message', (e: MessageEvent) => {
+  if (deliverMessage) deliverMessage(e.data)
+  else pendingMessages.push(e.data)
+})
+
 /** VS Code stamps the theme as a body class; mirror it onto data-theme. */
 function syncTheme(): void {
   const dark =
@@ -58,8 +71,7 @@ function App() {
     syncTheme()
     const observer = new MutationObserver(syncTheme)
     observer.observe(document.body, { attributes: true, attributeFilter: ['class'] })
-    const onMessage = (e: MessageEvent) => {
-      const msg = e.data
+    const onMessage = (msg: any) => {
       if (msg?.type === 'update') {
         const next: PreviewState = {
           fileName: msg.fileName,
@@ -75,10 +87,11 @@ function App() {
         setComponents(msg.components ?? [])
       }
     }
-    window.addEventListener('message', onMessage)
+    deliverMessage = onMessage
+    for (const msg of pendingMessages.splice(0)) onMessage(msg)
     return () => {
       observer.disconnect()
-      window.removeEventListener('message', onMessage)
+      deliverMessage = null
     }
   }, [])
 
