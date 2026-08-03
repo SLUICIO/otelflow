@@ -75,7 +75,7 @@
     "build:wasm": "sh -c 'cd .. && GOOS=js GOARCH=wasm go build -trimpath -ldflags=\"-s -w\" -o vscode/dist/validate.wasm ./cmd/wasm && cp \"$(go env GOROOT)/lib/wasm/wasm_exec.js\" vscode/dist/wasm_exec.js 2>/dev/null || cp \"$(go env GOROOT)/misc/wasm/wasm_exec.js\" vscode/dist/wasm_exec.js'",
     "build:js": "node esbuild.mjs",
     "build": "npm run build:js && npm run build:wasm",
-    "test": "node test/smoke.mjs && node test/webview.mjs",
+    "test": "node test/smoke.mjs && node test/webview.mjs && node test/extension-host.mjs",
     "package": "cp ../LICENSE LICENSE && vsce package --no-dependencies"
   },
   "devDependencies": {
