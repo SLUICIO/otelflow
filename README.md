@@ -200,8 +200,10 @@ The [vscode/](vscode/) directory contains a VS Code extension that runs the
 same WASM validation engine inside the editor: open a collector configuration
 and version-aware diagnostics appear in the Problems panel, with the collector
 version and distribution pickable from the status bar. Fully offline, like
-everything else here. CI attaches the packaged `.vsix` to every run; a
-Marketplace listing is planned. See [vscode/README.md](vscode/README.md).
+everything else here. Install it as
+[`sluicio.otelflow`](https://marketplace.visualstudio.com/items?itemName=sluicio.otelflow)
+from the Marketplace, or grab the `.vsix` CI attaches to every run. See
+[vscode/README.md](vscode/README.md).
 
 ## Development
 
