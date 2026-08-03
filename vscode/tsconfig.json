@@ -9,7 +9,16 @@
     "noEmit": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["node", "vscode"]
+    "types": ["node", "vscode"],
+    // The web sources imported by the webview resolve react/yaml from THIS
+    // package, mirroring the esbuild aliases — web/node_modules isn't needed.
+    "paths": {
+      "react": ["./node_modules/@types/react/index.d.ts"],
+      "react/jsx-runtime": ["./node_modules/@types/react/jsx-runtime.d.ts"],
+      "react-dom": ["./node_modules/@types/react-dom/index.d.ts"],
+      "react-dom/client": ["./node_modules/@types/react-dom/client.d.ts"],
+      "yaml": ["./node_modules/yaml/dist/index.d.ts"]
+    }
   },
   "include": ["src"]
 }
