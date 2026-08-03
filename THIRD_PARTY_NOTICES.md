@@ -13,6 +13,9 @@ OTelFlow bundles or depends on the following third-party software.
 | github.com/yosida95/uritemplate/v3 | BSD-3-Clause |
 | The Go standard library and golang.org/x packages | BSD-3-Clause |
 
+The VS Code extension additionally bundles react, react-dom, yaml,
+@modelcontextprotocol/sdk and zod (all MIT).
+
 ## npm (production bundle)
 
 | Package | License | Repository |

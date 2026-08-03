@@ -204,6 +204,22 @@ export function activate(context: vscode.ExtensionContext): void {
       const doc = vscode.window.activeTextEditor?.document ?? previewDoc
       if (doc) void check(doc)
     }),
+    // Offer the bundled MCP server (dist/mcp.cjs — same tools as `otelflow
+    // mcp`) to the editor's AI features. Guarded: older hosts lack the API.
+    ...(vscode.lm?.registerMcpServerDefinitionProvider
+      ? [
+          vscode.lm.registerMcpServerDefinitionProvider('otelflow.mcp', {
+            provideMcpServerDefinitions: () => [
+              new vscode.McpStdioServerDefinition(
+                'OTelFlow',
+                process.execPath,
+                [path.join(context.extensionPath, 'dist', 'mcp.cjs')],
+                { ELECTRON_RUN_AS_NODE: '1' },
+              ),
+            ],
+          }),
+        ]
+      : []),
     vscode.workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration('otelflow')) {
         for (const doc of vscode.workspace.textDocuments) schedule(doc)

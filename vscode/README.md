@@ -39,6 +39,14 @@ follows the active editor and updates as you type, and it edits both ways:
   the component you select.
 - **Add pipeline** opens the guided wizard.
 
+**MCP server for your editor's AI**: the extension registers an OTelFlow
+[Model Context Protocol](https://modelcontextprotocol.io) server with VS Code
+(1.101+), so AI features that consume MCP — e.g. Copilot's agent mode — can
+search the component catalog, fetch config schemas, validate configurations
+they write, and produce share links. Same five tools as the standalone
+`otelflow mcp` command, same offline WASM engine, spawned locally with no
+network and no auth.
+
 ## Settings
 
 | Setting | Description |

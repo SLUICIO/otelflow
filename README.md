@@ -237,7 +237,9 @@ version and distribution pickable from the status bar. The designer panel
 renders the same flow canvas as the web app beside the editor, live as you
 type — including the click-to-configure catalog and dialogs, which write
 comment-preserving YAML back into the text document as normal editor edits.
-Fully offline, like everything else here. Install it as
+The extension also registers the OTelFlow MCP server with VS Code, so the
+editor's AI features get the same tools without any setup. Fully offline,
+like everything else here. Install it as
 [`sluicio.otelflow`](https://marketplace.visualstudio.com/items?itemName=sluicio.otelflow)
 from the Marketplace, or grab the `.vsix` CI attaches to every run. See
 [vscode/README.md](vscode/README.md).

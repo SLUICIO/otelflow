@@ -28,6 +28,15 @@ await build({
   outfile: 'dist/validator.cjs',
 })
 
+// The MCP server: same tools as `otelflow mcp` (Go), backed by the bundled
+// WASM engine. Spawned by VS Code's MCP client (or any MCP client) via
+// `node dist/mcp.cjs`.
+await build({
+  ...common,
+  entryPoints: ['src/mcp/server.ts'],
+  outfile: 'dist/mcp.cjs',
+})
+
 // The preview webview: bundles the web app's FlowGraph + parser + styles.
 // react/react-dom/yaml are aliased to THIS package's copies so the bundle
 // holds exactly one React and builds without web/node_modules installed.

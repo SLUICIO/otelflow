@@ -3,7 +3,7 @@
   "displayName": "OTelFlow",
   "description": "Version-aware validation for OpenTelemetry Collector configurations — entirely offline, powered by the OTelFlow registry and validation engine.",
   "publisher": "sluicio",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -11,7 +11,7 @@
     "directory": "vscode"
   },
   "engines": {
-    "vscode": "^1.90.0"
+    "vscode": "^1.101.0"
   },
   "categories": [
     "Linters",
@@ -39,6 +39,12 @@
         "command": "otelflow.openPreview",
         "title": "OTelFlow: Open designer",
         "icon": "$(graph)"
+      }
+    ],
+    "mcpServerDefinitionProviders": [
+      {
+        "id": "otelflow.mcp",
+        "label": "OTelFlow — OpenTelemetry Collector tools"
       }
     ],
     "menus": {
@@ -75,10 +81,11 @@
     "build:wasm": "sh -c 'cd .. && GOOS=js GOARCH=wasm go build -trimpath -ldflags=\"-s -w\" -o vscode/dist/validate.wasm ./cmd/wasm && cp \"$(go env GOROOT)/lib/wasm/wasm_exec.js\" vscode/dist/wasm_exec.js 2>/dev/null || cp \"$(go env GOROOT)/misc/wasm/wasm_exec.js\" vscode/dist/wasm_exec.js'",
     "build:js": "node esbuild.mjs",
     "build": "npm run build:js && npm run build:wasm",
-    "test": "node test/smoke.mjs && node test/webview.mjs && node test/extension-host.mjs",
+    "test": "node test/smoke.mjs && node test/webview.mjs && node test/extension-host.mjs && node test/mcp.mjs",
     "package": "cp ../LICENSE LICENSE && vsce package --no-dependencies"
   },
   "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@types/node": "^20.14.0",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
@@ -89,6 +96,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.7.3",
-    "yaml": "^2.7.0"
+    "yaml": "^2.7.0",
+    "zod": "^4.4.3"
   }
 }
