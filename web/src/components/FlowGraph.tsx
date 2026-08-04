@@ -14,6 +14,20 @@ const MARGIN = 24
 
 export type PipelineRole = 'receivers' | 'processors' | 'exporters'
 
+/**
+ * Accent/label class for a node: connectors keep the azure brand accent,
+ * receivers carry the lane's signal color (that's where the signal enters),
+ * processors are neutral, exporters are ink — so the three roles of a
+ * pipeline are distinguishable at a glance without leaving the token set.
+ */
+function roleClass(isConnector: boolean, role: PipelineRole | undefined, signal?: string): string {
+  if (isConnector) return 'connector'
+  if (role === 'receivers') return signal ?? ''
+  if (role === 'processors') return 'processor'
+  if (role === 'exporters') return 'exporter'
+  return ''
+}
+
 export interface Selection {
   kind: Kind
   id: string
@@ -229,12 +243,12 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
       >
         <rect className="node-box" width={NODE_W} height={NODE_H} rx={8} />
         <rect
-          className={`node-accent ${isConnector ? 'connector' : (signal ?? '')}`}
+          className={`node-accent ${roleClass(isConnector, n.role, signal)}`}
           width={3}
           height={NODE_H}
           rx={1.5}
         />
-        <text className={`node-kind-label${isConnector ? ' connector' : ''}`} x={14} y={15}>
+        <text className={`node-kind-label ${roleClass(isConnector, n.role, signal)}`} x={14} y={15}>
           {n.kind}
         </text>
         <text className="node-title" x={14} y={32}>

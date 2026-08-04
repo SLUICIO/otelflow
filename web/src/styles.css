@@ -438,6 +438,14 @@ a.brand-sub:hover { color: var(--primary); text-decoration: underline; }
 .node-accent.traces { fill: var(--traces); }
 .node-accent.metrics { fill: var(--metrics); }
 .node-accent.logs { fill: var(--logs); }
+/* Pipeline roles: receivers keep the signal color above; processors are
+   neutral, exporters ink — role legible at a glance, tokens only. */
+.node-accent.processor { fill: var(--muted); }
+.node-accent.exporter { fill: var(--ink); }
+.node-kind-label.traces { fill: var(--traces-ink); }
+.node-kind-label.metrics { fill: var(--metrics-ink); }
+.node-kind-label.logs { fill: var(--logs-ink); }
+.node-kind-label.exporter { fill: var(--ink); }
 .node-title { font-size: 12px; font-weight: 600; fill: var(--ink); font-family: var(--mono); }
 .node-sub { font-size: 9.5px; fill: var(--muted); }
 
