@@ -135,11 +135,13 @@ func buildMCPServer(reg *registry.Registry) *mcp.Server {
 		Description: "Get one component's full details: description, supported signals, " +
 			"stability, the collector versions it exists in, its documentation URL, and — for " +
 			"curated components — the configuration schema (fields, types, required, enums).",
-	}, func(_ context.Context, _ *mcp.CallToolRequest, in schemaIn) (*mcp.CallToolResult, schemaOut, error) {
+		// Out is `any`: the component schema is free-form JSON, and a declared
+		// output schema for it trips strict MCP clients (e.g. Claude Code).
+	}, func(_ context.Context, _ *mcp.CallToolRequest, in schemaIn) (*mcp.CallToolResult, any, error) {
 		v := resolveVersion(reg, in.Version)
 		c := reg.Find(registry.Kind(in.Kind), in.Type)
 		if c == nil {
-			return nil, schemaOut{}, fmt.Errorf("no %s named %q in the registry — use search_components to find valid types", in.Kind, in.Type)
+			return nil, nil, fmt.Errorf("no %s named %q in the registry — use search_components to find valid types", in.Kind, in.Type)
 		}
 		out := schemaOut{
 			componentSummary: componentSummary{
