@@ -222,6 +222,15 @@
             "type": "object",
             "description": "Enable individual scrapers (cpu, memory, disk, filesystem, network, load, paging, processes, process).",
             "additionalProperties": true
+          },
+          "initial_delay": {
+            "type": "duration",
+            "default": "1s",
+            "description": "Delay before the first scrape (scraper helper)."
+          },
+          "timeout": {
+            "type": "duration",
+            "description": "Per-scrape timeout (scraper helper)."
           }
         },
         "required": [
@@ -319,6 +328,10 @@
             "type": "object",
             "description": "Enable/disable individual metrics (file.size, file.mtime, file.atime, file.ctime, file.count).",
             "additionalProperties": true
+          },
+          "timeout": {
+            "type": "duration",
+            "description": "Per-scrape timeout (scraper helper)."
           }
         },
         "required": [
@@ -371,6 +384,11 @@
               "text",
               "json"
             ]
+          },
+          "auth": {
+            "type": "object",
+            "description": "Kafka authentication (sasl, tls, kerberos).",
+            "additionalProperties": true
           }
         }
       }
@@ -476,6 +494,15 @@
             "values": {
               "type": "string"
             }
+          },
+          "initial_delay": {
+            "type": "duration",
+            "default": "1s",
+            "description": "Delay before the first scrape (scraper helper)."
+          },
+          "timeout": {
+            "type": "duration",
+            "description": "Per-scrape timeout (scraper helper)."
           }
         }
       }
@@ -515,6 +542,15 @@
           "insecure_skip_verify": {
             "type": "bool",
             "default": false
+          },
+          "initial_delay": {
+            "type": "duration",
+            "default": "1s",
+            "description": "Delay before the first scrape (scraper helper)."
+          },
+          "timeout": {
+            "type": "duration",
+            "description": "Per-scrape timeout (scraper helper)."
           }
         }
       }
@@ -596,6 +632,15 @@
           "collection_interval": {
             "type": "duration",
             "default": "60s"
+          },
+          "initial_delay": {
+            "type": "duration",
+            "default": "1s",
+            "description": "Delay before the first scrape (scraper helper)."
+          },
+          "timeout": {
+            "type": "duration",
+            "description": "Per-scrape timeout (scraper helper)."
           }
         },
         "required": [
@@ -626,6 +671,15 @@
           "password": {
             "type": "string",
             "secret": true
+          },
+          "initial_delay": {
+            "type": "duration",
+            "default": "1s",
+            "description": "Delay before the first scrape (scraper helper)."
+          },
+          "timeout": {
+            "type": "duration",
+            "description": "Per-scrape timeout (scraper helper)."
           }
         },
         "required": [
@@ -665,6 +719,15 @@
           "collection_interval": {
             "type": "duration",
             "default": "10s"
+          },
+          "initial_delay": {
+            "type": "duration",
+            "default": "1s",
+            "description": "Delay before the first scrape (scraper helper)."
+          },
+          "timeout": {
+            "type": "duration",
+            "description": "Per-scrape timeout (scraper helper)."
           }
         },
         "required": [
@@ -1802,6 +1865,96 @@
             "required": [
               "authenticator"
             ]
+          },
+          "namespace": {
+            "type": "string",
+            "description": "Prefix attached to every exported metric name."
+          },
+          "remote_write_queue": {
+            "type": "object",
+            "description": "PRW's own sending queue (this exporter does not use the common sending_queue).",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "queue_size": {
+                "type": "int",
+                "default": 10000
+              },
+              "num_consumers": {
+                "type": "int",
+                "default": 5
+              }
+            }
+          },
+          "retry_on_failure": {
+            "type": "object",
+            "description": "Retry failed exports with exponential backoff.",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "initial_interval": {
+                "type": "duration",
+                "default": "5s"
+              },
+              "max_interval": {
+                "type": "duration",
+                "default": "30s"
+              },
+              "max_elapsed_time": {
+                "type": "duration",
+                "default": "300s"
+              }
+            }
+          },
+          "timeout": {
+            "type": "duration",
+            "default": "5s"
+          },
+          "wal": {
+            "type": "object",
+            "description": "Write-ahead log: persists samples to disk until the remote acknowledges them.",
+            "properties": {
+              "directory": {
+                "type": "string"
+              },
+              "buffer_size": {
+                "type": "int",
+                "default": 300
+              },
+              "truncate_frequency": {
+                "type": "duration",
+                "default": "1m"
+              }
+            }
+          },
+          "resource_to_telemetry_conversion": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": false,
+                "description": "Copy resource attributes onto every metric as labels."
+              }
+            }
+          },
+          "target_info": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true,
+                "description": "Emit target_info metrics from resource attributes."
+              }
+            }
+          },
+          "max_batch_size_bytes": {
+            "type": "int",
+            "default": 3000000,
+            "description": "Maximum size of an outgoing remote-write batch."
           }
         },
         "required": [
@@ -2225,6 +2378,65 @@
             "required": [
               "authenticator"
             ]
+          },
+          "num_workers": {
+            "type": "int",
+            "description": "Concurrent bulk requests (defaults to the number of CPUs)."
+          },
+          "flush": {
+            "type": "object",
+            "description": "Bulk indexer flush thresholds.",
+            "properties": {
+              "bytes": {
+                "type": "int"
+              },
+              "interval": {
+                "type": "duration",
+                "default": "30s"
+              }
+            }
+          },
+          "retry": {
+            "type": "object",
+            "description": "The exporter's own retry policy (not the common retry_on_failure).",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "max_retries": {
+                "type": "int"
+              },
+              "initial_interval": {
+                "type": "duration",
+                "default": "100ms"
+              },
+              "max_interval": {
+                "type": "duration",
+                "default": "1m"
+              },
+              "retry_on_status": {
+                "type": "array",
+                "items": {
+                  "type": "int"
+                }
+              }
+            }
+          },
+          "mapping": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "ecs",
+                  "otel",
+                  "bodymap"
+                ],
+                "default": "otel"
+              }
+            }
           }
         }
       }

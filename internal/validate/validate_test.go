@@ -626,3 +626,70 @@ service:
 		t.Errorf("expected unrecognized-field warning for queue_sized, got:\n%s", messages(r))
 	}
 }
+
+func TestScraperAndComponentSpecificHelpers(t *testing.T) {
+	// Scraper helper on polling receivers; PRW's own queue; ES's own retry.
+	r := Validate(mustRegistry(t), `receivers:
+  host_metrics:
+    collection_interval: 30s
+    initial_delay: 5s
+    timeout: 10s
+    scrapers:
+      cpu:
+exporters:
+  prometheus_remote_write:
+    endpoint: https://prw.example.com/api/v1/write
+    remote_write_queue:
+      queue_size: 20000
+    retry_on_failure:
+      max_elapsed_time: 120s
+    wal:
+      directory: /var/lib/otelcol/wal
+    max_batch_size_bytes: 1000000
+  elasticsearch:
+    endpoints: [https://es.example.com:9200]
+    num_workers: 4
+    flush:
+      interval: 10s
+    retry:
+      max_retries: 5
+      retry_on_status: [429, 503]
+    mapping:
+      mode: otel
+service:
+  pipelines:
+    metrics:
+      receivers: [host_metrics]
+      exporters: [prometheus_remote_write]
+    logs/es:
+      receivers: [host_metrics]
+      exporters: [elasticsearch]
+`, "0.158.0", "contrib")
+	// logs/es pipeline: host_metrics is metrics-only, so expect exactly that
+	// signal error and nothing about the helper fields.
+	for _, d := range r.Diagnostics {
+		if strings.Contains(d.Message, "Unrecognized field") {
+			t.Errorf("helper field flagged: %s", d.Message)
+		}
+	}
+
+	// PRW must NOT accept the common sending_queue — it has its own.
+	r = Validate(mustRegistry(t), `receivers:
+  otlp:
+    protocols:
+      grpc:
+exporters:
+  prometheus_remote_write:
+    endpoint: https://prw.example.com/api/v1/write
+    sending_queue:
+      enabled: true
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      exporters: [prometheus_remote_write]
+`, "0.158.0", "contrib")
+	if !strings.Contains(messages(r), "sending_queue") {
+		t.Errorf("expected sending_queue to be flagged on prometheus_remote_write:\n%s", messages(r))
+	}
+}
