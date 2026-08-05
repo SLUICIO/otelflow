@@ -1,0 +1,63 @@
+name: Publish VS Code extension
+
+# Publishes vscode/ to the Marketplace when a vscode-v* tag is pushed
+# (e.g. vscode-v0.4.1), or manually via workflow_dispatch. Requires the
+# VSCE_PAT repository secret (Azure DevOps PAT, "All accessible
+# organizations", Marketplace → Manage).
+
+on:
+  push:
+    tags: ["vscode-v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write # attach the .vsix to a GitHub release on tag builds
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vscode
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: vscode/package-lock.json
+      - name: Check secret
+        run: |
+          if [ -z "${{ secrets.VSCE_PAT }}" ]; then
+            echo "::error::VSCE_PAT secret is not set (repo Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+      - name: Check tag matches package version
+        if: github.ref_type == 'tag'
+        run: |
+          pkg="$(node -p "require('./package.json').version")"
+          tag="${GITHUB_REF_NAME#vscode-v}"
+          if [ "$pkg" != "$tag" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match vscode/package.json version $pkg"
+            exit 1
+          fi
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm test
+      - name: Package
+        run: npm run package
+      - name: Publish to the Marketplace
+        run: npx vsce publish --no-dependencies
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      - name: Attach .vsix to a GitHub release
+        if: github.ref_type == 'tag'
+        run: gh release create "$GITHUB_REF_NAME" *.vsix --title "OTelFlow for VS Code ${GITHUB_REF_NAME#vscode-}" --notes "Published to the [Marketplace](https://marketplace.visualstudio.com/items?itemName=sluicio.otelflow)."
+        env:
+          GH_TOKEN: ${{ github.token }}
