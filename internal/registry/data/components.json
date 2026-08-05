@@ -1057,7 +1057,7 @@
           "sampling_percentage": {
             "type": "number",
             "default": 15,
-            "description": "Percentage of items to keep (0\u2013100)."
+            "description": "Percentage of items to keep (0–100)."
           },
           "hash_seed": {
             "type": "int"
@@ -1304,6 +1304,7 @@
           },
           "sending_queue": {
             "type": "object",
+            "description": "Queue telemetry before export (exporter helper): smooths bursts and survives brief backend outages. Set storage to a storage extension for a persistent queue.",
             "properties": {
               "enabled": {
                 "type": "bool",
@@ -1311,16 +1312,37 @@
               },
               "num_consumers": {
                 "type": "int",
-                "default": 10
+                "default": 10,
+                "description": "Consumers draining the queue concurrently."
               },
               "queue_size": {
                 "type": "int",
-                "default": 1000
+                "default": 1000,
+                "description": "Maximum queue capacity, measured in sizer units."
+              },
+              "sizer": {
+                "type": "string",
+                "enum": [
+                  "requests",
+                  "items",
+                  "bytes"
+                ],
+                "default": "requests"
+              },
+              "block_on_overflow": {
+                "type": "bool",
+                "default": false,
+                "description": "Block the pipeline instead of dropping when the queue is full."
+              },
+              "storage": {
+                "type": "string",
+                "description": "ID of a storage extension (e.g. file_storage) backing a persistent queue; omit for in-memory."
               }
             }
           },
           "retry_on_failure": {
             "type": "object",
+            "description": "Retry failed exports with exponential backoff (exporter helper).",
             "properties": {
               "enabled": {
                 "type": "bool",
@@ -1336,7 +1358,8 @@
               },
               "max_elapsed_time": {
                 "type": "duration",
-                "default": "5m"
+                "default": "300s",
+                "description": "Give up after this total elapsed time; 0 retries forever."
               }
             }
           },
@@ -1355,6 +1378,11 @@
             "required": [
               "authenticator"
             ]
+          },
+          "timeout": {
+            "type": "duration",
+            "default": "5s",
+            "description": "Per-batch export timeout (exporter helper)."
           }
         },
         "required": [
@@ -1436,6 +1464,67 @@
           "timeout": {
             "type": "duration",
             "default": "30s"
+          },
+          "sending_queue": {
+            "type": "object",
+            "description": "Queue telemetry before export (exporter helper): smooths bursts and survives brief backend outages. Set storage to a storage extension for a persistent queue.",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "num_consumers": {
+                "type": "int",
+                "default": 10,
+                "description": "Consumers draining the queue concurrently."
+              },
+              "queue_size": {
+                "type": "int",
+                "default": 1000,
+                "description": "Maximum queue capacity, measured in sizer units."
+              },
+              "sizer": {
+                "type": "string",
+                "enum": [
+                  "requests",
+                  "items",
+                  "bytes"
+                ],
+                "default": "requests"
+              },
+              "block_on_overflow": {
+                "type": "bool",
+                "default": false,
+                "description": "Block the pipeline instead of dropping when the queue is full."
+              },
+              "storage": {
+                "type": "string",
+                "description": "ID of a storage extension (e.g. file_storage) backing a persistent queue; omit for in-memory."
+              }
+            }
+          },
+          "retry_on_failure": {
+            "type": "object",
+            "description": "Retry failed exports with exponential backoff (exporter helper).",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "initial_interval": {
+                "type": "duration",
+                "default": "5s"
+              },
+              "max_interval": {
+                "type": "duration",
+                "default": "30s"
+              },
+              "max_elapsed_time": {
+                "type": "duration",
+                "default": "300s",
+                "description": "Give up after this total elapsed time; 0 retries forever."
+              }
+            }
           }
         },
         "required": [
@@ -1455,7 +1544,7 @@
       "deprecated": "0.86.0",
       "removed": "0.107.0",
       "stability": "deprecated",
-      "description": "Logs telemetry to the console. Deprecated \u2014 use the debug exporter instead.",
+      "description": "Logs telemetry to the console. Deprecated — use the debug exporter instead.",
       "schema": {
         "type": "object",
         "properties": {
@@ -1524,7 +1613,7 @@
       "deprecated": "0.85.0",
       "removed": "0.86.0",
       "stability": "deprecated",
-      "description": "Exports traces to Jaeger via gRPC. Removed \u2014 Jaeger natively accepts OTLP; use the otlp exporter instead.",
+      "description": "Exports traces to Jaeger via gRPC. Removed — Jaeger natively accepts OTLP; use the otlp exporter instead.",
       "schema": {
         "type": "object",
         "properties": {
@@ -1541,6 +1630,72 @@
                 "type": "bool"
               }
             }
+          },
+          "sending_queue": {
+            "type": "object",
+            "description": "Queue telemetry before export (exporter helper): smooths bursts and survives brief backend outages. Set storage to a storage extension for a persistent queue.",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "num_consumers": {
+                "type": "int",
+                "default": 10,
+                "description": "Consumers draining the queue concurrently."
+              },
+              "queue_size": {
+                "type": "int",
+                "default": 1000,
+                "description": "Maximum queue capacity, measured in sizer units."
+              },
+              "sizer": {
+                "type": "string",
+                "enum": [
+                  "requests",
+                  "items",
+                  "bytes"
+                ],
+                "default": "requests"
+              },
+              "block_on_overflow": {
+                "type": "bool",
+                "default": false,
+                "description": "Block the pipeline instead of dropping when the queue is full."
+              },
+              "storage": {
+                "type": "string",
+                "description": "ID of a storage extension (e.g. file_storage) backing a persistent queue; omit for in-memory."
+              }
+            }
+          },
+          "retry_on_failure": {
+            "type": "object",
+            "description": "Retry failed exports with exponential backoff (exporter helper).",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "initial_interval": {
+                "type": "duration",
+                "default": "5s"
+              },
+              "max_interval": {
+                "type": "duration",
+                "default": "30s"
+              },
+              "max_elapsed_time": {
+                "type": "duration",
+                "default": "300s",
+                "description": "Give up after this total elapsed time; 0 retries forever."
+              }
+            }
+          },
+          "timeout": {
+            "type": "duration",
+            "default": "5s",
+            "description": "Per-batch export timeout (exporter helper)."
           }
         },
         "required": [
@@ -1692,6 +1847,72 @@
             "type": "object",
             "description": "Kafka authentication (sasl, tls, kerberos).",
             "additionalProperties": true
+          },
+          "sending_queue": {
+            "type": "object",
+            "description": "Queue telemetry before export (exporter helper): smooths bursts and survives brief backend outages. Set storage to a storage extension for a persistent queue.",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "num_consumers": {
+                "type": "int",
+                "default": 10,
+                "description": "Consumers draining the queue concurrently."
+              },
+              "queue_size": {
+                "type": "int",
+                "default": 1000,
+                "description": "Maximum queue capacity, measured in sizer units."
+              },
+              "sizer": {
+                "type": "string",
+                "enum": [
+                  "requests",
+                  "items",
+                  "bytes"
+                ],
+                "default": "requests"
+              },
+              "block_on_overflow": {
+                "type": "bool",
+                "default": false,
+                "description": "Block the pipeline instead of dropping when the queue is full."
+              },
+              "storage": {
+                "type": "string",
+                "description": "ID of a storage extension (e.g. file_storage) backing a persistent queue; omit for in-memory."
+              }
+            }
+          },
+          "retry_on_failure": {
+            "type": "object",
+            "description": "Retry failed exports with exponential backoff (exporter helper).",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "initial_interval": {
+                "type": "duration",
+                "default": "5s"
+              },
+              "max_interval": {
+                "type": "duration",
+                "default": "30s"
+              },
+              "max_elapsed_time": {
+                "type": "duration",
+                "default": "300s",
+                "description": "Give up after this total elapsed time; 0 retries forever."
+              }
+            }
+          },
+          "timeout": {
+            "type": "duration",
+            "default": "5s",
+            "description": "Per-batch export timeout (exporter helper)."
           }
         }
       }
@@ -1884,6 +2105,72 @@
           },
           "ttl": {
             "type": "duration"
+          },
+          "sending_queue": {
+            "type": "object",
+            "description": "Queue telemetry before export (exporter helper): smooths bursts and survives brief backend outages. Set storage to a storage extension for a persistent queue.",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "num_consumers": {
+                "type": "int",
+                "default": 10,
+                "description": "Consumers draining the queue concurrently."
+              },
+              "queue_size": {
+                "type": "int",
+                "default": 1000,
+                "description": "Maximum queue capacity, measured in sizer units."
+              },
+              "sizer": {
+                "type": "string",
+                "enum": [
+                  "requests",
+                  "items",
+                  "bytes"
+                ],
+                "default": "requests"
+              },
+              "block_on_overflow": {
+                "type": "bool",
+                "default": false,
+                "description": "Block the pipeline instead of dropping when the queue is full."
+              },
+              "storage": {
+                "type": "string",
+                "description": "ID of a storage extension (e.g. file_storage) backing a persistent queue; omit for in-memory."
+              }
+            }
+          },
+          "retry_on_failure": {
+            "type": "object",
+            "description": "Retry failed exports with exponential backoff (exporter helper).",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "initial_interval": {
+                "type": "duration",
+                "default": "5s"
+              },
+              "max_interval": {
+                "type": "duration",
+                "default": "30s"
+              },
+              "max_elapsed_time": {
+                "type": "duration",
+                "default": "300s",
+                "description": "Give up after this total elapsed time; 0 retries forever."
+              }
+            }
+          },
+          "timeout": {
+            "type": "duration",
+            "default": "5s",
+            "description": "Per-batch export timeout (exporter helper)."
           }
         },
         "required": [
@@ -1990,6 +2277,72 @@
             "required": [
               "authenticator"
             ]
+          },
+          "sending_queue": {
+            "type": "object",
+            "description": "Queue telemetry before export (exporter helper): smooths bursts and survives brief backend outages. Set storage to a storage extension for a persistent queue.",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "num_consumers": {
+                "type": "int",
+                "default": 10,
+                "description": "Consumers draining the queue concurrently."
+              },
+              "queue_size": {
+                "type": "int",
+                "default": 1000,
+                "description": "Maximum queue capacity, measured in sizer units."
+              },
+              "sizer": {
+                "type": "string",
+                "enum": [
+                  "requests",
+                  "items",
+                  "bytes"
+                ],
+                "default": "requests"
+              },
+              "block_on_overflow": {
+                "type": "bool",
+                "default": false,
+                "description": "Block the pipeline instead of dropping when the queue is full."
+              },
+              "storage": {
+                "type": "string",
+                "description": "ID of a storage extension (e.g. file_storage) backing a persistent queue; omit for in-memory."
+              }
+            }
+          },
+          "retry_on_failure": {
+            "type": "object",
+            "description": "Retry failed exports with exponential backoff (exporter helper).",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "initial_interval": {
+                "type": "duration",
+                "default": "5s"
+              },
+              "max_interval": {
+                "type": "duration",
+                "default": "30s"
+              },
+              "max_elapsed_time": {
+                "type": "duration",
+                "default": "300s",
+                "description": "Give up after this total elapsed time; 0 retries forever."
+              }
+            }
+          },
+          "timeout": {
+            "type": "duration",
+            "default": "5s",
+            "description": "Per-batch export timeout (exporter helper)."
           }
         },
         "required": [
@@ -2065,7 +2418,7 @@
       "deprecated": "0.99.0",
       "removed": "0.104.0",
       "stability": "deprecated",
-      "description": "Pre-allocates heap to reduce GC churn. Removed \u2014 use GOMEMLIMIT instead.",
+      "description": "Pre-allocates heap to reduce GC churn. Removed — use GOMEMLIMIT instead.",
       "schema": {
         "type": "object",
         "properties": {
@@ -2220,7 +2573,7 @@
       "kind": "extension",
       "added": "0.36.0",
       "stability": "beta",
-      "description": "Persists component state to disk \u2014 enables durable sending queues and checkpoints.",
+      "description": "Persists component state to disk — enables durable sending queues and checkpoints.",
       "schema": {
         "type": "object",
         "properties": {
@@ -2511,6 +2864,7 @@
           },
           "sending_queue": {
             "type": "object",
+            "description": "Queue telemetry before export (exporter helper): smooths bursts and survives brief backend outages. Set storage to a storage extension for a persistent queue.",
             "properties": {
               "enabled": {
                 "type": "bool",
@@ -2518,16 +2872,37 @@
               },
               "num_consumers": {
                 "type": "int",
-                "default": 10
+                "default": 10,
+                "description": "Consumers draining the queue concurrently."
               },
               "queue_size": {
                 "type": "int",
-                "default": 1000
+                "default": 1000,
+                "description": "Maximum queue capacity, measured in sizer units."
+              },
+              "sizer": {
+                "type": "string",
+                "enum": [
+                  "requests",
+                  "items",
+                  "bytes"
+                ],
+                "default": "requests"
+              },
+              "block_on_overflow": {
+                "type": "bool",
+                "default": false,
+                "description": "Block the pipeline instead of dropping when the queue is full."
+              },
+              "storage": {
+                "type": "string",
+                "description": "ID of a storage extension (e.g. file_storage) backing a persistent queue; omit for in-memory."
               }
             }
           },
           "retry_on_failure": {
             "type": "object",
+            "description": "Retry failed exports with exponential backoff (exporter helper).",
             "properties": {
               "enabled": {
                 "type": "bool",
@@ -2543,7 +2918,8 @@
               },
               "max_elapsed_time": {
                 "type": "duration",
-                "default": "5m"
+                "default": "300s",
+                "description": "Give up after this total elapsed time; 0 retries forever."
               }
             }
           },
@@ -2562,6 +2938,11 @@
             "required": [
               "authenticator"
             ]
+          },
+          "timeout": {
+            "type": "duration",
+            "default": "5s",
+            "description": "Per-batch export timeout (exporter helper)."
           }
         },
         "required": [
@@ -2643,6 +3024,67 @@
           "timeout": {
             "type": "duration",
             "default": "30s"
+          },
+          "sending_queue": {
+            "type": "object",
+            "description": "Queue telemetry before export (exporter helper): smooths bursts and survives brief backend outages. Set storage to a storage extension for a persistent queue.",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "num_consumers": {
+                "type": "int",
+                "default": 10,
+                "description": "Consumers draining the queue concurrently."
+              },
+              "queue_size": {
+                "type": "int",
+                "default": 1000,
+                "description": "Maximum queue capacity, measured in sizer units."
+              },
+              "sizer": {
+                "type": "string",
+                "enum": [
+                  "requests",
+                  "items",
+                  "bytes"
+                ],
+                "default": "requests"
+              },
+              "block_on_overflow": {
+                "type": "bool",
+                "default": false,
+                "description": "Block the pipeline instead of dropping when the queue is full."
+              },
+              "storage": {
+                "type": "string",
+                "description": "ID of a storage extension (e.g. file_storage) backing a persistent queue; omit for in-memory."
+              }
+            }
+          },
+          "retry_on_failure": {
+            "type": "object",
+            "description": "Retry failed exports with exponential backoff (exporter helper).",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "initial_interval": {
+                "type": "duration",
+                "default": "5s"
+              },
+              "max_interval": {
+                "type": "duration",
+                "default": "30s"
+              },
+              "max_elapsed_time": {
+                "type": "duration",
+                "default": "300s",
+                "description": "Give up after this total elapsed time; 0 retries forever."
+              }
+            }
           }
         },
         "required": [

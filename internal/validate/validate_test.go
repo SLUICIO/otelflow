@@ -578,3 +578,51 @@ service:
 		t.Fatalf("missing unknown-type diagnostic:\n%s", messages(r))
 	}
 }
+
+func TestExporterHelperFields(t *testing.T) {
+	// sending_queue / retry_on_failure / timeout come from the collector's
+	// exporter helper and must be accepted on network exporters.
+	r := Validate(mustRegistry(t), `receivers:
+  otlp:
+    protocols:
+      grpc:
+exporters:
+  otlp_http:
+    endpoint: https://backend.example.com:4318
+    sending_queue:
+      enabled: true
+      queue_size: 5000
+      storage: file_storage
+    retry_on_failure:
+      max_elapsed_time: 600s
+    timeout: 10s
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlp_http]
+`, "0.158.0", "contrib")
+	if !r.Valid {
+		t.Errorf("exporter helper fields should validate, got:\n%s", messages(r))
+	}
+
+	// Typos inside the helper blocks still get flagged.
+	r = Validate(mustRegistry(t), `receivers:
+  otlp:
+    protocols:
+      grpc:
+exporters:
+  otlp_http:
+    endpoint: https://x:4318
+    sending_queue:
+      queue_sized: 10
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlp_http]
+`, "0.158.0", "contrib")
+	if !strings.Contains(messages(r), "queue_sized") {
+		t.Errorf("expected unrecognized-field warning for queue_sized, got:\n%s", messages(r))
+	}
+}
