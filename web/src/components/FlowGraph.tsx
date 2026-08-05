@@ -76,6 +76,9 @@ export interface GraphLayout {
   totalW: number
   maxProc: number
   showExtensions: boolean
+  /** Components defined in a section but referenced by no pipeline. */
+  unused: NodePos[]
+  unusedY: number
 }
 
 /**
@@ -138,10 +141,42 @@ export function computeLayout(model: ConfigModel, readOnly = false): GraphLayout
   const showExtensions = !readOnly || model.sections.extensions.length > 0
   const extY = y + 8
   const extRailH = 30 + NODE_H + 16
-  const totalH = (showExtensions ? extY + extRailH : y) + MARGIN
+
+  // "Defined but not used" rail: components no pipeline references. The
+  // validator flags these too; the canvas makes them visible and clickable.
+  const used = new Set<string>()
+  for (const p of model.pipelines) {
+    for (const role of ['receivers', 'processors', 'exporters'] as const) {
+      for (const id of p[role]) used.add(id)
+    }
+  }
+  const base = showExtensions ? extY + extRailH : y
+  const unusedY = base + 8
+  const perRow = Math.max(1, Math.floor(laneWidth / (NODE_W + 16)))
+  const unused: NodePos[] = []
+  const sectionKinds = [
+    ['receivers', 'receiver'],
+    ['processors', 'processor'],
+    ['exporters', 'exporter'],
+    ['connectors', 'connector'],
+  ] as const
+  for (const [section, kind] of sectionKinds) {
+    for (const id of model.sections[section]) {
+      if (used.has(id)) continue
+      const i = unused.length
+      unused.push({
+        id,
+        kind: kind as Kind,
+        x: MARGIN + (i % perRow) * (NODE_W + 16),
+        y: unusedY + 22 + Math.floor(i / perRow) * (NODE_H + 30),
+      })
+    }
+  }
+  const unusedRows = Math.ceil(unused.length / perRow)
+  const totalH = (unused.length > 0 ? unusedY + 30 + unusedRows * (NODE_H + 30) : base) + MARGIN
   // Extra width on the right for the connector-edge routing channel.
   const totalW = Math.max(laneWidth + MARGIN * 2 + 56, 720)
-  return { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW, maxProc, showExtensions }
+  return { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW, maxProc, showExtensions, unused, unusedY }
 }
 
 export function FlowGraph({ model, componentIndex, diagnostics, selected, onSelect, onAdd, onAddPipeline, readOnly }: Props) {
@@ -205,7 +240,7 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
     )
   }
 
-  const { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW, showExtensions } = layout
+  const { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW, showExtensions, unused, unusedY } = layout
 
   const renderNode = (n: NodePos, signal?: string, pipelineId?: string) => {
     const typeName = componentType(n.id)
@@ -431,6 +466,22 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
           onClick={() => onAdd('extension')}
         />
       )}
+
+      {/* defined-but-unused rail: visible in every mode — the validator
+          warns about these, the canvas shows them */}
+      {unused.length > 0 && (
+        <text className="section-heading" x={MARGIN} y={unusedY + 12}>
+          Defined but not used
+        </text>
+      )}
+      {unused.map((n) => (
+        <g key={`unused:${n.kind}:${n.id}`} className="unused-node" opacity={0.55}>
+          {renderNode(n)}
+          <text className="node-sub" x={n.x + 14} y={n.y + NODE_H + 12} fill="var(--warn)">
+            not in any pipeline
+          </text>
+        </g>
+      ))}
     </svg>
   )
 }

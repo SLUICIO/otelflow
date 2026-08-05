@@ -35,7 +35,7 @@ const ofType = (type) => messages.filter((m) => m.type === type)
 const yaml = [
   'receivers:', '  otlp:', '  filestats:',
   'processors:', '  batch:',
-  'exporters:', '  debug:',
+  'exporters:', '  debug:', '  zipkin:',
   'extensions:', '  health_check:',
   'service:',
   '  extensions: [health_check]',
@@ -88,6 +88,11 @@ assert.ok(errNodes.some((t) => t?.includes('filestats')), 'filestats flagged as 
 const bar = doc.querySelector('.embed-bar')
 assert.ok(bar?.textContent?.includes('otelcol.yaml'), 'file name in bar')
 assert.ok(bar?.textContent?.includes('1 error'), 'error count in bar')
+
+// ── Unused rail: defined-but-unreferenced components are visible ──
+assert.ok(byText('.section-heading', 'Defined but not used'), 'unused rail heading rendered')
+const unusedNode = [...doc.querySelectorAll('.unused-node .node-title')].map((n) => n.textContent)
+assert.ok(unusedNode.some((t) => t?.includes('zipkin')), 'zipkin shown as unused')
 
 // ── Click a node: details dialog opens, editor reveal posted ──
 const target = [...doc.querySelectorAll('.flow-node')].find((n) =>
