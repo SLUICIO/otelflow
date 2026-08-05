@@ -5,3 +5,9 @@ web/public/wasm_exec.js
 *.log
 .DS_Store
 *.tsbuildinfo
+
+# stray local build artifacts (go build without -o)
+/wasm
+/registry-gen
+/otelflow
+/server
