@@ -693,3 +693,51 @@ service:
 		t.Errorf("expected sending_queue to be flagged on prometheus_remote_write:\n%s", messages(r))
 	}
 }
+
+func TestAuditedSchemaAdditions(t *testing.T) {
+	// Fields added by the v0.158.0 upstream audit across several components.
+	r := Validate(mustRegistry(t), `receivers:
+  kafka:
+    brokers: [localhost:9092]
+    tls:
+      insecure: false
+    header_extraction:
+      extract_headers: true
+    logs:
+      topic: otlp_logs
+processors:
+  batch:
+    metadata_keys: [tenant_id]
+    metadata_cardinality_limit: 500
+  tail_sampling:
+    decision_wait: 10s
+    policies: []
+    decision_cache:
+      sampled_cache_size: 1000
+exporters:
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    add_metric_suffixes: false
+    metric_expiration: 10m
+  splunk_hec:
+    token: x
+    endpoint: https://splunk:8088
+    heartbeat:
+      interval: 30s
+service:
+  pipelines:
+    traces:
+      receivers: [kafka]
+      processors: [tail_sampling]
+      exporters: [splunk_hec]
+    metrics:
+      receivers: [kafka]
+      processors: [batch]
+      exporters: [prometheus]
+`, "0.158.0", "contrib")
+	for _, d := range r.Diagnostics {
+		if strings.Contains(d.Message, "Unrecognized field") {
+			t.Errorf("audited field flagged: %s", d.Message)
+		}
+	}
+}

@@ -191,6 +191,26 @@
             "type": "object",
             "description": "Standard Prometheus configuration (scrape_configs etc.).",
             "additionalProperties": true
+          },
+          "trim_metric_suffixes": {
+            "type": "bool",
+            "description": "Trim type and unit suffixes from metric names."
+          },
+          "target_allocator": {
+            "type": "object",
+            "description": "Fetch scrape targets from an OpenTelemetry target allocator.",
+            "properties": {
+              "endpoint": {
+                "type": "string"
+              },
+              "interval": {
+                "type": "duration",
+                "default": "30s"
+              },
+              "collector_id": {
+                "type": "string"
+              }
+            }
           }
         },
         "required": [
@@ -389,6 +409,76 @@
             "type": "object",
             "description": "Kafka authentication (sasl, tls, kerberos).",
             "additionalProperties": true
+          },
+          "tls": {
+            "type": "object",
+            "properties": {
+              "insecure": {
+                "type": "bool",
+                "default": false
+              },
+              "ca_file": {
+                "type": "string"
+              },
+              "cert_file": {
+                "type": "string"
+              },
+              "key_file": {
+                "type": "string"
+              }
+            }
+          },
+          "header_extraction": {
+            "type": "object",
+            "properties": {
+              "extract_headers": {
+                "type": "bool",
+                "default": false
+              },
+              "headers": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Kafka record headers to attach as attributes."
+              }
+            }
+          },
+          "logs": {
+            "type": "object",
+            "description": "Per-signal consumption settings for logs.",
+            "properties": {
+              "topic": {
+                "type": "string"
+              },
+              "encoding": {
+                "type": "string"
+              }
+            }
+          },
+          "metrics": {
+            "type": "object",
+            "description": "Per-signal consumption settings for metrics.",
+            "properties": {
+              "topic": {
+                "type": "string"
+              },
+              "encoding": {
+                "type": "string"
+              }
+            }
+          },
+          "traces": {
+            "type": "object",
+            "description": "Per-signal consumption settings for traces.",
+            "properties": {
+              "topic": {
+                "type": "string"
+              },
+              "encoding": {
+                "type": "string"
+              }
+            }
           }
         }
       }
@@ -434,6 +524,15 @@
               "rfc5424"
             ],
             "default": "rfc5424"
+          },
+          "location": {
+            "type": "string",
+            "description": "Timezone for timestamps without one, e.g. UTC.",
+            "default": "UTC"
+          },
+          "enable_octet_counting": {
+            "type": "bool",
+            "description": "RFC 6587 octet counting (TCP, RFC 5424 only)."
           }
         }
       }
@@ -503,6 +602,27 @@
           "timeout": {
             "type": "duration",
             "description": "Per-scrape timeout (scraper helper)."
+          },
+          "api_version": {
+            "type": "string",
+            "description": "Docker API version to use, e.g. \"1.25\"."
+          },
+          "excluded_images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Image names to exclude; supports globs and ! negation."
+          },
+          "env_vars_to_metric_labels": {
+            "type": "map",
+            "values": {
+              "type": "string"
+            }
+          },
+          "metrics": {
+            "type": "object",
+            "description": "Enable or disable individual metrics (metrics builder config)."
           }
         }
       }
@@ -589,6 +709,29 @@
             "default": [
               "Ready"
             ]
+          },
+          "allocatable_types_to_report": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "e.g. cpu, memory, ephemeral-storage, storage"
+          },
+          "distribution": {
+            "type": "string",
+            "enum": [
+              "kubernetes",
+              "openshift"
+            ],
+            "default": "kubernetes"
+          },
+          "metrics": {
+            "type": "object",
+            "description": "Enable or disable individual metrics (metrics builder config)."
+          },
+          "resource_attributes": {
+            "type": "object",
+            "description": "Enable or disable resource attributes (metrics builder config)."
           }
         }
       }
@@ -728,6 +871,52 @@
           "timeout": {
             "type": "duration",
             "description": "Per-scrape timeout (scraper helper)."
+          },
+          "transport": {
+            "type": "string",
+            "enum": [
+              "tcp",
+              "unix"
+            ],
+            "default": "tcp"
+          },
+          "tls": {
+            "type": "object",
+            "properties": {
+              "insecure": {
+                "type": "bool",
+                "default": false
+              },
+              "ca_file": {
+                "type": "string"
+              },
+              "cert_file": {
+                "type": "string"
+              },
+              "key_file": {
+                "type": "string"
+              }
+            }
+          },
+          "connection_pool": {
+            "type": "object",
+            "description": "Connection pool tuning (max_idle_time, max_lifetime, max_idle, max_open)."
+          },
+          "metrics": {
+            "type": "object",
+            "description": "Enable or disable individual metrics (metrics builder config)."
+          },
+          "events": {
+            "type": "object",
+            "description": "Enable or disable events (events builder config)."
+          },
+          "query_sample_collection": {
+            "type": "object",
+            "description": "Collect query samples (query activity monitoring)."
+          },
+          "top_query_collection": {
+            "type": "object",
+            "description": "Collect top queries by resource usage."
           }
         },
         "required": [
@@ -763,6 +952,18 @@
             "type": "int",
             "default": 0,
             "description": "Upper bound on batch size; 0 means no limit."
+          },
+          "metadata_keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "client.Metadata keys to batch by; creates one batcher per distinct combination."
+          },
+          "metadata_cardinality_limit": {
+            "type": "int",
+            "default": 1000,
+            "description": "Maximum distinct metadata combinations (with metadata_keys)."
           }
         }
       }
@@ -1067,6 +1268,18 @@
               "type": "object",
               "additionalProperties": true
             }
+          },
+          "flatten_data": {
+            "type": "bool",
+            "default": false,
+            "description": "Temporarily flatten logs to one point per resource/scope while statements run."
+          },
+          "profile_statements": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "OTTL statements for the profiles signal."
           }
         }
       }
@@ -1101,6 +1314,18 @@
               "type": "object",
               "additionalProperties": true
             }
+          },
+          "decision_cache": {
+            "type": "object",
+            "properties": {
+              "sampled_cache_size": {
+                "type": "int"
+              },
+              "non_sampled_cache_size": {
+                "type": "int"
+              }
+            },
+            "description": "Remember sampling decisions for late-arriving spans."
           }
         },
         "required": [
@@ -1128,6 +1353,31 @@
           },
           "hash_seed": {
             "type": "int"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "proportional",
+              "equalizing",
+              "hash_seed"
+            ],
+            "description": "Sampling mode."
+          },
+          "attribute_source": {
+            "type": "string",
+            "enum": [
+              "traceID",
+              "record"
+            ],
+            "description": "Log sampling: where to take the sampling source from."
+          },
+          "from_attribute": {
+            "type": "string",
+            "description": "Log sampling: attribute to hash when attribute_source is record."
+          },
+          "sampling_priority": {
+            "type": "string",
+            "description": "Log attribute overriding the sampling percentage per record."
           }
         },
         "required": [
@@ -1311,6 +1561,51 @@
               "silent"
             ],
             "default": "info"
+          },
+          "allowed_values": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Attribute values allowed to pass (regular expressions)."
+          },
+          "ignored_keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Attribute keys ignored by the processor entirely."
+          },
+          "blocked_key_patterns": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Attribute keys masked when matching these patterns."
+          },
+          "ignored_key_patterns": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Attribute key patterns ignored entirely."
+          },
+          "redact_all_types": {
+            "type": "bool",
+            "description": "Also scan non-string attribute values."
+          },
+          "hash_function": {
+            "type": "string",
+            "enum": [
+              "md5",
+              "sha1",
+              "sha3"
+            ],
+            "description": "Hash blocked values instead of masking."
+          },
+          "hmac_key": {
+            "type": "string",
+            "description": "Key for HMAC hashing of blocked values."
           }
         }
       }
@@ -1666,6 +1961,11 @@
           "sampling_thereafter": {
             "type": "int",
             "default": 1
+          },
+          "use_internal_logger": {
+            "type": "bool",
+            "default": true,
+            "description": "Emit through the collector's internal logger (honors service::telemetry::logs)."
           }
         }
       }
@@ -1807,6 +2107,38 @@
               "enabled": {
                 "type": "bool",
                 "default": false
+              }
+            }
+          },
+          "add_metric_suffixes": {
+            "type": "bool",
+            "default": true
+          },
+          "send_timestamps": {
+            "type": "bool",
+            "default": false
+          },
+          "metric_expiration": {
+            "type": "duration",
+            "default": "5m",
+            "description": "Drop metrics not updated within this window."
+          },
+          "translation_strategy": {
+            "type": "string",
+            "description": "Metric name translation strategy, e.g. UnderscoreEscapingWithSuffixes."
+          },
+          "tls": {
+            "type": "object",
+            "description": "Server-side TLS.",
+            "properties": {
+              "ca_file": {
+                "type": "string"
+              },
+              "cert_file": {
+                "type": "string"
+              },
+              "key_file": {
+                "type": "string"
               }
             }
           }
@@ -2070,6 +2402,24 @@
             "type": "duration",
             "default": "5s",
             "description": "Per-batch export timeout (exporter helper)."
+          },
+          "tls": {
+            "type": "object",
+            "properties": {
+              "insecure": {
+                "type": "bool",
+                "default": false
+              },
+              "ca_file": {
+                "type": "string"
+              },
+              "cert_file": {
+                "type": "string"
+              },
+              "key_file": {
+                "type": "string"
+              }
+            }
           }
         }
       }
@@ -2115,6 +2465,17 @@
                 "type": "int"
               }
             }
+          },
+          "compression": {
+            "type": "string",
+            "enum": [
+              "zstd"
+            ],
+            "description": "Compress telemetry before writing."
+          },
+          "flush_interval": {
+            "type": "duration",
+            "default": "1s"
           }
         },
         "required": [
@@ -2222,6 +2583,84 @@
               "body"
             ],
             "default": "otlp_json"
+          },
+          "resource_attrs_to_s3": {
+            "type": "object",
+            "properties": {
+              "s3_bucket": {
+                "type": "string",
+                "description": "Resource attribute whose value overrides the bucket."
+              },
+              "s3_prefix": {
+                "type": "string",
+                "description": "Resource attribute whose value overrides the prefix."
+              }
+            }
+          },
+          "sending_queue": {
+            "type": "object",
+            "description": "Queue telemetry before export (exporter helper): smooths bursts and survives brief backend outages. Set storage to a storage extension for a persistent queue.",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "num_consumers": {
+                "type": "int",
+                "default": 10,
+                "description": "Consumers draining the queue concurrently."
+              },
+              "queue_size": {
+                "type": "int",
+                "default": 1000,
+                "description": "Maximum queue capacity, measured in sizer units."
+              },
+              "sizer": {
+                "type": "string",
+                "enum": [
+                  "requests",
+                  "items",
+                  "bytes"
+                ],
+                "default": "requests"
+              },
+              "block_on_overflow": {
+                "type": "bool",
+                "default": false,
+                "description": "Block the pipeline instead of dropping when the queue is full."
+              },
+              "storage": {
+                "type": "string",
+                "description": "ID of a storage extension (e.g. file_storage) backing a persistent queue; omit for in-memory."
+              }
+            }
+          },
+          "retry_on_failure": {
+            "type": "object",
+            "description": "Retry failed exports with exponential backoff (exporter helper).",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": true
+              },
+              "initial_interval": {
+                "type": "duration",
+                "default": "5s"
+              },
+              "max_interval": {
+                "type": "duration",
+                "default": "30s"
+              },
+              "max_elapsed_time": {
+                "type": "duration",
+                "default": "300s",
+                "description": "Give up after this total elapsed time; 0 retries forever."
+              }
+            }
+          },
+          "timeout": {
+            "type": "duration",
+            "default": "5s"
           }
         },
         "required": [
@@ -2328,6 +2767,57 @@
             "type": "duration",
             "default": "5s",
             "description": "Per-batch export timeout (exporter helper)."
+          },
+          "async_insert": {
+            "type": "bool",
+            "default": true
+          },
+          "create_schema": {
+            "type": "bool",
+            "default": true,
+            "description": "Create the database and tables on startup."
+          },
+          "compress": {
+            "type": "string",
+            "enum": [
+              "none",
+              "gzip",
+              "deflate",
+              "lz4",
+              "zstd",
+              "br"
+            ],
+            "default": "lz4"
+          },
+          "logs_table_name": {
+            "type": "string",
+            "default": "otel_logs"
+          },
+          "traces_table_name": {
+            "type": "string",
+            "default": "otel_traces"
+          },
+          "metrics_tables": {
+            "type": "object",
+            "description": "Per-metric-type table configuration."
+          },
+          "tls": {
+            "type": "object",
+            "properties": {
+              "insecure": {
+                "type": "bool",
+                "default": false
+              },
+              "ca_file": {
+                "type": "string"
+              },
+              "cert_file": {
+                "type": "string"
+              },
+              "key_file": {
+                "type": "string"
+              }
+            }
           }
         },
         "required": [
@@ -2441,6 +2931,20 @@
                 "default": "otel"
               }
             }
+          },
+          "endpoint": {
+            "type": "string",
+            "description": "Single Elasticsearch URL; alternative to endpoints."
+          },
+          "traces_dynamic_id": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": false
+              }
+            },
+            "description": "Take the document ID from the elasticsearch.document_id attribute."
           }
         }
       }
@@ -2559,6 +3063,54 @@
             "type": "duration",
             "default": "5s",
             "description": "Per-batch export timeout (exporter helper)."
+          },
+          "disable_compression": {
+            "type": "bool",
+            "default": false
+          },
+          "max_idle_conns": {
+            "type": "int"
+          },
+          "splunk_app_name": {
+            "type": "string",
+            "default": "OpenTelemetry Collector Contrib"
+          },
+          "splunk_app_version": {
+            "type": "string"
+          },
+          "tls": {
+            "type": "object",
+            "properties": {
+              "insecure": {
+                "type": "bool",
+                "default": false
+              },
+              "ca_file": {
+                "type": "string"
+              },
+              "cert_file": {
+                "type": "string"
+              },
+              "key_file": {
+                "type": "string"
+              }
+            }
+          },
+          "heartbeat": {
+            "type": "object",
+            "properties": {
+              "interval": {
+                "type": "duration"
+              },
+              "startup": {
+                "type": "bool"
+              }
+            },
+            "description": "Periodic heartbeat events to Splunk."
+          },
+          "telemetry": {
+            "type": "object",
+            "description": "Internal telemetry about the exporter itself."
           }
         },
         "required": [
@@ -2583,6 +3135,21 @@
           "path": {
             "type": "string",
             "default": "/"
+          },
+          "tls": {
+            "type": "object",
+            "description": "Server-side TLS.",
+            "properties": {
+              "ca_file": {
+                "type": "string"
+              },
+              "cert_file": {
+                "type": "string"
+              },
+              "key_file": {
+                "type": "string"
+              }
+            }
           }
         }
       }
@@ -2607,6 +3174,10 @@
           "mutex_profile_fraction": {
             "type": "int",
             "default": 0
+          },
+          "save_to_file": {
+            "type": "string",
+            "description": "Also write the CPU profile to this file."
           }
         }
       }
@@ -2702,6 +3273,13 @@
           "scheme": {
             "type": "string",
             "default": "Bearer"
+          },
+          "tokens": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Multiple allowed tokens (server side); alternative to token."
           }
         }
       }
@@ -2729,6 +3307,39 @@
             "type": "array",
             "items": {
               "type": "string"
+            }
+          },
+          "endpoint_params": {
+            "type": "map",
+            "values": {
+              "type": "string"
+            },
+            "description": "Extra parameters sent to the token endpoint."
+          },
+          "timeout": {
+            "type": "duration"
+          },
+          "expiry_buffer": {
+            "type": "duration",
+            "default": "5m",
+            "description": "Refresh the token this long before it expires."
+          },
+          "tls": {
+            "type": "object",
+            "properties": {
+              "insecure": {
+                "type": "bool",
+                "default": false
+              },
+              "ca_file": {
+                "type": "string"
+              },
+              "cert_file": {
+                "type": "string"
+              },
+              "key_file": {
+                "type": "string"
+              }
             }
           }
         },
@@ -2806,6 +3417,15 @@
           "compaction": {
             "type": "object",
             "additionalProperties": true
+          },
+          "fsync": {
+            "type": "bool",
+            "default": false,
+            "description": "fsync after each write (safer, slower)."
+          },
+          "create_directory": {
+            "type": "bool",
+            "default": false
           }
         }
       }
@@ -2869,6 +3489,14 @@
           "datapoints": {
             "type": "object",
             "additionalProperties": true
+          },
+          "spanevents": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "metrics": {
+            "type": "object",
+            "additionalProperties": true
           }
         }
       }
@@ -2902,6 +3530,38 @@
           "metrics_flush_interval": {
             "type": "duration",
             "default": "60s"
+          },
+          "exclude_dimensions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Dimensions to drop from the default set."
+          },
+          "aggregation_temporality": {
+            "type": "string",
+            "enum": [
+              "AGGREGATION_TEMPORALITY_CUMULATIVE",
+              "AGGREGATION_TEMPORALITY_DELTA"
+            ],
+            "default": "AGGREGATION_TEMPORALITY_CUMULATIVE"
+          },
+          "namespace": {
+            "type": "string",
+            "default": "traces.span.metrics",
+            "description": "Prefix for generated metric names."
+          },
+          "exemplars": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "bool",
+                "default": false
+              },
+              "max_per_data_point": {
+                "type": "int"
+              }
+            }
           }
         }
       }
@@ -2984,6 +3644,10 @@
               "propagate"
             ],
             "default": "propagate"
+          },
+          "match_once": {
+            "type": "bool",
+            "description": "Deprecated: route each item by the first matching table entry only."
           }
         },
         "required": [
