@@ -62,7 +62,9 @@ jobs:
         if: steps.check.outputs.newer == 'true'
         run: |
           go build ./... && go vet ./... && go test ./...
-          GOOS=js GOARCH=wasm go build ./cmd/wasm
+          # -o to a scratch path: a bare build drops a `wasm` binary into the
+          # working tree, and create-pull-request would commit it.
+          GOOS=js GOARCH=wasm go build -o /tmp/validate.wasm ./cmd/wasm
 
       - name: Summarize changes
         if: steps.check.outputs.newer == 'true'
