@@ -796,6 +796,10 @@
           "limit_percentage": {
             "type": "int",
             "description": "Alternative to limit_mib: percentage of total memory."
+          },
+          "spike_limit_percentage": {
+            "type": "int",
+            "description": "Spike allowance as a percentage of total memory; pairs with limit_percentage."
           }
         },
         "required": [
