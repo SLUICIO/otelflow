@@ -741,3 +741,28 @@ service:
 		}
 	}
 }
+
+func TestRenameFixPayload(t *testing.T) {
+	r := Validate(mustRegistry(t), `receivers:
+  filestats/disk:
+exporters:
+  debug:
+service:
+  pipelines:
+    metrics:
+      receivers: [filestats/disk]
+      exporters: [debug]
+`, "0.158.0", "contrib")
+	var fix *Fix
+	for _, d := range r.Diagnostics {
+		if d.Fix != nil {
+			fix = d.Fix
+		}
+	}
+	if fix == nil {
+		t.Fatalf("expected a rename fix, got:\n%s", messages(r))
+	}
+	if fix.Type != "rename" || fix.Section != "receivers" || fix.From != "filestats/disk" || fix.To != "file_stats/disk" {
+		t.Errorf("unexpected fix payload: %+v", fix)
+	}
+}

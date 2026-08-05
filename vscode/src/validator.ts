@@ -9,6 +9,13 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import * as vm from 'node:vm'
 
+export interface DiagnosticFix {
+  type: 'rename'
+  section: string
+  from: string
+  to: string
+}
+
 export interface Diagnostic {
   severity: 'error' | 'warning' | 'info'
   message: string
@@ -16,6 +23,7 @@ export interface Diagnostic {
   line?: number
   column?: number
   hint?: string
+  fix?: DiagnosticFix
 }
 
 export interface ValidationResult {

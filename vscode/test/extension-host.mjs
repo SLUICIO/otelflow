@@ -16,6 +16,8 @@ const commands = new Map()
 const posted = [] // messages posted to the webview
 let webviewMessageHandler = null
 let panelCreated = false
+let codeActionProvider = null
+let lastDiagnostics = []
 
 class Position {
   constructor(line, character) { this.line = line; this.character = character }
@@ -65,8 +67,13 @@ const doc = makeDoc('/tmp/otelcol.yaml', [
   '      exporters: [debug]',
 ].join('\n'))
 
+class CodeAction {
+  constructor(title, kind) { this.title = title; this.kind = kind }
+}
 const vscodeStub = {
   Position, Range, WorkspaceEdit,
+  CodeAction,
+  CodeActionKind: { QuickFix: 'quickfix' },
   Uri: { file: (p) => ({ toString: () => `file://${p}`, fsPath: p }) },
   ViewColumn: { One: 1, Beside: -2 },
   ConfigurationTarget: { Global: 1, Workspace: 2 },
@@ -74,7 +81,12 @@ const vscodeStub = {
   DiagnosticSeverity: { Error: 0, Warning: 1, Information: 2, Hint: 3 },
   Diagnostic: class { constructor(range, message, severity) { this.range = range; this.message = message; this.severity = severity } },
   languages: {
-    createDiagnosticCollection: () => ({ set: () => {}, delete: () => {}, dispose: () => {} }),
+    createDiagnosticCollection: () => ({
+      set: (_uri, diags) => { lastDiagnostics = diags ?? [] },
+      delete: () => {},
+      dispose: () => {},
+    }),
+    registerCodeActionsProvider: (_sel, provider) => ((codeActionProvider = provider), { dispose: () => {} }),
   },
   window: {
     activeTextEditor: { document: doc, viewColumn: 1 },
@@ -163,4 +175,26 @@ assert.ok(doc._text.includes('zipkin'), 'applyYaml edited the document')
 assert.ok(updates().length > before2, 'designer edit round-tripped as an update')
 assert.ok(updates().at(-1).yaml.includes('zipkin'), 'mutated yaml reached the webview')
 
-console.log('extension-host test passed:', updates().length, 'updates delivered')
+// ── 4. Rename quick fix: diagnostic -> code action -> full-document rename ──
+doc._text = [
+  'receivers:', '  filestats/disk:', '  otlp:', '    protocols:', '      grpc:',
+  'exporters:', '  debug:',
+  'service:',
+  '  pipelines:',
+  '    metrics:',
+  '      receivers: [filestats/disk, otlp]',
+  '      exporters: [debug]',
+].join('\n')
+for (const fn of handlers.changeDoc) fn({ document: doc })
+await settle(800)
+assert.ok(codeActionProvider, 'code action provider registered')
+assert.ok(lastDiagnostics.length > 0, 'diagnostics published for filestats config')
+const actions = codeActionProvider.provideCodeActions(doc, null, { diagnostics: lastDiagnostics })
+const rename = actions.find((a) => a.title.includes('file_stats/disk'))
+assert.ok(rename, `rename quick fix offered (got: ${actions.map((a) => a.title).join(' | ')})`)
+await vscodeStub.workspace.applyEdit(rename.edit)
+assert.ok(doc._text.includes('file_stats/disk:'), 'definition renamed')
+assert.ok(/\[\s*file_stats\/disk,\s*otlp\s*\]/.test(doc._text), 'pipeline reference renamed')
+assert.ok(!doc._text.includes('filestats/disk'), 'old name gone everywhere')
+
+console.log('extension-host test passed:', updates().length, 'updates delivered; rename quick fix applied')

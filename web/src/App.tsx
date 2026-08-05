@@ -7,6 +7,7 @@ import {
   getComponentConfig,
   removeComponent,
   removeFromPipeline,
+  renameComponent,
   setComponentConfig,
 } from './lib/mutate'
 import { AddPipelineDialog } from './components/AddPipelineDialog'
@@ -435,7 +436,16 @@ export default function App() {
               onJumped={() => setJumpLine(null)}
               dark={isDark}
             />
-            <DiagnosticsPanel diagnostics={diagnostics} onJump={setJumpLine} />
+            <DiagnosticsPanel
+              diagnostics={diagnostics}
+              onJump={setJumpLine}
+              onFix={(d) => {
+                if (d.fix?.type === 'rename') {
+                  const fix = d.fix
+                  setYamlText((prev) => renameComponent(prev, fix.section, fix.from, fix.to))
+                }
+              }}
+            />
           </section>
         )}
 

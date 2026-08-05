@@ -2,6 +2,8 @@ import * as vscode from 'vscode'
 import * as path from 'node:path'
 import { meta, validate, type Meta, type ValidationResult } from './validator'
 import { PreviewPanel, type RevealRequest } from './preview'
+import { renameComponent } from '../../web/src/lib/mutate'
+import type { SectionName } from '../../web/src/types'
 
 /**
  * A YAML document is treated as a collector configuration when it has a
@@ -48,8 +50,14 @@ export function activate(context: vscode.ExtensionContext): void {
   async function applyYaml(newYaml: string): Promise<void> {
     const doc = previewDoc
     if (!doc) return
+    const edit = minimalEdit(doc, newYaml)
+    if (edit) await vscode.workspace.applyEdit(edit)
+  }
+
+  /** Single-range edit covering the difference between doc text and newYaml. */
+  function minimalEdit(doc: vscode.TextDocument, newYaml: string): vscode.WorkspaceEdit | null {
     const old = doc.getText()
-    if (old === newYaml) return
+    if (old === newYaml) return null
     let start = 0
     while (start < old.length && start < newYaml.length && old[start] === newYaml[start]) start++
     let endOld = old.length
@@ -64,7 +72,7 @@ export function activate(context: vscode.ExtensionContext): void {
       new vscode.Range(doc.positionAt(start), doc.positionAt(endOld)),
       newYaml.slice(start, endNew),
     )
-    await vscode.workspace.applyEdit(edit)
+    return edit
   }
 
   /** Click-to-reveal from the preview: jump to the component's definition. */
@@ -204,6 +212,42 @@ export function activate(context: vscode.ExtensionContext): void {
       const doc = vscode.window.activeTextEditor?.document ?? previewDoc
       if (doc) void check(doc)
     }),
+    // Quick fixes: rename diagnostics become one-click renames applied to
+    // the definition and every pipeline reference, comment-preserving.
+    vscode.languages.registerCodeActionsProvider(
+      'yaml',
+      {
+        provideCodeActions(doc, _range, context) {
+          const stored = results.get(doc.uri.toString())
+          if (!stored) return []
+          const actions: vscode.CodeAction[] = []
+          for (const vd of context.diagnostics) {
+            if (vd.source !== 'otelflow') continue
+            const match = stored.diagnostics.find(
+              (d) => d.fix && vd.message.startsWith(d.message) && (d.line ?? 1) - 1 === vd.range.start.line,
+            )
+            const fix = match?.fix
+            if (!fix || fix.type !== 'rename') continue
+            const action = new vscode.CodeAction(
+              `Rename to '${fix.to}' everywhere`,
+              vscode.CodeActionKind.QuickFix,
+            )
+            action.diagnostics = [vd]
+            action.isPreferred = true
+            const edit = minimalEdit(
+              doc,
+              renameComponent(doc.getText(), fix.section as SectionName, fix.from, fix.to),
+            )
+            if (edit) {
+              action.edit = edit
+              actions.push(action)
+            }
+          }
+          return actions
+        },
+      },
+      { providedCodeActionKinds: [vscode.CodeActionKind.QuickFix] },
+    ),
     // Offer the bundled MCP server (dist/mcp.cjs — same tools as `otelflow
     // mcp`) to the editor's AI features. Guarded: older hosts lack the API.
     ...(vscode.lm?.registerMcpServerDefinitionProvider

@@ -23,6 +23,19 @@ const (
 	SevInfo    Severity = "info"
 )
 
+// Fix is a machine-applicable remedy attached to a diagnostic — clients
+// (the web problems panel, the VS Code quick fix, AI agents via MCP) can
+// apply it without parsing the hint text.
+type Fix struct {
+	// Type of fix; currently only "rename".
+	Type string `json:"type"`
+	// Section the component lives in (receivers, exporters, …).
+	Section string `json:"section"`
+	// From and To are full component IDs (instance suffix preserved).
+	From string `json:"from"`
+	To   string `json:"to"`
+}
+
 type Diagnostic struct {
 	Severity Severity `json:"severity"`
 	Message  string   `json:"message"`
@@ -30,6 +43,7 @@ type Diagnostic struct {
 	Line     int      `json:"line,omitempty"`
 	Column   int      `json:"column,omitempty"`
 	Hint     string   `json:"hint,omitempty"`
+	Fix      *Fix     `json:"fix,omitempty"`
 }
 
 type Result struct {
@@ -184,9 +198,9 @@ func (v *validator) checkComponentSection(section string, kind registry.Kind, no
 		}
 		if !comp.AvailableIn(v.version) {
 			if comp.Removed != "" && registry.CompareVersions(v.version, comp.Removed) >= 0 {
-				v.add(SevError,
+				v.addWithFix(SevError,
 					fmt.Sprintf("The %s '%s' was removed in v%s and does not exist in v%s.", kind, typeName, comp.Removed, v.version),
-					path, key, removalHint(comp))
+					path, key, removalHint(comp), renameFix(section, id, typeName, comp))
 			} else {
 				v.add(SevError,
 					fmt.Sprintf("The %s '%s' is not available in v%s (added in v%s).", kind, typeName, v.version, comp.Added),
@@ -201,9 +215,9 @@ func (v *validator) checkComponentSection(section string, kind registry.Kind, no
 				"It ships in the contrib distribution — switch the distribution selector, or use a collector build that includes it.")
 		}
 		if comp.DeprecatedIn(v.version) {
-			v.add(SevWarning,
+			v.addWithFix(SevWarning,
 				fmt.Sprintf("The %s '%s' is deprecated since v%s.", kind, typeName, comp.Deprecated),
-				path, key, removalHint(comp))
+				path, key, removalHint(comp), renameFix(section, id, typeName, comp))
 		}
 		if len(comp.Schema) > 0 {
 			v.checkAgainstSchema(comp.Schema, val, path)
@@ -700,11 +714,24 @@ func (v *validator) result() Result {
 }
 
 func (v *validator) add(sev Severity, msg, path string, node *yaml.Node, hint string) {
-	d := Diagnostic{Severity: sev, Message: msg, Path: path, Hint: hint}
+	v.addWithFix(sev, msg, path, node, hint, nil)
+}
+
+func (v *validator) addWithFix(sev Severity, msg, path string, node *yaml.Node, hint string, fix *Fix) {
+	d := Diagnostic{Severity: sev, Message: msg, Path: path, Hint: hint, Fix: fix}
 	if node != nil {
 		d.Line, d.Column = node.Line, node.Column
 	}
 	v.diags = append(v.diags, d)
+}
+
+// renameFix builds the fix for a component whose type was renamed upstream,
+// preserving any instance suffix (filestats/disk → file_stats/disk).
+func renameFix(section, id, typeName string, comp *registry.Component) *Fix {
+	if comp.RenamedTo == "" {
+		return nil
+	}
+	return &Fix{Type: "rename", Section: section, From: id, To: comp.RenamedTo + strings.TrimPrefix(id, typeName)}
 }
 
 var yamlErrLineRe = regexp.MustCompile(`(?:yaml: )?line (\d+):`)

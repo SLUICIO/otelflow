@@ -4,11 +4,13 @@ import type { Diagnostic } from '../types'
 interface Props {
   diagnostics: Diagnostic[]
   onJump: (line: number) => void
+  /** Applies a diagnostic's machine fix (e.g. an upstream type rename). */
+  onFix?: (d: Diagnostic) => void
 }
 
 const ICON = { error: '●', warning: '▲', info: 'ℹ' } as const
 
-export function DiagnosticsPanel({ diagnostics, onJump }: Props) {
+export function DiagnosticsPanel({ diagnostics, onJump, onFix }: Props) {
   const [open, setOpen] = useState(true)
   const errors = diagnostics.filter((d) => d.severity === 'error').length
   const warnings = diagnostics.filter((d) => d.severity === 'warning').length
@@ -37,6 +39,18 @@ export function DiagnosticsPanel({ diagnostics, onJump }: Props) {
                 {d.message}
                 {d.hint ? <span className="diag-hint"> {d.hint}</span> : null}
               </span>
+              {d.fix && onFix && (
+                <button
+                  className="btn btn--link diag-fix"
+                  title={`Rename '${d.fix.from}' to '${d.fix.to}' everywhere in the configuration`}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onFix(d)
+                  }}
+                >
+                  Rename to '{d.fix.to}'
+                </button>
+              )}
             </div>
           ))}
         </div>

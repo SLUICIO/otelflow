@@ -10,6 +10,9 @@ const common = {
   format: 'cjs',
   target: 'node20',
   sourcemap: true,
+  // Shared web sources import 'yaml'; resolve it from THIS package so the
+  // build works without web/node_modules installed (CI).
+  alias: { yaml: dirname(require.resolve('yaml/package.json')) },
 }
 
 // The extension entry point; 'vscode' is provided by the host.

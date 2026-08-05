@@ -37,6 +37,14 @@ export interface Component {
   isDeprecated: boolean
 }
 
+/** Machine-applicable remedy attached to a diagnostic (currently renames). */
+export interface DiagnosticFix {
+  type: 'rename'
+  section: SectionName
+  from: string
+  to: string
+}
+
 export interface Diagnostic {
   severity: 'error' | 'warning' | 'info'
   message: string
@@ -44,6 +52,7 @@ export interface Diagnostic {
   line?: number
   column?: number
   hint?: string
+  fix?: DiagnosticFix
 }
 
 export interface ValidationResult {

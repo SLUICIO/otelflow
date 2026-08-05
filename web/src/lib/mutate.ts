@@ -192,3 +192,38 @@ export function removeComponent(yamlText: string, section: SectionName, id: stri
   }
   return doc.toString(TO_STRING)
 }
+
+/**
+ * Renames a component ID everywhere: the definition key in its section plus
+ * every pipeline reference (and service.extensions for extensions). Used by
+ * the rename quick fix for upstream type renames; comment-preserving.
+ */
+export function renameComponent(yamlText: string, section: SectionName, from: string, to: string): string {
+  const doc = parseDocument(yamlText)
+  const sec = doc.getIn([section], true)
+  if (sec instanceof YAMLMap) {
+    for (const pair of sec.items) {
+      const key = pair.key as any
+      if (key?.value === from) key.value = to
+    }
+  }
+  const renameIn = (seq: unknown) => {
+    if (seq instanceof YAMLSeq) {
+      for (const it of seq.items as any[]) {
+        if (it?.value === from) it.value = to
+      }
+    }
+  }
+  renameIn(doc.getIn(['service', 'extensions'], true))
+  const pipelines = doc.getIn(['service', 'pipelines'], true)
+  if (pipelines instanceof YAMLMap) {
+    for (const pair of pipelines.items) {
+      const pl = pair.value
+      if (!(pl instanceof YAMLMap)) continue
+      for (const role of ['receivers', 'processors', 'exporters']) {
+        renameIn(pl.get(role, true))
+      }
+    }
+  }
+  return doc.toString(TO_STRING)
+}
