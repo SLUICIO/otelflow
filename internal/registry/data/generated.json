@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-07-24T14:49:56Z",
+ "generatedAt": "2026-08-05T11:04:48Z",
  "source": "Derived from the Apache-2.0 licensed repositories open-telemetry/opentelemetry-collector and open-telemetry/opentelemetry-collector-contrib.",
  "versions": [
   "0.70.0",
@@ -17,7 +17,8 @@
   "0.140.0",
   "0.146.0",
   "0.152.0",
-  "0.157.0"
+  "0.157.0",
+  "0.158.0"
  ],
  "components": [
   {
@@ -1187,7 +1188,7 @@
     "logs"
    ],
    "added": "0.70.0",
-   "stability": "beta",
+   "stability": "deprecated",
    "distributions": [
     "contrib"
    ],
@@ -1826,7 +1827,7 @@
    "type": "memory_limiter",
    "kind": "extension",
    "added": "0.96.0",
-   "stability": "development",
+   "stability": "beta",
    "distributions": [
     "core"
    ],
@@ -2050,13 +2051,41 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/datadogsemanticsprocessor"
   },
   {
+   "type": "delta_to_cumulative",
+   "kind": "processor",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.158.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/deltatocumulativeprocessor"
+  },
+  {
+   "type": "delta_to_rate",
+   "kind": "processor",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.158.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/deltatorateprocessor"
+  },
+  {
    "type": "deltatocumulative",
    "kind": "processor",
    "signals": [
     "metrics"
    ],
    "added": "0.96.0",
-   "stability": "alpha",
+   "removed": "0.158.0",
+   "renamedTo": "delta_to_cumulative",
+   "stability": "development",
    "distributions": [
     "contrib"
    ],
@@ -2069,7 +2098,9 @@
     "metrics"
    ],
    "added": "0.70.0",
-   "stability": "alpha",
+   "removed": "0.158.0",
+   "renamedTo": "delta_to_rate",
+   "stability": "development",
    "distributions": [
     "contrib"
    ],
@@ -2431,6 +2462,21 @@
     "contrib"
    ],
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/probabilisticsamplerprocessor"
+  },
+  {
+   "type": "queuebatch",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.158.0",
+   "stability": "development",
+   "distributions": [
+    "core"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/queuebatchprocessor"
   },
   {
    "type": "redaction",
@@ -3186,6 +3232,19 @@
     "contrib"
    ],
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/datadogreceiver"
+  },
+  {
+   "type": "dns_check",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.158.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/dnscheckreceiver"
   },
   {
    "type": "docker_stats",
