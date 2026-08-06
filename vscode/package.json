@@ -3,7 +3,7 @@
   "displayName": "OTelFlow",
   "description": "Version-aware validation for OpenTelemetry Collector configurations — entirely offline, powered by the OTelFlow registry and validation engine.",
   "publisher": "sluicio",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
