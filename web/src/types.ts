@@ -67,10 +67,18 @@ export interface Meta {
 }
 
 /** Parsed view of the config used to draw the flow graph. */
+/** Summary of service::telemetry — the collector's own telemetry. */
+export interface TelemetryModel {
+  logs?: string
+  metrics?: string
+  traces?: string
+}
+
 export interface ConfigModel {
   sections: Record<SectionName, string[]>
   pipelines: PipelineModel[]
   serviceExtensions: string[]
+  telemetry?: TelemetryModel
   parseError?: string
 }
 

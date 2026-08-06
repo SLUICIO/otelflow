@@ -38,6 +38,11 @@ const yaml = [
   'exporters:', '  debug:', '  zipkin:',
   'extensions:', '  health_check:',
   'service:',
+  '  telemetry:',
+  '    logs:',
+  '      level: debug',
+  '    metrics:',
+  '      level: detailed',
   '  extensions: [health_check]',
   '  pipelines:',
   '    metrics:',
@@ -93,6 +98,12 @@ assert.ok(bar?.textContent?.includes('1 error'), 'error count in bar')
 assert.ok(byText('.section-heading', 'Defined but not used'), 'unused rail heading rendered')
 const unusedNode = [...doc.querySelectorAll('.unused-node .node-title')].map((n) => n.textContent)
 assert.ok(unusedNode.some((t) => t?.includes('zipkin')), 'zipkin shown as unused')
+
+// ── Collector telemetry rail ──
+assert.ok(byText('.section-heading', 'Collector telemetry'), 'telemetry heading rendered')
+const telTitles = [...doc.querySelectorAll('.telemetry-node .node-title')].map((n) => n.textContent)
+assert.ok(telTitles.some((t) => t?.includes('level: debug')), 'logs telemetry card shows level')
+assert.ok(telTitles.some((t) => t?.includes('level: detailed')), 'metrics telemetry card shows level')
 
 // ── Click a node: details dialog opens, editor reveal posted ──
 const target = [...doc.querySelectorAll('.flow-node')].find((n) =>

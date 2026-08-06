@@ -79,6 +79,9 @@ export interface GraphLayout {
   /** Components defined in a section but referenced by no pipeline. */
   unused: NodePos[]
   unusedY: number
+  /** service::telemetry summary cards (collector self-telemetry). */
+  telemetry: { signal: string; summary: string; x: number; y: number }[]
+  telemetryY: number
 }
 
 /**
@@ -151,7 +154,27 @@ export function computeLayout(model: ConfigModel, readOnly = false): GraphLayout
     }
   }
   const base = showExtensions ? extY + extRailH : y
-  const unusedY = base + 8
+
+  // Collector self-telemetry (service::telemetry): one card per configured
+  // signal, colored with the signal tokens.
+  const telemetryY = base + 8
+  const telemetry: GraphLayout['telemetry'] = []
+  if (model.telemetry) {
+    for (const signal of ['traces', 'metrics', 'logs'] as const) {
+      const summary = model.telemetry[signal]
+      if (summary) {
+        telemetry.push({
+          signal,
+          summary,
+          x: MARGIN + telemetry.length * (NODE_W + 16),
+          y: telemetryY + 22,
+        })
+      }
+    }
+  }
+  const telRailH = telemetry.length > 0 ? 30 + NODE_H + 16 : 0
+
+  const unusedY = base + telRailH + (telemetry.length > 0 ? 16 : 0) + 8
   const perRow = Math.max(1, Math.floor(laneWidth / (NODE_W + 16)))
   const unused: NodePos[] = []
   const sectionKinds = [
@@ -173,10 +196,11 @@ export function computeLayout(model: ConfigModel, readOnly = false): GraphLayout
     }
   }
   const unusedRows = Math.ceil(unused.length / perRow)
-  const totalH = (unused.length > 0 ? unusedY + 30 + unusedRows * (NODE_H + 30) : base) + MARGIN
+  const railsBottom = base + telRailH + (telemetry.length > 0 ? 16 : 0)
+  const totalH = (unused.length > 0 ? unusedY + 30 + unusedRows * (NODE_H + 30) : railsBottom) + MARGIN
   // Extra width on the right for the connector-edge routing channel.
   const totalW = Math.max(laneWidth + MARGIN * 2 + 56, 720)
-  return { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW, maxProc, showExtensions, unused, unusedY }
+  return { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW, maxProc, showExtensions, unused, unusedY, telemetry, telemetryY }
 }
 
 export function FlowGraph({ model, componentIndex, diagnostics, selected, onSelect, onAdd, onAddPipeline, readOnly }: Props) {
@@ -240,7 +264,7 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
     )
   }
 
-  const { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW, showExtensions, unused, unusedY } = layout
+  const { lanes, laneWidth, exporterX, pipelineZoneY, extY, totalH, totalW, showExtensions, unused, unusedY, telemetry, telemetryY } = layout
 
   const renderNode = (n: NodePos, signal?: string, pipelineId?: string) => {
     const typeName = componentType(n.id)
@@ -466,6 +490,25 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
           onClick={() => onAdd('extension')}
         />
       )}
+
+      {/* collector self-telemetry (service::telemetry) */}
+      {telemetry.length > 0 && (
+        <text className="section-heading" x={MARGIN} y={telemetryY + 12}>
+          Collector telemetry
+        </text>
+      )}
+      {telemetry.map((t) => (
+        <g key={`telemetry:${t.signal}`} className="telemetry-node" transform={`translate(${t.x},${t.y})`}>
+          <rect className="node-box" width={NODE_W} height={NODE_H} rx={8} />
+          <rect className={`node-accent ${t.signal}`} width={3} height={NODE_H} rx={1.5} />
+          <text className={`node-kind-label ${t.signal}`} x={14} y={15}>
+            {t.signal}
+          </text>
+          <text className="node-title" x={14} y={32}>
+            {truncate(t.summary, 24)}
+          </text>
+        </g>
+      ))}
 
       {/* defined-but-unused rail: visible in every mode — the validator
           warns about these, the canvas shows them */}

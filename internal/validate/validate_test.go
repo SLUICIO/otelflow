@@ -1,6 +1,7 @@
 package validate
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -811,5 +812,53 @@ service:
 		if strings.Contains(d.Message, "Unrecognized field") {
 			t.Errorf("field flagged: %s", d.Message)
 		}
+	}
+}
+
+func TestServiceTelemetrySchema(t *testing.T) {
+	base := `receivers:
+  otlp:
+    protocols:
+      grpc:
+exporters:
+  debug:
+service:
+  telemetry:
+%s
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [debug]
+`
+	valid := Validate(mustRegistry(t), fmt.Sprintf(base, `    logs:
+      level: debug
+      encoding: json
+      sampling:
+        initial: 10
+    metrics:
+      level: detailed
+      readers:
+        - periodic:
+            exporter:
+              otlp:
+                endpoint: https://x:4318
+    traces:
+      propagators: [tracecontext, b3]`), "0.158.0", "contrib")
+	for _, d := range valid.Diagnostics {
+		if strings.Contains(d.Path, "service.telemetry") {
+			t.Errorf("valid telemetry flagged: %s", d.Message)
+		}
+	}
+
+	invalid := Validate(mustRegistry(t), fmt.Sprintf(base, `    metrics:
+      levl: detailed
+    logs:
+      encoding: yaml`), "0.158.0", "contrib")
+	msgs := messages(invalid)
+	if !strings.Contains(msgs, "levl") {
+		t.Errorf("telemetry typo not flagged:\n%s", msgs)
+	}
+	if !strings.Contains(msgs, "must be one of: console, json") {
+		t.Errorf("bad encoding enum not flagged:\n%s", msgs)
 	}
 }

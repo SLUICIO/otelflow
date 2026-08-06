@@ -35,9 +35,27 @@ export function parseConfigModel(yamlText: string): ConfigModel {
 
   const pipelines: PipelineModel[] = []
   let serviceExtensions: string[] = []
+  let telemetry: ConfigModel['telemetry']
   const service = root['service']
   if (service && typeof service === 'object' && !Array.isArray(service)) {
     const svc = service as Record<string, unknown>
+    const tel = svc['telemetry']
+    if (tel && typeof tel === 'object' && !Array.isArray(tel)) {
+      telemetry = {}
+      const t = tel as Record<string, unknown>
+      for (const sig of ['logs', 'metrics', 'traces'] as const) {
+        const block = t[sig]
+        if (block && typeof block === 'object' && !Array.isArray(block)) {
+          const b = block as Record<string, unknown>
+          const parts: string[] = []
+          if (typeof b['level'] === 'string') parts.push(`level: ${b['level']}`)
+          if (sig === 'logs' && typeof b['encoding'] === 'string') parts.push(b['encoding'] as string)
+          if (sig === 'metrics' && Array.isArray(b['readers'])) parts.push(`${(b['readers'] as unknown[]).length} reader${(b['readers'] as unknown[]).length === 1 ? '' : 's'}`)
+          if (sig === 'traces' && Array.isArray(b['propagators'])) parts.push(`${(b['propagators'] as unknown[]).length} propagators`)
+          telemetry[sig] = parts.join(' · ') || 'configured'
+        }
+      }
+    }
     if (Array.isArray(svc['extensions'])) {
       serviceExtensions = svc['extensions'].filter((x): x is string => typeof x === 'string')
     }
@@ -66,5 +84,5 @@ export function parseConfigModel(yamlText: string): ConfigModel {
       }
     }
   }
-  return { sections, pipelines, serviceExtensions }
+  return { sections, pipelines, serviceExtensions, telemetry }
 }

@@ -332,6 +332,55 @@ func (v *validator) unknownTypeHint(kind registry.Kind, typeName string) string 
 
 // --- service section ---
 
+// telemetrySchema models service::telemetry — the collector's own logs,
+// metrics and traces — from the otelconftelemetry config structs at v0.158.0.
+// Reader/processor entries are otelconf documents, kept free-form.
+var telemetrySchema = json.RawMessage(`{
+  "type": "object",
+  "properties": {
+    "logs": {
+      "type": "object",
+      "properties": {
+        "level": {"type": "string", "enum": ["debug", "info", "warn", "error", "dpanic", "panic", "fatal"], "default": "info"},
+        "development": {"type": "bool"},
+        "encoding": {"type": "string", "enum": ["console", "json"], "default": "console"},
+        "disable_caller": {"type": "bool"},
+        "disable_stacktrace": {"type": "bool"},
+        "sampling": {"type": "object", "properties": {
+          "enabled": {"type": "bool", "default": true},
+          "tick": {"type": "duration"},
+          "initial": {"type": "int"},
+          "thereafter": {"type": "int"}
+        }},
+        "output_paths": {"type": "array", "items": {"type": "string"}},
+        "error_output_paths": {"type": "array", "items": {"type": "string"}},
+        "initial_fields": {"type": "map"},
+        "processors": {"type": "array", "items": {"type": "object"}, "description": "otelconf log record processors (e.g. batch with an otlp exporter)."},
+        "disable_zap_resource": {"type": "bool"}
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "level": {"type": "string", "enum": ["none", "basic", "normal", "detailed"], "default": "normal"},
+        "readers": {"type": "array", "items": {"type": "object"}, "description": "otelconf metric readers (pull prometheus or periodic otlp)."},
+        "views": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "traces": {
+      "type": "object",
+      "properties": {
+        "level": {"type": "string", "enum": ["none", "basic", "normal", "detailed"]},
+        "propagators": {"type": "array", "items": {"type": "string"}},
+        "processors": {"type": "array", "items": {"type": "object"}, "description": "otelconf span processors (e.g. batch with an otlp exporter)."},
+        "sampler": {"type": "object"},
+        "limits": {"type": "object"}
+      }
+    },
+    "resource": {"type": "object", "description": "Resource attributes for the collector's own telemetry."}
+  }
+}`)
+
 func (v *validator) checkService(node *yaml.Node) {
 	node = resolve(node)
 	if node == nil || node.Kind != yaml.MappingNode {
@@ -346,7 +395,7 @@ func (v *validator) checkService(node *yaml.Node) {
 		case "extensions":
 			v.checkServiceExtensions(val)
 		case "telemetry":
-			// free-form; accepted
+			v.checkAgainstSchema(telemetrySchema, val, "service.telemetry")
 		default:
 			v.add(SevWarning, fmt.Sprintf("Unknown service field '%s'.", key.Value), "service."+key.Value, key,
 				"Expected: pipelines, extensions, telemetry.")
