@@ -243,6 +243,9 @@
                 }
               }
             }
+          },
+          "remote_sampling": {
+            "type": "object"
           }
         },
         "required": [
@@ -310,6 +313,18 @@
                 "type": "string"
               }
             }
+          },
+          "api_server": {
+            "type": "object"
+          },
+          "scrape_on_shutdown": {
+            "type": "bool"
+          },
+          "discovery_reload_on_startup": {
+            "type": "bool"
+          },
+          "initial_scrape_offset": {
+            "type": "duration"
           }
         },
         "required": [
@@ -350,6 +365,9 @@
           "timeout": {
             "type": "duration",
             "description": "Per-scrape timeout (scraper helper)."
+          },
+          "metadata_collection_interval": {
+            "type": "duration"
           }
         },
         "required": [
@@ -578,6 +596,64 @@
                 "type": "string"
               }
             }
+          },
+          "profiles": {
+            "type": "object"
+          },
+          "message_marking": {
+            "type": "object"
+          },
+          "error_backoff": {
+            "type": "object"
+          },
+          "telemetry": {
+            "type": "object"
+          },
+          "protocol_version": {
+            "type": "string"
+          },
+          "client_id": {
+            "type": "string"
+          },
+          "resolve_canonical_bootstrap_servers_only": {
+            "type": "bool"
+          },
+          "metadata": {
+            "type": "object"
+          },
+          "session_timeout": {
+            "type": "duration"
+          },
+          "heartbeat_interval": {
+            "type": "duration"
+          },
+          "initial_offset": {
+            "type": "string",
+            "enum": [
+              "latest",
+              "earliest"
+            ]
+          },
+          "auto_commit": {
+            "type": "object"
+          },
+          "min_fetch_size": {
+            "type": "int"
+          },
+          "default_fetch_size": {
+            "type": "int"
+          },
+          "max_fetch_size": {
+            "type": "int"
+          },
+          "max_fetch_wait": {
+            "type": "duration"
+          },
+          "group_instance_id": {
+            "type": "string"
+          },
+          "group_rebalance_strategy": {
+            "type": "string"
           }
         }
       }
@@ -770,6 +846,27 @@
           "timeout": {
             "type": "duration",
             "description": "Per-scrape timeout (scraper helper)."
+          },
+          "extra_metadata_labels": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "metric_groups": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "k8s_api_config": {
+            "type": "object"
+          },
+          "node": {
+            "type": "string"
+          },
+          "collect_all_network_interfaces": {
+            "type": "object"
           }
         }
       }
@@ -831,6 +928,27 @@
           "resource_attributes": {
             "type": "object",
             "description": "Enable or disable resource attributes (metrics builder config)."
+          },
+          "metadata_exporters": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "metadata_collection_interval": {
+            "type": "duration"
+          },
+          "namespace": {
+            "type": "string"
+          },
+          "namespaces": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "k8s_leader_elector": {
+            "type": "object"
           }
         }
       }
@@ -922,6 +1040,27 @@
           "timeout": {
             "type": "duration",
             "description": "Per-scrape timeout (scraper helper)."
+          },
+          "username": {
+            "type": "string"
+          },
+          "tls": {
+            "type": "object",
+            "properties": {
+              "insecure": {
+                "type": "bool",
+                "default": false
+              },
+              "ca_file": {
+                "type": "string"
+              },
+              "cert_file": {
+                "type": "string"
+              },
+              "key_file": {
+                "type": "string"
+              }
+            }
           }
         },
         "required": [
@@ -1016,6 +1155,15 @@
           "top_query_collection": {
             "type": "object",
             "description": "Collect top queries by resource usage."
+          },
+          "exclude_databases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "db_auth": {
+            "type": "object"
           }
         },
         "required": [
@@ -1246,6 +1394,151 @@
           "override": {
             "type": "bool",
             "default": true
+          },
+          "refresh_interval": {
+            "type": "duration"
+          },
+          "fail_on_missing_metadata": {
+            "type": "bool"
+          },
+          "proxy_url": {
+            "type": "string"
+          },
+          "read_buffer_size": {
+            "type": "int"
+          },
+          "write_buffer_size": {
+            "type": "int"
+          },
+          "max_idle_conns": {
+            "type": "int"
+          },
+          "max_idle_conns_per_host": {
+            "type": "int"
+          },
+          "max_conns_per_host": {
+            "type": "int"
+          },
+          "idle_conn_timeout": {
+            "type": "duration"
+          },
+          "disable_keep_alives": {
+            "type": "bool"
+          },
+          "http2_read_idle_timeout": {
+            "type": "duration"
+          },
+          "http2_ping_timeout": {
+            "type": "duration"
+          },
+          "cookies": {
+            "type": "object"
+          },
+          "compression": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "map",
+            "values": {
+              "type": "string"
+            }
+          },
+          "endpoint": {
+            "type": "string"
+          },
+          "auth": {
+            "type": "object",
+            "properties": {
+              "authenticator": {
+                "type": "string"
+              }
+            }
+          },
+          "tls": {
+            "type": "object",
+            "properties": {
+              "insecure": {
+                "type": "bool",
+                "default": false
+              },
+              "ca_file": {
+                "type": "string"
+              },
+              "cert_file": {
+                "type": "string"
+              },
+              "key_file": {
+                "type": "string"
+              }
+            }
+          },
+          "system": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "env": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "ec2": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "ecs": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "eks": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "elasticbeanstalk": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "lambda": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "azure": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "aks": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "gcp": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "docker": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "heroku": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "openshift": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "consul": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "k8snode": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "kubeadm": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
+          },
+          "dynatrace": {
+            "type": "object",
+            "description": "Detector-specific settings; see the resourcedetection docs."
           }
         },
         "required": [
@@ -1755,6 +2048,25 @@
               }
             },
             "description": "Remember sampling decisions for late-arriving spans."
+          },
+          "decision_wait_after_root_received": {
+            "type": "duration"
+          },
+          "block_on_overflow": {
+            "type": "bool"
+          },
+          "tail_storage": {
+            "type": "object"
+          },
+          "sample_on_first_match": {
+            "type": "bool"
+          },
+          "sampling_strategy": {},
+          "drop_pending_traces_on_shutdown": {
+            "type": "bool"
+          },
+          "maximum_trace_size_bytes": {
+            "type": "int"
           }
         },
         "required": [
@@ -1807,6 +2119,12 @@
           "sampling_priority": {
             "type": "string",
             "description": "Log attribute overriding the sampling percentage per record."
+          },
+          "fail_closed": {
+            "type": "bool"
+          },
+          "sampling_precision": {
+            "type": "int"
           }
         },
         "required": [
@@ -1851,6 +2169,24 @@
               "type": "object",
               "additionalProperties": true
             }
+          },
+          "filter": {
+            "type": "object"
+          },
+          "exclude": {
+            "type": "object"
+          },
+          "wait_for_metadata": {
+            "type": "bool"
+          },
+          "wait_for_metadata_timeout": {
+            "type": "duration"
+          },
+          "watch_sync_period": {
+            "type": "duration"
+          },
+          "pod_delete_grace_period": {
+            "type": "duration"
           }
         }
       }
@@ -1900,6 +2236,9 @@
           },
           "max_staleness": {
             "type": "duration"
+          },
+          "initial_value": {
+            "type": "object"
           }
         }
       }
@@ -2035,6 +2374,12 @@
           "hmac_key": {
             "type": "string",
             "description": "Key for HMAC hashing of blocked values."
+          },
+          "db_sanitizer": {
+            "type": "object"
+          },
+          "url_sanitizer": {
+            "type": "object"
           }
         }
       }
@@ -2174,6 +2519,24 @@
             "type": "duration",
             "default": "5s",
             "description": "Per-batch export timeout (exporter helper)."
+          },
+          "keepalive": {
+            "type": "object"
+          },
+          "balancer_name": {
+            "type": "string"
+          },
+          "authority": {
+            "type": "string"
+          },
+          "wait_for_ready": {
+            "type": "bool"
+          },
+          "read_buffer_size": {
+            "type": "int"
+          },
+          "write_buffer_size": {
+            "type": "int"
           }
         },
         "required": [
@@ -2316,6 +2679,51 @@
                 "description": "Give up after this total elapsed time; 0 retries forever."
               }
             }
+          },
+          "traces_endpoint": {
+            "type": "string"
+          },
+          "metrics_endpoint": {
+            "type": "string"
+          },
+          "logs_endpoint": {
+            "type": "string"
+          },
+          "profiles_endpoint": {
+            "type": "string"
+          },
+          "proxy_url": {
+            "type": "string"
+          },
+          "read_buffer_size": {
+            "type": "int"
+          },
+          "write_buffer_size": {
+            "type": "int"
+          },
+          "max_idle_conns": {
+            "type": "int"
+          },
+          "max_idle_conns_per_host": {
+            "type": "int"
+          },
+          "max_conns_per_host": {
+            "type": "int"
+          },
+          "idle_conn_timeout": {
+            "type": "duration"
+          },
+          "disable_keep_alives": {
+            "type": "bool"
+          },
+          "http2_read_idle_timeout": {
+            "type": "duration"
+          },
+          "http2_ping_timeout": {
+            "type": "duration"
+          },
+          "cookies": {
+            "type": "object"
           }
         },
         "required": [
@@ -2395,6 +2803,15 @@
             "type": "bool",
             "default": true,
             "description": "Emit through the collector's internal logger (honors service::telemetry::logs)."
+          },
+          "output_paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sending_queue": {
+            "type": "object"
           }
         }
       }
@@ -2570,6 +2987,26 @@
                 "type": "string"
               }
             }
+          },
+          "sending_queue": {
+            "type": "object"
+          },
+          "without_scope_info": {
+            "type": "bool"
+          },
+          "max_request_body_size": {
+            "type": "int"
+          },
+          "cors": {
+            "type": "object"
+          },
+          "auth": {
+            "type": "object",
+            "properties": {
+              "authenticator": {
+                "type": "string"
+              }
+            }
           }
         },
         "required": [
@@ -2720,6 +3157,70 @@
             "type": "int",
             "default": 3000000,
             "description": "Maximum size of an outgoing remote-write batch."
+          },
+          "max_batch_request_parallelism": {
+            "type": "int"
+          },
+          "disable_scope_info": {
+            "type": "bool"
+          },
+          "add_metric_suffixes": {
+            "type": "bool"
+          },
+          "translation_strategy": {},
+          "send_metadata": {
+            "type": "bool"
+          },
+          "include_metadata_keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "convert_explicit_histograms_to_nhcb": {
+            "type": "bool"
+          },
+          "keep_classic_histograms": {
+            "type": "bool"
+          },
+          "proxy_url": {
+            "type": "string"
+          },
+          "read_buffer_size": {
+            "type": "int"
+          },
+          "write_buffer_size": {
+            "type": "int"
+          },
+          "max_idle_conns": {
+            "type": "int"
+          },
+          "max_idle_conns_per_host": {
+            "type": "int"
+          },
+          "max_conns_per_host": {
+            "type": "int"
+          },
+          "idle_conn_timeout": {
+            "type": "duration"
+          },
+          "disable_keep_alives": {
+            "type": "bool"
+          },
+          "http2_read_idle_timeout": {
+            "type": "duration"
+          },
+          "http2_ping_timeout": {
+            "type": "duration"
+          },
+          "cookies": {
+            "type": "object"
+          },
+          "compression": {
+            "type": "string"
+          },
+          "protobuf_message": {
+            "type": "object"
           }
         },
         "required": [
@@ -2849,6 +3350,60 @@
                 "type": "string"
               }
             }
+          },
+          "producer": {
+            "type": "object"
+          },
+          "logs": {
+            "type": "object"
+          },
+          "metrics": {
+            "type": "object"
+          },
+          "traces": {
+            "type": "object"
+          },
+          "profiles": {
+            "type": "object"
+          },
+          "include_metadata_keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "record_headers": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "topic_from_attribute": {
+            "type": "string"
+          },
+          "partition_metrics_by_resource_attributes": {
+            "type": "bool"
+          },
+          "partition_logs_by_resource_attributes": {
+            "type": "bool"
+          },
+          "partition_logs_by_trace_id": {
+            "type": "bool"
+          },
+          "record_partitioner": {
+            "type": "object"
+          },
+          "protocol_version": {
+            "type": "string"
+          },
+          "client_id": {
+            "type": "string"
+          },
+          "resolve_canonical_bootstrap_servers_only": {
+            "type": "bool"
+          },
+          "metadata": {
+            "type": "object"
           }
         }
       }
@@ -2905,6 +3460,24 @@
           "flush_interval": {
             "type": "duration",
             "default": "1s"
+          },
+          "append": {
+            "type": "bool"
+          },
+          "encoding": {
+            "type": "object"
+          },
+          "compression_params": {
+            "type": "object"
+          },
+          "group_by": {
+            "type": "object"
+          },
+          "create_directory": {
+            "type": "bool"
+          },
+          "directory_permissions": {
+            "type": "string"
           }
         },
         "required": [
@@ -2956,6 +3529,18 @@
             "required": [
               "authenticator"
             ]
+          },
+          "retry_on_failure": {
+            "type": "object"
+          },
+          "sending_queue": {
+            "type": "object"
+          },
+          "routing_attributes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
@@ -3090,6 +3675,12 @@
           "timeout": {
             "type": "duration",
             "default": "5s"
+          },
+          "encoding": {
+            "type": "object"
+          },
+          "encoding_file_extension": {
+            "type": "string"
           }
         },
         "required": [
@@ -3247,6 +3838,27 @@
                 "type": "string"
               }
             }
+          },
+          "connection_params": {
+            "type": "map",
+            "values": {
+              "type": "string"
+            }
+          },
+          "profiles_table_name": {
+            "type": "string"
+          },
+          "metrics_table_name": {
+            "type": "string"
+          },
+          "table_engine": {
+            "type": "object"
+          },
+          "cluster_name": {
+            "type": "string"
+          },
+          "json": {
+            "type": "bool"
           }
         },
         "required": [
@@ -3374,6 +3986,126 @@
               }
             },
             "description": "Take the document ID from the elasticsearch.document_id attribute."
+          },
+          "sending_queue": {
+            "type": "object"
+          },
+          "cloudid": {
+            "type": "string"
+          },
+          "logs_dynamic_index": {
+            "type": "object"
+          },
+          "metrics_index": {
+            "type": "string"
+          },
+          "metrics_dynamic_index": {
+            "type": "object"
+          },
+          "traces_dynamic_index": {
+            "type": "object"
+          },
+          "logs_dynamic_id": {
+            "type": "object"
+          },
+          "logs_dynamic_pipeline": {
+            "type": "object"
+          },
+          "pipeline": {
+            "type": "string"
+          },
+          "discover": {
+            "type": "object"
+          },
+          "logstash_format": {
+            "type": "object"
+          },
+          "suppress_conflict_errors": {
+            "type": "bool"
+          },
+          "telemetry": {
+            "type": "object"
+          },
+          "include_source_on_error": {
+            "type": "bool"
+          },
+          "metadata_keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bulk_response_filter_path": {
+            "type": "string"
+          },
+          "proxy_url": {
+            "type": "string"
+          },
+          "read_buffer_size": {
+            "type": "int"
+          },
+          "write_buffer_size": {
+            "type": "int"
+          },
+          "max_idle_conns": {
+            "type": "int"
+          },
+          "max_idle_conns_per_host": {
+            "type": "int"
+          },
+          "max_conns_per_host": {
+            "type": "int"
+          },
+          "idle_conn_timeout": {
+            "type": "duration"
+          },
+          "disable_keep_alives": {
+            "type": "bool"
+          },
+          "http2_read_idle_timeout": {
+            "type": "duration"
+          },
+          "http2_ping_timeout": {
+            "type": "duration"
+          },
+          "cookies": {
+            "type": "object"
+          },
+          "compression": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "map",
+            "values": {
+              "type": "string"
+            }
+          },
+          "timeout": {
+            "type": "duration"
+          },
+          "tls": {
+            "type": "object",
+            "properties": {
+              "insecure": {
+                "type": "bool",
+                "default": false
+              },
+              "ca_file": {
+                "type": "string"
+              },
+              "cert_file": {
+                "type": "string"
+              },
+              "key_file": {
+                "type": "string"
+              }
+            }
+          },
+          "user": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
           }
         }
       }
@@ -3540,6 +4272,81 @@
           "telemetry": {
             "type": "object",
             "description": "Internal telemetry about the exporter itself."
+          },
+          "log_data_enabled": {
+            "type": "bool"
+          },
+          "profiling_data_enabled": {
+            "type": "bool"
+          },
+          "max_content_length_logs": {
+            "type": "int"
+          },
+          "max_content_length_metrics": {
+            "type": "int"
+          },
+          "max_content_length_traces": {
+            "type": "int"
+          },
+          "max_event_size": {
+            "type": "int"
+          },
+          "otel_attrs_to_hec_metadata": {
+            "type": "object"
+          },
+          "otel_to_hec_fields": {
+            "type": "object"
+          },
+          "health_path": {
+            "type": "string"
+          },
+          "health_check_enabled": {
+            "type": "bool"
+          },
+          "export_raw": {
+            "type": "bool"
+          },
+          "use_multi_metric_format": {
+            "type": "bool"
+          },
+          "proxy_url": {
+            "type": "string"
+          },
+          "read_buffer_size": {
+            "type": "int"
+          },
+          "write_buffer_size": {
+            "type": "int"
+          },
+          "max_idle_conns_per_host": {
+            "type": "int"
+          },
+          "max_conns_per_host": {
+            "type": "int"
+          },
+          "idle_conn_timeout": {
+            "type": "duration"
+          },
+          "disable_keep_alives": {
+            "type": "bool"
+          },
+          "http2_read_idle_timeout": {
+            "type": "duration"
+          },
+          "http2_ping_timeout": {
+            "type": "duration"
+          },
+          "cookies": {
+            "type": "object"
+          },
+          "compression": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "map",
+            "values": {
+              "type": "string"
+            }
           }
         },
         "required": [
@@ -3623,6 +4430,9 @@
           "endpoint": {
             "type": "string",
             "default": "localhost:55679"
+          },
+          "expvar": {
+            "type": "object"
           }
         }
       }
@@ -3709,6 +4519,9 @@
               "type": "string"
             },
             "description": "Multiple allowed tokens (server side); alternative to token."
+          },
+          "header": {
+            "type": "string"
           }
         }
       }
@@ -3770,6 +4583,36 @@
                 "type": "string"
               }
             }
+          },
+          "client_id_file": {
+            "type": "string"
+          },
+          "client_secret_file": {
+            "type": "string"
+          },
+          "client_certificate_key_id": {
+            "type": "string"
+          },
+          "client_certificate_key": {
+            "type": "string"
+          },
+          "client_certificate_key_file": {
+            "type": "string"
+          },
+          "grant_type": {
+            "type": "string"
+          },
+          "signature_algorithm": {
+            "type": "string"
+          },
+          "iss": {
+            "type": "string"
+          },
+          "audience": {
+            "type": "string"
+          },
+          "claims": {
+            "type": "map"
           }
         },
         "required": [
@@ -3817,6 +4660,9 @@
                 "key"
               ]
             }
+          },
+          "additional_auth": {
+            "type": "object"
           }
         },
         "required": [
@@ -3855,6 +4701,21 @@
           "create_directory": {
             "type": "bool",
             "default": false
+          },
+          "rebound_needed_threshold_mib": {
+            "type": "int"
+          },
+          "rebound_trigger_threshold_mib": {
+            "type": "int"
+          },
+          "max_size": {
+            "type": "int"
+          },
+          "directory_permissions": {
+            "type": "string"
+          },
+          "recreate": {
+            "type": "bool"
           }
         }
       }
@@ -3926,6 +4787,9 @@
           "metrics": {
             "type": "object",
             "additionalProperties": true
+          },
+          "profiles": {
+            "type": "map"
           }
         }
       }
@@ -3991,6 +4855,51 @@
                 "type": "int"
               }
             }
+          },
+          "calls_dimensions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "dimensions_cache_size": {
+            "type": "int"
+          },
+          "resource_metrics_cache_size": {
+            "type": "int"
+          },
+          "resource_metrics_key_attributes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "metrics_expiration": {
+            "type": "duration"
+          },
+          "series_expiration": {
+            "type": "duration"
+          },
+          "metric_timestamp_cache_size": {
+            "type": "int"
+          },
+          "events": {
+            "type": "object"
+          },
+          "include_instrumentation_scope": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "aggregation_cardinality_limit": {
+            "type": "int"
+          },
+          "add_resource_attributes": {
+            "type": "bool"
+          },
+          "enable_metrics_sampling_method": {
+            "type": "bool"
           }
         }
       }
@@ -4025,6 +4934,36 @@
           "store": {
             "type": "object",
             "additionalProperties": true
+          },
+          "exponential_histogram_max_size": {
+            "type": "int"
+          },
+          "cache_loop": {
+            "type": "duration"
+          },
+          "store_expiration_loop": {
+            "type": "duration"
+          },
+          "virtual_node_peer_attributes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "virtual_node_extra_label": {
+            "type": "bool"
+          },
+          "metrics_flush_interval": {
+            "type": "duration"
+          },
+          "database_name_attributes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "metrics_timestamp_offset": {
+            "type": "duration"
           }
         }
       }
@@ -4252,6 +5191,24 @@
             "type": "duration",
             "default": "5s",
             "description": "Per-batch export timeout (exporter helper)."
+          },
+          "keepalive": {
+            "type": "object"
+          },
+          "balancer_name": {
+            "type": "string"
+          },
+          "authority": {
+            "type": "string"
+          },
+          "wait_for_ready": {
+            "type": "bool"
+          },
+          "read_buffer_size": {
+            "type": "int"
+          },
+          "write_buffer_size": {
+            "type": "int"
           }
         },
         "required": [
@@ -4394,6 +5351,51 @@
                 "description": "Give up after this total elapsed time; 0 retries forever."
               }
             }
+          },
+          "proxy_url": {
+            "type": "string"
+          },
+          "read_buffer_size": {
+            "type": "int"
+          },
+          "write_buffer_size": {
+            "type": "int"
+          },
+          "max_idle_conns": {
+            "type": "int"
+          },
+          "max_idle_conns_per_host": {
+            "type": "int"
+          },
+          "max_conns_per_host": {
+            "type": "int"
+          },
+          "idle_conn_timeout": {
+            "type": "duration"
+          },
+          "disable_keep_alives": {
+            "type": "bool"
+          },
+          "http2_read_idle_timeout": {
+            "type": "duration"
+          },
+          "http2_ping_timeout": {
+            "type": "duration"
+          },
+          "cookies": {
+            "type": "object"
+          },
+          "traces_endpoint": {
+            "type": "string"
+          },
+          "metrics_endpoint": {
+            "type": "string"
+          },
+          "logs_endpoint": {
+            "type": "string"
+          },
+          "profiles_endpoint": {
+            "type": "string"
           }
         },
         "required": [
