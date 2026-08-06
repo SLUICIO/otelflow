@@ -410,7 +410,8 @@ a.brand-sub:hover { color: var(--primary); text-decoration: underline; }
 
 /* ── Flow graph SVG — neutral by default; color is signal ── */
 .flow-node { cursor: pointer; }
-.flow-node rect.node-box {
+.flow-node rect.node-box,
+.telemetry-node rect.node-box {
   fill: var(--surface-2);
   stroke: var(--border-strong);
   stroke-width: 1;
