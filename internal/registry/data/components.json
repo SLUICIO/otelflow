@@ -59,6 +59,47 @@
                       "unix"
                     ],
                     "default": "tcp"
+                  },
+                  "tls": {
+                    "type": "object",
+                    "description": "Server-side TLS.",
+                    "properties": {
+                      "ca_file": {
+                        "type": "string"
+                      },
+                      "cert_file": {
+                        "type": "string"
+                      },
+                      "key_file": {
+                        "type": "string"
+                      },
+                      "client_ca_file": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "auth": {
+                    "type": "object",
+                    "properties": {
+                      "authenticator": {
+                        "type": "string",
+                        "description": "ID of a server auth extension."
+                      }
+                    }
+                  },
+                  "keepalive": {
+                    "type": "object",
+                    "description": "gRPC keepalive server parameters and enforcement policy."
+                  },
+                  "read_buffer_size": {
+                    "type": "int"
+                  },
+                  "write_buffer_size": {
+                    "type": "int"
+                  },
+                  "include_metadata": {
+                    "type": "bool",
+                    "description": "Propagate client metadata (for use with metadata_keys batching)."
                   }
                 }
               },
@@ -81,6 +122,64 @@
                   "logs_url_path": {
                     "type": "string",
                     "default": "/v1/logs"
+                  },
+                  "max_request_body_size": {
+                    "type": "int",
+                    "default": 20971520,
+                    "description": "Maximum request body size in bytes."
+                  },
+                  "cors": {
+                    "type": "object",
+                    "properties": {
+                      "allowed_origins": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Origins allowed; wildcards with *."
+                      },
+                      "allowed_headers": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "max_age": {
+                        "type": "int",
+                        "description": "Preflight cache seconds."
+                      }
+                    }
+                  },
+                  "tls": {
+                    "type": "object",
+                    "description": "Server-side TLS.",
+                    "properties": {
+                      "ca_file": {
+                        "type": "string"
+                      },
+                      "cert_file": {
+                        "type": "string"
+                      },
+                      "key_file": {
+                        "type": "string"
+                      },
+                      "client_ca_file": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "auth": {
+                    "type": "object",
+                    "properties": {
+                      "authenticator": {
+                        "type": "string",
+                        "description": "ID of a server auth extension."
+                      }
+                    }
+                  },
+                  "include_metadata": {
+                    "type": "bool",
+                    "description": "Propagate client metadata (for use with metadata_keys batching)."
                   }
                 }
               }
@@ -1191,6 +1290,13 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "resource": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "OTTL conditions on the resource."
               }
             }
           },
@@ -1208,6 +1314,79 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "include": {
+                "type": "object",
+                "properties": {
+                  "match_type": {
+                    "type": "string",
+                    "enum": [
+                      "strict",
+                      "regexp",
+                      "expr"
+                    ]
+                  },
+                  "metric_names": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "expressions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "resource_attributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              },
+              "exclude": {
+                "type": "object",
+                "properties": {
+                  "match_type": {
+                    "type": "string",
+                    "enum": [
+                      "strict",
+                      "regexp",
+                      "expr"
+                    ]
+                  },
+                  "metric_names": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "expressions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "resource_attributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              },
+              "regexp": {
+                "type": "object",
+                "description": "Regexp cache settings for the legacy match syntax."
+              },
+              "resource": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "OTTL conditions on the resource."
               }
             }
           },
@@ -1219,8 +1398,258 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "include": {
+                "type": "object",
+                "properties": {
+                  "match_type": {
+                    "type": "string",
+                    "enum": [
+                      "strict",
+                      "regexp"
+                    ]
+                  },
+                  "resource_attributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "record_attributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "severity_texts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "bodies": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "severity_number": {
+                    "type": "object",
+                    "properties": {
+                      "min": {
+                        "type": "string"
+                      },
+                      "match_undefined": {
+                        "type": "bool"
+                      }
+                    }
+                  }
+                }
+              },
+              "exclude": {
+                "type": "object",
+                "properties": {
+                  "match_type": {
+                    "type": "string",
+                    "enum": [
+                      "strict",
+                      "regexp"
+                    ]
+                  },
+                  "resource_attributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "record_attributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "severity_texts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "bodies": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "severity_number": {
+                    "type": "object",
+                    "properties": {
+                      "min": {
+                        "type": "string"
+                      },
+                      "match_undefined": {
+                        "type": "bool"
+                      }
+                    }
+                  }
+                }
+              },
+              "resource": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "OTTL conditions on the resource."
               }
             }
+          },
+          "spans": {
+            "type": "object",
+            "description": "Legacy span match syntax; prefer trace_conditions.",
+            "properties": {
+              "include": {
+                "type": "object",
+                "properties": {
+                  "match_type": {
+                    "type": "string",
+                    "enum": [
+                      "strict",
+                      "regexp"
+                    ]
+                  },
+                  "services": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "span_names": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "span_kinds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "attributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    },
+                    "description": "Attribute key/value matchers."
+                  },
+                  "resources": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "libraries": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              },
+              "exclude": {
+                "type": "object",
+                "properties": {
+                  "match_type": {
+                    "type": "string",
+                    "enum": [
+                      "strict",
+                      "regexp"
+                    ]
+                  },
+                  "services": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "span_names": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "span_kinds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "attributes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    },
+                    "description": "Attribute key/value matchers."
+                  },
+                  "resources": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "libraries": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "profiles": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "profile": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "trace_conditions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Flat OTTL conditions (the current format); contexts via prefixes like span. / resource."
+          },
+          "metric_conditions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Flat OTTL conditions (the current format); contexts via prefixes like span. / resource."
+          },
+          "log_conditions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Flat OTTL conditions (the current format); contexts via prefixes like span. / resource."
+          },
+          "profile_conditions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Flat OTTL conditions (the current format); contexts via prefixes like span. / resource."
           }
         }
       }

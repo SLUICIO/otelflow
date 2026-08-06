@@ -766,3 +766,50 @@ service:
 		t.Errorf("unexpected fix payload: %+v", fix)
 	}
 }
+
+func TestFilterLegacyMatchAndOTLPHTTPServerFields(t *testing.T) {
+	// User-reported gaps: filter's legacy include/exclude match syntax and
+	// confighttp server fields on the otlp receiver (verified against the
+	// v0.158.0 config structs).
+	r := Validate(mustRegistry(t), `receivers:
+  otlp:
+    protocols:
+      http:
+        max_request_body_size: 20971520
+        cors:
+          allowed_origins: [https://*.example.com]
+        tls:
+          cert_file: /certs/server.crt
+          key_file: /certs/server.key
+      grpc:
+        max_recv_msg_size_mib: 16
+        keepalive:
+          server_parameters:
+            max_connection_idle: 11s
+processors:
+  filter:
+    spans:
+      exclude:
+        match_type: strict
+        services: [healthcheck]
+    metrics:
+      exclude:
+        match_type: strict
+        metric_names: [system.cpu.time]
+    log_conditions:
+      - log.severity_number < SEVERITY_NUMBER_WARN
+exporters:
+  debug:
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [filter]
+      exporters: [debug]
+`, "0.158.0", "contrib")
+	for _, d := range r.Diagnostics {
+		if strings.Contains(d.Message, "Unrecognized field") {
+			t.Errorf("field flagged: %s", d.Message)
+		}
+	}
+}
