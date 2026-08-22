@@ -272,6 +272,16 @@ docker compose --profile proxy up -d  # + Caddy on :80/:443 with automatic TLS
                                       #   (set your domain in deploy/Caddyfile)
 ```
 
+Image tags: `:stable` moves only on tagged releases (what the compose file
+uses — safe to auto-update), `:latest` follows every push to main, and
+`:X.Y.Z` pins a release. To keep a self-hosted instance current without
+manual deploys, pull on a schedule — `docker compose up -d` only replaces the
+container when the image actually changed:
+
+```sh
+0 6 * * * cd /opt/otelflow && docker compose pull -q && docker compose up -d && docker image prune -f
+```
+
 The server honors the `PORT` environment variable, so the same image runs
 unmodified on container platforms like Scaleway Serverless Containers or
 Cloud Run. `-addr` and `-static` flags override the defaults.

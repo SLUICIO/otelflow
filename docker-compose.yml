@@ -10,7 +10,7 @@
 
 services:
   otelflow:
-    image: ghcr.io/sluicio/otelflow:latest
+    image: ghcr.io/sluicio/otelflow:stable # :latest follows every push to main
     build: .
     restart: unless-stopped
     ports:
