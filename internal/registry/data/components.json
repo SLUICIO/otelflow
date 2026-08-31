@@ -16,9 +16,10 @@
     "0.146.0",
     "0.152.0",
     "0.157.0",
-    "0.158.0"
+    "0.158.0",
+    "0.159.0"
   ],
-  "defaultVersion": "0.158.0",
+  "defaultVersion": "0.159.0",
   "components": [
     {
       "type": "otlp",
@@ -2090,7 +2091,7 @@
           "sampling_percentage": {
             "type": "number",
             "default": 15,
-            "description": "Percentage of items to keep (0–100)."
+            "description": "Percentage of items to keep (0\u2013100)."
           },
           "hash_seed": {
             "type": "int"
@@ -2743,7 +2744,7 @@
       "deprecated": "0.86.0",
       "removed": "0.107.0",
       "stability": "deprecated",
-      "description": "Logs telemetry to the console. Deprecated — use the debug exporter instead.",
+      "description": "Logs telemetry to the console. Deprecated \u2014 use the debug exporter instead.",
       "schema": {
         "type": "object",
         "properties": {
@@ -2826,7 +2827,7 @@
       "deprecated": "0.85.0",
       "removed": "0.86.0",
       "stability": "deprecated",
-      "description": "Exports traces to Jaeger via gRPC. Removed — Jaeger natively accepts OTLP; use the otlp exporter instead.",
+      "description": "Exports traces to Jaeger via gRPC. Removed \u2014 Jaeger natively accepts OTLP; use the otlp exporter instead.",
       "schema": {
         "type": "object",
         "properties": {
@@ -4444,7 +4445,7 @@
       "deprecated": "0.99.0",
       "removed": "0.104.0",
       "stability": "deprecated",
-      "description": "Pre-allocates heap to reduce GC churn. Removed — use GOMEMLIMIT instead.",
+      "description": "Pre-allocates heap to reduce GC churn. Removed \u2014 use GOMEMLIMIT instead.",
       "schema": {
         "type": "object",
         "properties": {
@@ -4675,7 +4676,7 @@
       "kind": "extension",
       "added": "0.36.0",
       "stability": "beta",
-      "description": "Persists component state to disk — enables durable sending queues and checkpoints.",
+      "description": "Persists component state to disk \u2014 enables durable sending queues and checkpoints.",
       "schema": {
         "type": "object",
         "properties": {
