@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-05T11:04:48Z",
+ "generatedAt": "2026-08-31T12:38:49Z",
  "source": "Derived from the Apache-2.0 licensed repositories open-telemetry/opentelemetry-collector and open-telemetry/opentelemetry-collector-contrib.",
  "versions": [
   "0.70.0",
@@ -18,7 +18,8 @@
   "0.146.0",
   "0.152.0",
   "0.157.0",
-  "0.158.0"
+  "0.158.0",
+  "0.159.0"
  ],
  "components": [
   {
@@ -609,6 +610,21 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/azureblobexporter"
   },
   {
+   "type": "azure_monitor",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.159.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/azuremonitorexporter"
+  },
+  {
    "type": "azureblob",
    "kind": "exporter",
    "signals": [
@@ -649,6 +665,8 @@
     "logs"
    ],
    "added": "0.70.0",
+   "removed": "0.159.0",
+   "renamedTo": "azure_monitor",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -1882,6 +1900,16 @@
     "contrib"
    ],
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/remotetapextension"
+  },
+  {
+   "type": "sd_notify",
+   "kind": "extension",
+   "added": "0.159.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/sdnotifyextension"
   },
   {
    "type": "sigv4auth",
@@ -3527,7 +3555,7 @@
     "logs"
    ],
    "added": "0.140.0",
-   "stability": "development",
+   "stability": "alpha",
    "distributions": [
     "contrib"
    ],
@@ -4464,6 +4492,20 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/splunkenterprisereceiver"
   },
   {
+   "type": "sql_query",
+   "kind": "receiver",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.159.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/sqlqueryreceiver"
+  },
+  {
    "type": "sqlquery",
    "kind": "receiver",
    "signals": [
@@ -4471,6 +4513,8 @@
     "logs"
    ],
    "added": "0.70.0",
+   "removed": "0.159.0",
+   "renamedTo": "sql_query",
    "stability": "alpha",
    "distributions": [
     "contrib"
