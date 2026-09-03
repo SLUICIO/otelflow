@@ -311,9 +311,12 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
           {n.kind}
         </text>
         <text className="node-title" x={14} y={32}>
-          {truncate(typeName, 17)}
-          {instance ? <tspan className="node-sub"> /{truncate(instance, 10)}</tspan> : null}
+          {fitTitle(typeName, instance).type}
+          {instance ? (
+            <tspan className="node-sub"> /{fitTitle(typeName, instance).inst}</tspan>
+          ) : null}
         </text>
+        <title>{n.id}</title>
         {problem && (
           <g transform={`translate(${NODE_W - 14},12)`}>
             <circle r={7} fill={problem === 'error' ? 'var(--err)' : 'var(--warn)'} />
@@ -549,6 +552,19 @@ function AddZone({ x, y, label, onClick }: { x: number; y: number; label: string
 
 function truncate(s: string, n: number): string {
   return s.length > n ? s.slice(0, n - 1) + '…' : s
+}
+
+/**
+ * Fits "type /instance" into a node's title line as one pixel budget:
+ * the type renders at 12px mono (~7.3px/char), the instance at 9.5px
+ * (~5px/char), with ~146px available. Truncating the parts independently
+ * let long type + long instance overflow the box.
+ */
+function fitTitle(typeName: string, instance: string | null): { type: string; inst: string | null } {
+  if (!instance) return { type: truncate(typeName, 17), inst: null }
+  const type = truncate(typeName, 13)
+  const left = 146 - type.length * 7.3 - 2 * 5 // minus the " /" separator
+  return { type, inst: truncate(instance, Math.max(4, Math.floor(left / 5))) }
 }
 
 /** Builds an SVG path along the given points with rounded corners. */
