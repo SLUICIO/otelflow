@@ -39,7 +39,7 @@ jobs:
             echo "version=$latest" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Add version and regenerate the catalog
+      - name: Add versions and regenerate the catalog
         if: steps.check.outputs.newer == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -47,9 +47,18 @@ jobs:
         run: |
           python3 - <<'EOF'
           import json, os
+          # Add every release between the grid's newest and upstream's newest,
+          # not just the latest — unmerged weekly PRs must not create gaps.
           p = 'internal/registry/data/components.json'
           d = json.load(open(p))
           v = os.environ['NEW_VERSION']
+          newest = d['versions'][-1]
+          minor_lo = int(newest.split('.')[1])
+          minor_hi = int(v.split('.')[1])
+          for m in range(minor_lo + 1, minor_hi + 1):
+              candidate = f'0.{m}.0'
+              if candidate not in d['versions']:
+                  d['versions'].append(candidate)
           if v not in d['versions']:
               d['versions'].append(v)
           d['defaultVersion'] = v
@@ -77,7 +86,9 @@ jobs:
         if: steps.check.outputs.newer == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          branch: registry-refresh/v${{ steps.check.outputs.version }}
+          # One evergreen branch: a later run updates the open PR in place
+          # instead of stacking a new PR per version.
+          branch: registry-refresh
           delete-branch: true
           commit-message: |
             Refresh registry through collector v${{ steps.check.outputs.version }}
