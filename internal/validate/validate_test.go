@@ -862,3 +862,38 @@ service:
 		t.Errorf("bad encoding enum not flagged:\n%s", msgs)
 	}
 }
+
+func TestRenameChains(t *testing.T) {
+	// sqlserverreceiver → sqlserver → sql_server: every name must be valid
+	// exactly in its own version span (the 0.163.0 regen regression).
+	base := `receivers:
+  %s:
+exporters:
+  debug:
+service:
+  pipelines:
+    metrics:
+      receivers: [%s]
+      exporters: [debug]
+`
+	cases := []struct {
+		typ, version string
+		valid        bool
+		hint         string
+	}{
+		{"sqlserver", "0.152.0", true, ""},
+		{"sqlserver", "0.163.0", false, "sql_server"},
+		{"sql_server", "0.158.0", false, "v0.163.0"},
+		{"sql_server", "0.163.0", true, ""},
+		{"azureeventhub", "0.120.0", true, ""},
+	}
+	for _, c := range cases {
+		r := Validate(mustRegistry(t), fmt.Sprintf(base, c.typ, c.typ), c.version, "contrib")
+		if r.Valid != c.valid {
+			t.Errorf("%s@%s: valid=%v, want %v:\n%s", c.typ, c.version, r.Valid, c.valid, messages(r))
+		}
+		if c.hint != "" && !strings.Contains(messages(r), c.hint) {
+			t.Errorf("%s@%s: missing %q in:\n%s", c.typ, c.version, c.hint, messages(r))
+		}
+	}
+}

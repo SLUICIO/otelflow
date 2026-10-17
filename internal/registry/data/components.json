@@ -16,9 +16,14 @@
     "0.146.0",
     "0.152.0",
     "0.157.0",
-    "0.158.0"
+    "0.158.0",
+    "0.159.0",
+    "0.160.0",
+    "0.161.0",
+    "0.162.0",
+    "0.163.0"
   ],
-  "defaultVersion": "0.158.0",
+  "defaultVersion": "0.163.0",
   "components": [
     {
       "type": "otlp",
@@ -5402,6 +5407,17 @@
           "endpoint"
         ]
       }
+    },
+    {
+      "type": "sqlserver",
+      "kind": "receiver",
+      "signals": [
+        "metrics",
+        "logs"
+      ],
+      "added": "0.70.0",
+      "stability": "beta",
+      "description": "Collects metrics (and query events) from Microsoft SQL Server instances."
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-08-05T11:04:48Z",
+ "generatedAt": "2026-10-17T18:18:48Z",
  "source": "Derived from the Apache-2.0 licensed repositories open-telemetry/opentelemetry-collector and open-telemetry/opentelemetry-collector-contrib.",
  "versions": [
   "0.70.0",
@@ -18,7 +18,12 @@
   "0.146.0",
   "0.152.0",
   "0.157.0",
-  "0.158.0"
+  "0.158.0",
+  "0.159.0",
+  "0.160.0",
+  "0.161.0",
+  "0.162.0",
+  "0.163.0"
  ],
  "components": [
   {
@@ -73,6 +78,14 @@
    "type": "exceptions",
    "kind": "connector",
    "connects": [
+    {
+     "from": "logs",
+     "to": "logs"
+    },
+    {
+     "from": "logs",
+     "to": "metrics"
+    },
     {
      "from": "traces",
      "to": "logs"
@@ -142,6 +155,22 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector/tree/main/connector/forwardconnector"
   },
   {
+   "type": "grafana_cloud",
+   "kind": "connector",
+   "connects": [
+    {
+     "from": "traces",
+     "to": "metrics"
+    }
+   ],
+   "added": "0.162.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/connector/grafanacloudconnector"
+  },
+  {
    "type": "grafanacloud",
    "kind": "connector",
    "connects": [
@@ -151,6 +180,8 @@
     }
    ],
    "added": "0.102.1",
+   "removed": "0.162.0",
+   "renamedTo": "grafana_cloud",
    "stability": "alpha",
    "distributions": [
     "contrib"
@@ -609,6 +640,21 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/azureblobexporter"
   },
   {
+   "type": "azure_monitor",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.159.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/azuremonitorexporter"
+  },
+  {
    "type": "azureblob",
    "kind": "exporter",
    "signals": [
@@ -649,6 +695,8 @@
     "logs"
    ],
    "added": "0.70.0",
+   "removed": "0.159.0",
+   "renamedTo": "azure_monitor",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -1188,11 +1236,27 @@
     "logs"
    ],
    "added": "0.70.0",
+   "removed": "0.161.0",
    "stability": "deprecated",
    "distributions": [
     "contrib"
    ],
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/mezmoexporter"
+  },
+  {
+   "type": "nats",
+   "kind": "exporter",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.162.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/natsexporter"
   },
   {
    "type": "nop",
@@ -1229,6 +1293,7 @@
    "kind": "exporter",
    "signals": [
     "traces",
+    "metrics",
     "logs"
    ],
    "added": "0.86.0",
@@ -1639,7 +1704,7 @@
    "type": "azure_auth",
    "kind": "extension",
    "added": "0.152.0",
-   "stability": "beta",
+   "stability": "alpha",
    "distributions": [
     "contrib"
    ],
@@ -1719,6 +1784,16 @@
     "contrib"
    ],
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/encodingextension"
+  },
+  {
+   "type": "file_telemetry_policy",
+   "kind": "extension",
+   "added": "0.162.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/filetelemetrypolicyextension"
   },
   {
    "type": "googleclientauth",
@@ -1884,6 +1959,16 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/remotetapextension"
   },
   {
+   "type": "sd_notify",
+   "kind": "extension",
+   "added": "0.159.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/sdnotifyextension"
+  },
+  {
    "type": "sigv4auth",
    "kind": "extension",
    "added": "0.70.0",
@@ -1922,6 +2007,19 @@
     "core"
    ],
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector/tree/main/extension/zpagesextension"
+  },
+  {
+   "type": "adaptive_tail_sampling",
+   "kind": "processor",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.160.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/adaptivetailsamplingprocessor"
   },
   {
    "type": "attributes",
@@ -2142,6 +2240,7 @@
     "traces"
    ],
    "added": "0.157.0",
+   "removed": "0.160.0",
    "stability": "development",
    "distributions": [
     "contrib"
@@ -2359,7 +2458,7 @@
     "logs"
    ],
    "added": "0.146.0",
-   "stability": "development",
+   "stability": "alpha",
    "distributions": [
     "contrib"
    ],
@@ -2450,6 +2549,21 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/metricstransformprocessor"
   },
   {
+   "type": "partitioning",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.163.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/partitioningprocessor"
+  },
+  {
    "type": "probabilistic_sampler",
    "kind": "processor",
    "signals": [
@@ -2464,6 +2578,21 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/probabilisticsamplerprocessor"
   },
   {
+   "type": "queue_batch",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.162.0",
+   "stability": "development",
+   "distributions": [
+    "core"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/queuebatchprocessor"
+  },
+  {
    "type": "queuebatch",
    "kind": "processor",
    "signals": [
@@ -2472,6 +2601,8 @@
     "logs"
    ],
    "added": "0.158.0",
+   "removed": "0.162.0",
+   "renamedTo": "queue_batch",
    "stability": "development",
    "distributions": [
     "core"
@@ -2555,6 +2686,23 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/resourcedetectionprocessor"
   },
   {
+   "type": "resourcedetection",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.80.0",
+   "removed": "0.157.0",
+   "renamedTo": "resource_detection",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/resourcedetectionprocessor"
+  },
+  {
    "type": "resourcedetectionprocessor",
    "kind": "processor",
    "signals": [
@@ -2563,8 +2711,8 @@
     "logs"
    ],
    "added": "0.70.0",
-   "removed": "0.157.0",
-   "renamedTo": "resource_detection",
+   "removed": "0.80.0",
+   "renamedTo": "resourcedetection",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -2587,6 +2735,19 @@
     "contrib"
    ],
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/resourceprocessor"
+  },
+  {
+   "type": "rolling_span_latency",
+   "kind": "processor",
+   "signals": [
+    "traces"
+   ],
+   "added": "0.161.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/rollingspanlatencyprocessor"
   },
   {
    "type": "routing",
@@ -2632,6 +2793,19 @@
     "contrib"
    ],
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/servicegraphprocessor"
+  },
+  {
+   "type": "signing",
+   "kind": "processor",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.160.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/signingprocessor"
   },
   {
    "type": "span",
@@ -2717,6 +2891,21 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/tailsamplingprocessor"
   },
   {
+   "type": "telemetry_policy",
+   "kind": "processor",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.162.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/telemetrypolicyprocessor"
+  },
+  {
    "type": "transform",
    "kind": "processor",
    "signals": [
@@ -2766,7 +2955,7 @@
    "signals": [
     "metrics"
    ],
-   "added": "0.70.0",
+   "added": "0.80.0",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -2787,12 +2976,42 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/activedirectoryinvreceiver"
   },
   {
-   "type": "aerospike",
+   "type": "activedirectorydsreceiver",
    "kind": "receiver",
    "signals": [
     "metrics"
    ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "active_directory_ds",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/activedirectorydsreceiver"
+  },
+  {
+   "type": "aerospike",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.80.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/aerospikereceiver"
+  },
+  {
+   "type": "aerospikereceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "aerospike",
    "stability": "alpha",
    "distributions": [
     "contrib"
@@ -2805,7 +3024,7 @@
    "signals": [
     "metrics"
    ],
-   "added": "0.70.0",
+   "added": "0.80.0",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -2824,6 +3043,21 @@
     "contrib"
    ],
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/apachesparkreceiver"
+  },
+  {
+   "type": "apachereceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "apache",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/apachereceiver"
   },
   {
    "type": "apachespark",
@@ -2867,6 +3101,21 @@
     "contrib"
    ],
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/awslambdareceiver"
+  },
+  {
+   "type": "aws_s3",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.162.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/awss3receiver"
   },
   {
    "type": "awscloudwatch",
@@ -2956,12 +3205,12 @@
    "type": "awss3",
    "kind": "receiver",
    "signals": [
-    "traces",
-    "metrics",
-    "logs"
+    "traces"
    ],
    "added": "0.102.1",
-   "stability": "alpha",
+   "removed": "0.162.0",
+   "renamedTo": "aws_s3",
+   "stability": "development",
    "distributions": [
     "contrib"
    ],
@@ -3003,7 +3252,7 @@
     "logs"
    ],
    "added": "0.146.0",
-   "stability": "beta",
+   "stability": "alpha",
    "distributions": [
     "contrib"
    ],
@@ -3013,6 +3262,7 @@
    "type": "azure_functions",
    "kind": "receiver",
    "signals": [
+    "metrics",
     "logs"
    ],
    "added": "0.152.0",
@@ -3052,6 +3302,22 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/azureblobreceiver"
   },
   {
+   "type": "azureeventhub",
+   "kind": "receiver",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.80.0",
+   "removed": "0.146.0",
+   "renamedTo": "azure_event_hub",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/azureeventhubreceiver"
+  },
+  {
    "type": "azureeventhubreceiver",
    "kind": "receiver",
    "signals": [
@@ -3059,8 +3325,8 @@
     "logs"
    ],
    "added": "0.70.0",
-   "removed": "0.146.0",
-   "renamedTo": "azure_event_hub",
+   "removed": "0.80.0",
+   "renamedTo": "azureeventhub",
    "stability": "alpha",
    "distributions": [
     "contrib"
@@ -3088,9 +3354,24 @@
    "signals": [
     "metrics"
    ],
-   "added": "0.70.0",
+   "added": "0.80.0",
    "removed": "0.152.0",
-   "stability": "unmaintained",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/bigipreceiver"
+  },
+  {
+   "type": "bigipreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "bigip",
+   "stability": "beta",
    "distributions": [
     "contrib"
    ],
@@ -3115,8 +3396,20 @@
    "signals": [
     "metrics"
    ],
+   "added": "0.80.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/chronyreceiver"
+  },
+  {
+   "type": "chrony receiver",
+   "kind": "receiver",
    "added": "0.70.0",
-   "stability": "beta",
+   "removed": "0.80.0",
+   "renamedTo": "chrony",
+   "stability": "development",
    "distributions": [
     "contrib"
    ],
@@ -3211,7 +3504,22 @@
    "signals": [
     "metrics"
    ],
+   "added": "0.80.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/couchdbreceiver"
+  },
+  {
+   "type": "couchdbreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "couchdb",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -3252,8 +3560,20 @@
    "signals": [
     "metrics"
    ],
-   "added": "0.70.0",
+   "added": "0.80.0",
    "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/dockerstatsreceiver"
+  },
+  {
+   "type": "dockerstatsreceiver",
+   "kind": "receiver",
+   "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "docker_stats",
+   "stability": "development",
    "distributions": [
     "contrib"
    ],
@@ -3265,7 +3585,22 @@
    "signals": [
     "metrics"
    ],
+   "added": "0.80.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/elasticsearchreceiver"
+  },
+  {
+   "type": "elasticsearchreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "elasticsearch",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -3306,8 +3641,20 @@
    "signals": [
     "metrics"
    ],
-   "added": "0.70.0",
+   "added": "0.80.0",
    "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/expvarreceiver"
+  },
+  {
+   "type": "expvarreceiver",
+   "kind": "receiver",
+   "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "expvar",
+   "stability": "development",
    "distributions": [
     "contrib"
    ],
@@ -3403,7 +3750,37 @@
    "signals": [
     "metrics"
    ],
+   "added": "0.157.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/flinkmetricsreceiver"
+  },
+  {
+   "type": "flinkmetrics",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.80.0",
+   "removed": "0.157.0",
+   "renamedTo": "flink_metrics",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/flinkmetricsreceiver"
+  },
+  {
+   "type": "flinkmetricsreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "flinkmetrics",
    "stability": "alpha",
    "distributions": [
     "contrib"
@@ -3527,7 +3904,7 @@
     "logs"
    ],
    "added": "0.140.0",
-   "stability": "development",
+   "stability": "alpha",
    "distributions": [
     "contrib"
    ],
@@ -3554,8 +3931,23 @@
    "signals": [
     "metrics"
    ],
+   "added": "0.80.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/haproxyreceiver"
+  },
+  {
+   "type": "haproxyreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
    "added": "0.70.0",
-   "stability": "beta",
+   "removed": "0.80.0",
+   "renamedTo": "haproxy",
+   "stability": "alpha",
    "distributions": [
     "contrib"
    ],
@@ -3596,8 +3988,38 @@
    "signals": [
     "metrics"
    ],
-   "added": "0.70.0",
+   "added": "0.152.0",
    "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/httpcheckreceiver"
+  },
+  {
+   "type": "httpcheck",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.80.0",
+   "removed": "0.152.0",
+   "renamedTo": "http_check",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/httpcheckreceiver"
+  },
+  {
+   "type": "httpcheckreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "httpcheck",
+   "stability": "development",
    "distributions": [
     "contrib"
    ],
@@ -3617,12 +4039,27 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/huaweicloudcesreceiver"
   },
   {
+   "type": "icmp_check",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.160.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/icmpcheckreceiver"
+  },
+  {
    "type": "icmpcheckreceiver",
    "kind": "receiver",
    "signals": [
     "metrics"
    ],
    "added": "0.140.0",
+   "removed": "0.160.0",
+   "renamedTo": "icmp_check",
    "stability": "development",
    "distributions": [
     "contrib"
@@ -3635,7 +4072,22 @@
    "signals": [
     "metrics"
    ],
+   "added": "0.80.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/iisreceiver"
+  },
+  {
+   "type": "iisreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "iis",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -3785,8 +4237,35 @@
    "signals": [
     "metrics"
    ],
-   "added": "0.70.0",
+   "added": "0.152.0",
    "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/kafkametricsreceiver"
+  },
+  {
+   "type": "kafkametrics",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.80.0",
+   "removed": "0.152.0",
+   "renamedTo": "kafka_metrics",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/kafkametricsreceiver"
+  },
+  {
+   "type": "kafkametricsreceiver",
+   "kind": "receiver",
+   "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "kafkametrics",
+   "stability": "development",
    "distributions": [
     "contrib"
    ],
@@ -3798,8 +4277,35 @@
    "signals": [
     "metrics"
    ],
-   "added": "0.70.0",
+   "added": "0.152.0",
    "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/kubeletstatsreceiver"
+  },
+  {
+   "type": "kubeletstats",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.80.0",
+   "removed": "0.152.0",
+   "renamedTo": "kubelet_stats",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/kubeletstatsreceiver"
+  },
+  {
+   "type": "kubeletstatsreceiver",
+   "kind": "receiver",
+   "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "kubeletstats",
+   "stability": "development",
    "distributions": [
     "contrib"
    ],
@@ -3866,7 +4372,7 @@
    "signals": [
     "metrics"
    ],
-   "added": "0.70.0",
+   "added": "0.80.0",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -3874,13 +4380,43 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/memcachedreceiver"
   },
   {
-   "type": "mongodb",
+   "type": "memcachedreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "memcached",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/memcachedreceiver"
+  },
+  {
+   "type": "mongoatlasreceiver",
    "kind": "receiver",
    "signals": [
     "metrics",
     "logs"
    ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "mongodbatlas",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/mongodbatlasreceiver"
+  },
+  {
+   "type": "mongodb",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.80.0",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -3894,7 +4430,7 @@
     "metrics",
     "logs"
    ],
-   "added": "0.70.0",
+   "added": "0.146.0",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -3902,13 +4438,58 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/mongodbatlasreceiver"
   },
   {
-   "type": "mysql",
+   "type": "mongodbatlas",
    "kind": "receiver",
    "signals": [
     "metrics",
     "logs"
    ],
+   "added": "0.80.0",
+   "removed": "0.146.0",
+   "renamedTo": "mongodb_atlas",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/mongodbatlasreceiver"
+  },
+  {
+   "type": "mongodbreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "mongodb",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/mongodbreceiver"
+  },
+  {
+   "type": "mysql",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.80.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/mysqlreceiver"
+  },
+  {
+   "type": "mysqlreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "mysql",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -3962,7 +4543,22 @@
    "signals": [
     "metrics"
    ],
+   "added": "0.80.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/nginxreceiver"
+  },
+  {
+   "type": "nginxreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "nginx",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -3990,7 +4586,22 @@
    "signals": [
     "metrics"
    ],
+   "added": "0.80.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/nsxtreceiver"
+  },
+  {
+   "type": "nsxtreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "nsxt",
    "stability": "alpha",
    "distributions": [
     "contrib"
@@ -4029,10 +4640,24 @@
    "type": "oracledb",
    "kind": "receiver",
    "signals": [
-    "metrics",
-    "logs"
+    "metrics"
+   ],
+   "added": "0.80.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/oracledbreceiver"
+  },
+  {
+   "type": "oracledbreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
    ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "oracledb",
    "stability": "alpha",
    "distributions": [
     "contrib"
@@ -4131,10 +4756,24 @@
    "type": "postgresql",
    "kind": "receiver",
    "signals": [
-    "metrics",
-    "logs"
+    "metrics"
+   ],
+   "added": "0.80.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/postgresqlreceiver"
+  },
+  {
+   "type": "postgresqlreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
    ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "postgresql",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -4198,7 +4837,7 @@
     "metrics"
    ],
    "added": "0.70.0",
-   "stability": "unmaintained",
+   "stability": "beta",
    "distributions": [
     "contrib"
    ],
@@ -4266,7 +4905,22 @@
    "signals": [
     "metrics"
    ],
+   "added": "0.80.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/rabbitmqreceiver"
+  },
+  {
+   "type": "rabbitmqreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "rabbitmq",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -4307,7 +4961,22 @@
    "signals": [
     "metrics"
    ],
+   "added": "0.80.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/redisreceiver"
+  },
+  {
+   "type": "redisreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "redis",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -4320,7 +4989,22 @@
    "signals": [
     "metrics"
    ],
+   "added": "0.80.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/riakreceiver"
+  },
+  {
+   "type": "riakreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "riak",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -4333,8 +5017,23 @@
    "signals": [
     "metrics"
    ],
+   "added": "0.80.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/saphanareceiver"
+  },
+  {
+   "type": "saphanareceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
    "added": "0.70.0",
-   "stability": "alpha",
+   "removed": "0.80.0",
+   "renamedTo": "saphana",
+   "stability": "development",
    "distributions": [
     "contrib"
    ],
@@ -4401,8 +5100,20 @@
    "signals": [
     "metrics"
    ],
-   "added": "0.70.0",
+   "added": "0.80.0",
    "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/snowflakereceiver"
+  },
+  {
+   "type": "snowflakereceiver",
+   "kind": "receiver",
+   "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "snowflake",
+   "stability": "development",
    "distributions": [
     "contrib"
    ],
@@ -4464,6 +5175,34 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/splunkenterprisereceiver"
   },
   {
+   "type": "sql_query",
+   "kind": "receiver",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.159.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/sqlqueryreceiver"
+  },
+  {
+   "type": "sql_server",
+   "kind": "receiver",
+   "signals": [
+    "metrics",
+    "logs"
+   ],
+   "added": "0.163.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/sqlserverreceiver"
+  },
+  {
    "type": "sqlquery",
    "kind": "receiver",
    "signals": [
@@ -4471,6 +5210,8 @@
     "logs"
    ],
    "added": "0.70.0",
+   "removed": "0.159.0",
+   "renamedTo": "sql_query",
    "stability": "alpha",
    "distributions": [
     "contrib"
@@ -4481,10 +5222,26 @@
    "type": "sqlserver",
    "kind": "receiver",
    "signals": [
-    "metrics",
-    "logs"
+    "metrics"
+   ],
+   "added": "0.80.0",
+   "removed": "0.163.0",
+   "renamedTo": "sql_server",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/sqlserverreceiver"
+  },
+  {
+   "type": "sqlserverreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
    ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "sqlserver",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -4505,14 +5262,29 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/sshcheckreceiver"
   },
   {
+   "type": "sshcheck",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.80.0",
+   "removed": "0.152.0",
+   "renamedTo": "ssh_check",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/sshcheckreceiver"
+  },
+  {
    "type": "sshcheckreceiver",
    "kind": "receiver",
    "signals": [
     "metrics"
    ],
    "added": "0.77.0",
-   "removed": "0.152.0",
-   "renamedTo": "ssh_check",
+   "removed": "0.80.0",
+   "renamedTo": "sshcheck",
    "stability": "development",
    "distributions": [
     "contrib"
@@ -4689,7 +5461,22 @@
    "signals": [
     "metrics"
    ],
+   "added": "0.80.0",
+   "stability": "alpha",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/vcenterreceiver"
+  },
+  {
+   "type": "vcenterreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
    "added": "0.70.0",
+   "removed": "0.80.0",
+   "renamedTo": "vcenter",
    "stability": "alpha",
    "distributions": [
     "contrib"
@@ -4718,6 +5505,7 @@
     "metrics"
    ],
    "added": "0.70.0",
+   "removed": "0.162.0",
    "stability": "deprecated",
    "distributions": [
     "contrib"
@@ -4766,6 +5554,19 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/windowseventlogreceiver"
   },
   {
+   "type": "windows_perf_counters",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.160.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/windowsperfcountersreceiver"
+  },
+  {
    "type": "windows_service",
    "kind": "receiver",
    "signals": [
@@ -4800,6 +5601,8 @@
     "metrics"
    ],
    "added": "0.70.0",
+   "removed": "0.160.0",
+   "renamedTo": "windows_perf_counters",
    "stability": "beta",
    "distributions": [
     "contrib"
@@ -4883,8 +5686,23 @@
    "signals": [
     "metrics"
    ],
+   "added": "0.80.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/zookeeperreceiver"
+  },
+  {
+   "type": "zookeeperreceiver",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
    "added": "0.70.0",
-   "stability": "alpha",
+   "removed": "0.80.0",
+   "renamedTo": "zookeeper",
+   "stability": "development",
    "distributions": [
     "contrib"
    ],
