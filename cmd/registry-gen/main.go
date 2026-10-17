@@ -164,29 +164,32 @@ func main() {
 		docsURL := fmt.Sprintf("https://github.com/%s/tree/main/%s", src.repo, dirKey)
 
 		// Upstream sometimes renames a component's config type while keeping
-		// its directory (e.g. otlphttp → otlp_http in core v0.146.0). Detect
-		// by comparing the earliest readable metadata (old components predate
-		// metadata.yaml at their first tags) with the latest, and emit the
-		// old and new type as separate, correctly-gated components.
+		// its directory (e.g. otlphttp → otlp_http in core v0.146.0) — and
+		// occasionally more than once (sqlserverreceiver → sqlserver →
+		// sql_server). Detect by comparing the earliest readable metadata
+		// with the latest, then walk every supported version to emit one
+		// correctly-gated component per segment of the rename chain.
 		if firstMeta, ferr := fetchEarliestMetadata(src.repo, dirKey, present); ferr == nil &&
 			firstMeta.Type != "" && firstMeta.Type != meta.Type {
-			renameVersion := findRenameVersion(src.repo, dirKey, meta.Type, present, added, lastPresent)
-			oldSignals, oldConnects, oldStability := interpretStability(kind, firstMeta.Status.Stability)
-			comps = append(comps, genComponent{
-				Type: firstMeta.Type, Kind: kind,
-				Signals: oldSignals, Connects: oldConnects,
-				Added: added, Removed: renameVersion, RenamedTo: meta.Type,
-				Stability: oldStability, Distributions: dists,
-				DocsURL: docsURL,
-			})
-			comps = append(comps, genComponent{
-				Type: meta.Type, Kind: kind,
-				Signals: signals, Connects: connects,
-				Added: renameVersion, Removed: removed,
-				Stability: stability, Distributions: dists,
-				DocsURL: docsURL,
-			})
-			log.Printf("rename detected: %s %s → %s at v%s", dirKey, firstMeta.Type, meta.Type, renameVersion)
+			segs := typeSegments(src.repo, dirKey, kind, present, added)
+			for i, seg := range segs {
+				c := genComponent{
+					Type: seg.typ, Kind: kind,
+					Signals: seg.signals, Connects: seg.connects,
+					Added: seg.from, Removed: removed,
+					Stability: seg.stability, Distributions: dists,
+					DocsURL: docsURL,
+				}
+				if i == 0 {
+					c.Added = added // the directory predates readable metadata
+				}
+				if i < len(segs)-1 {
+					c.Removed = segs[i+1].from
+					c.RenamedTo = segs[i+1].typ
+					log.Printf("rename detected: %s %s → %s at v%s", dirKey, seg.typ, segs[i+1].typ, segs[i+1].from)
+				}
+				comps = append(comps, c)
+			}
 			continue
 		}
 
@@ -244,30 +247,46 @@ func fetchEarliestMetadata(repo, dirKey string, present map[string]bool) (*metad
 		if !present[v] {
 			continue
 		}
-		if meta, err := fetchMetadataAnyTag(repo, v, dirKey); err == nil {
+		// Very old metadata.yaml files predate the type field; an empty
+		// type is as useless as a missing file.
+		if meta, err := fetchMetadataAnyTag(repo, v, dirKey); err == nil && meta.Type != "" {
 			return meta, nil
 		}
 	}
 	return nil, fmt.Errorf("no readable metadata at any present tag")
 }
 
-// findRenameVersion returns the first supported version at which the
-// component's metadata declares the new type name.
-func findRenameVersion(repo, dirKey, newType string, present map[string]bool, added, lastPresent string) string {
+// typeSegment is one stretch of a component's life under a single type name.
+type typeSegment struct {
+	typ       string
+	from      string // first supported version declaring this type
+	signals   []string
+	connects  []connection
+	stability string
+}
+
+// typeSegments walks every supported version the directory is present at and
+// records each type the metadata declares, in order. Unreadable or
+// type-less metadata (old formats) is skipped.
+func typeSegments(repo, dirKey, kind string, present map[string]bool, added string) []typeSegment {
+	var segs []typeSegment
 	for _, v := range versions {
 		if registry.CompareVersions(v, added) < 0 || !present[v] {
 			continue
 		}
 		meta, err := fetchMetadataAnyTag(repo, v, dirKey)
-		if err != nil {
+		if err != nil || meta.Type == "" {
 			continue
 		}
-		if meta.Type == newType {
-			return v
+		if len(segs) > 0 && segs[len(segs)-1].typ == meta.Type {
+			continue
 		}
+		signals, connects, stability := interpretStability(kind, meta.Status.Stability)
+		segs = append(segs, typeSegment{typ: meta.Type, from: v, signals: signals, connects: connects, stability: stability})
 	}
-	return lastPresent
+	return segs
 }
+
 
 // availability derives added/removed from the presence set, relative to the
 // supported version list. removed is the first supported version where the
