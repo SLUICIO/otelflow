@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-17T18:18:48Z",
+ "generatedAt": "2026-11-09T15:07:25Z",
  "source": "Derived from the Apache-2.0 licensed repositories open-telemetry/opentelemetry-collector and open-telemetry/opentelemetry-collector-contrib.",
  "versions": [
   "0.70.0",
@@ -23,7 +23,9 @@
   "0.160.0",
   "0.161.0",
   "0.162.0",
-  "0.163.0"
+  "0.163.0",
+  "0.164.0",
+  "0.165.0"
  ],
  "components": [
   {
@@ -1195,7 +1197,7 @@
     "logs"
    ],
    "added": "0.70.0",
-   "stability": "alpha",
+   "stability": "unmaintained",
    "distributions": [
     "contrib"
    ],
@@ -1796,10 +1798,22 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/filetelemetrypolicyextension"
   },
   {
+   "type": "google_client_auth",
+   "kind": "extension",
+   "added": "0.164.0",
+   "stability": "beta",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/googleclientauthextension"
+  },
+  {
    "type": "googleclientauth",
    "kind": "extension",
    "added": "0.102.1",
-   "stability": "beta",
+   "removed": "0.164.0",
+   "renamedTo": "google_client_auth",
+   "stability": "alpha",
    "distributions": [
     "contrib"
    ],
@@ -2557,7 +2571,7 @@
     "logs"
    ],
    "added": "0.163.0",
-   "stability": "development",
+   "stability": "alpha",
    "distributions": [
     "contrib"
    ],
@@ -2932,6 +2946,19 @@
     "contrib"
    ],
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/unrollprocessor"
+  },
+  {
+   "type": "verify",
+   "kind": "processor",
+   "signals": [
+    "logs"
+   ],
+   "added": "0.164.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/verifyprocessor"
   },
   {
    "type": "websocket",
@@ -3857,6 +3884,19 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/gitproviderreceiver"
   },
   {
+   "type": "gnmi",
+   "kind": "receiver",
+   "signals": [
+    "metrics"
+   ],
+   "added": "0.164.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/gnmireceiver"
+  },
+  {
    "type": "google_cloud_spanner",
    "kind": "receiver",
    "signals": [
@@ -4525,6 +4565,21 @@
    "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/namedpipereceiver"
   },
   {
+   "type": "nats",
+   "kind": "receiver",
+   "signals": [
+    "traces",
+    "metrics",
+    "logs"
+   ],
+   "added": "0.164.0",
+   "stability": "development",
+   "distributions": [
+    "contrib"
+   ],
+   "docsUrl": "https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/natsreceiver"
+  },
+  {
    "type": "netflow",
    "kind": "receiver",
    "signals": [
@@ -5061,6 +5116,7 @@
     "logs"
    ],
    "added": "0.70.0",
+   "removed": "0.165.0",
    "stability": "deprecated",
    "distributions": [
     "contrib"
