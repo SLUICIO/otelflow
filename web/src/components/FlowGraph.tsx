@@ -500,18 +500,26 @@ export function FlowGraph({ model, componentIndex, diagnostics, selected, onSele
           Collector telemetry
         </text>
       )}
-      {telemetry.map((t) => (
+      {telemetry.map((t) => {
+        const fit = fitSummary(t.summary)
+        return (
         <g key={`telemetry:${t.signal}`} className="telemetry-node" transform={`translate(${t.x},${t.y})`}>
           <rect className="node-box" width={NODE_W} height={NODE_H} rx={8} />
           <rect className={`node-accent ${t.signal}`} width={3} height={NODE_H} rx={1.5} />
           <text className={`node-kind-label ${t.signal}`} x={14} y={15}>
             {t.signal}
           </text>
+          {fit.rest && (
+            <text className="node-sub" x={NODE_W - 10} y={15} textAnchor="end">
+              {fit.rest}
+            </text>
+          )}
           <text className="node-title" x={14} y={32}>
-            {truncate(t.summary, 24)}
+            {fit.head}
           </text>
         </g>
-      ))}
+        )
+      })}
 
       {/* defined-but-unused rail: visible in every mode — the validator
           warns about these, the canvas shows them */}
@@ -565,6 +573,17 @@ function fitTitle(typeName: string, instance: string | null): { type: string; in
   const type = truncate(typeName, 13)
   const left = 146 - type.length * 7.3 - 2 * 5 // minus the " /" separator
   return { type, inst: truncate(instance, Math.max(4, Math.floor(left / 5))) }
+}
+
+/**
+ * Splits a telemetry summary ("level: Normal · 1 reader") so it fits its
+ * card: the level is the title, the rest goes small and muted on the kind
+ * label's line. One line at the title size held only about 19 characters,
+ * and "level: Normal · 1 reader" ran out of the box.
+ */
+function fitSummary(summary: string): { head: string; rest: string | null } {
+  const [first, ...others] = summary.split(' · ')
+  return { head: truncate(first, 19), rest: others.length ? truncate(others.join(' · '), 18) : null }
 }
 
 /** Builds an SVG path along the given points with rounded corners. */
