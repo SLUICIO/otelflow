@@ -23,6 +23,7 @@ import (
 func main() {
 	addr := flag.String("addr", defaultAddr(), "listen address")
 	staticDir := flag.String("static", "web/dist", "directory with the built frontend (optional)")
+	prefix := flag.String("prefix", os.Getenv("OTELFLOW_PREFIX"), "serve everything under this path, e.g. /otelflow (default: the root; env OTELFLOW_PREFIX)")
 	flag.Parse()
 
 	reg, err := registry.Load()
@@ -39,10 +40,34 @@ func main() {
 		mux.Handle("/", withCachePolicy(spaHandler(*staticDir)))
 	}
 
-	log.Printf("Sluicio OTel Collector Designer API listening on %s", *addr)
-	if err := http.ListenAndServe(*addr, api.CORS(mux)); err != nil {
+	handler, err := mount(*prefix, mux)
+	if err != nil {
 		log.Fatal(err)
 	}
+	log.Printf("Sluicio OTel Collector Designer API listening on %s%s", *addr, strings.TrimSuffix(*prefix, "/"))
+	if err := http.ListenAndServe(*addr, api.CORS(handler)); err != nil {
+		log.Fatal(err)
+	}
+}
+
+// mount serves h under prefix, for a host that puts the designer at a path
+// of its own site (https://example.com/otelflow/) through a proxy that
+// passes the path on unchanged. The frontend's asset URLs are relative, so
+// only the server needs to know. The bare prefix redirects to prefix + "/",
+// because relative URLs resolve against the directory. An empty prefix
+// serves at the root, as before.
+func mount(prefix string, h http.Handler) (http.Handler, error) {
+	prefix = strings.TrimSuffix(prefix, "/")
+	if prefix == "" {
+		return h, nil
+	}
+	if !strings.HasPrefix(prefix, "/") || strings.ContainsAny(prefix, "?#") {
+		return nil, fmt.Errorf("prefix %q must be a path starting with /", prefix)
+	}
+	root := http.NewServeMux()
+	root.Handle(prefix+"/", http.StripPrefix(prefix, h))
+	root.Handle(prefix, http.RedirectHandler(prefix+"/", http.StatusMovedPermanently))
+	return root, nil
 }
 
 // defaultAddr honors the PORT environment variable that container platforms

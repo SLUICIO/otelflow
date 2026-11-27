@@ -286,6 +286,14 @@ The server honors the `PORT` environment variable, so the same image runs
 unmodified on container platforms like Scaleway Serverless Containers or
 Cloud Run. `-addr` and `-static` flags override the defaults.
 
+To serve OTelFlow under a path of another site rather than at the root of
+its own host, set `OTELFLOW_PREFIX` (or `-prefix`), for example
+`OTELFLOW_PREFIX=/otelflow`, and route that path to the container without
+rewriting it. Everything then lives under `/otelflow/`, including the API
+and embeds (`https://example.com/otelflow/#embed=...`); the bare prefix
+redirects to it. The frontend's asset URLs are relative, so a proxy that
+strips the prefix instead works too, with no setting at all.
+
 Optional: set `PLAUSIBLE_SCRIPT_URL` to your Plausible script URL to enable
 cookieless page-view analytics on your instance (e.g.
 `-e PLAUSIBLE_SCRIPT_URL=https://plausible.example.com/js/script.js`).
