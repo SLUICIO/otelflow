@@ -19,6 +19,11 @@ const gitSha = (
 ).trim().slice(0, 7)
 
 export default defineConfig({
+  // Relative asset URLs, so the built app works wherever it is mounted: at
+  // the root of its own host, or under a path prefix behind a proxy that
+  // strips it (https://example.com/otelflow/). All state lives in the URL
+  // fragment, so the page itself is always the mount point's index.
+  base: './',
   plugins: [react()],
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
