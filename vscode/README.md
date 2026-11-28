@@ -17,6 +17,9 @@ Problems panel:
   distribution — per collector version, for core and contrib.
 - Undefined pipeline references, signal compatibility, connector role rules,
   auth extension references, required and typed config fields, deprecations.
+- Secrets written in plain text (a password, token, API key or `Authorization`
+  header) instead of an `${env:NAME}` reference, with a hint to move them into
+  an environment variable.
 
 The status bar shows which collector version and distribution the file is
 validated against; click it to change them.

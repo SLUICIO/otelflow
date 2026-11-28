@@ -76,4 +76,33 @@ assert.ok(
   'rename hint points to file_stats',
 )
 
+// A secret written in plain text is a warning with its path and line; a
+// reference is not.
+const secrets = await validate(
+  distDir,
+  `receivers:
+  otlp:
+    protocols:
+      grpc:
+exporters:
+  otlp_http:
+    endpoint: https://example.test
+    headers:
+      authorization: Bearer abc123
+      x-tenant: \${env:TENANT}
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlp_http]
+`,
+  '0.157.0',
+  'contrib',
+)
+const plain = secrets.diagnostics.filter((d) => d.severity === 'warning' && (d.path ?? '').startsWith('exporters.otlp_http.headers'))
+assert.equal(plain.length, 1, `one plain-text secret, got: ${JSON.stringify(secrets.diagnostics)}`)
+assert.equal(plain[0].path, 'exporters.otlp_http.headers.authorization')
+assert.ok(plain[0].line > 0, 'the warning carries a line number')
+assert.equal(secrets.valid, true, 'a plain-text secret is a warning, not an error')
+
 console.log('smoke test passed:', m.versions.length, 'versions, default', m.defaultVersion)
