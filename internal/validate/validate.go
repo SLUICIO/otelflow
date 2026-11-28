@@ -164,6 +164,7 @@ func Validate(reg *registry.Registry, configYAML, version, distro string) Result
 	v.checkUnused()
 	v.checkConnectorRoles()
 	v.checkAuthReferences()
+	v.checkPlainSecrets(root)
 	return v.result()
 }
 
